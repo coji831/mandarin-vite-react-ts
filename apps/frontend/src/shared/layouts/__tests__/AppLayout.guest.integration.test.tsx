@@ -1,20 +1,24 @@
 /**
  * @file shared/layouts/__tests__/AppLayout.guest.integration.test.tsx
- * @description Integration test (Testing Trophy, INTEGRATION tier) — the
- * CALIBRATED guest identity end-to-end (Story 24-7). The real `usePhaseGate`
- * hook fetches `GET /v1/progression/phase-gate` through `apiClient`; MSW
- * serves the ACTUAL calibrated guest gate — `createGuestPhaseGate()` →
- * `{currentPhase: 1, isGuest: true}` — imported from `@mandarin/shared-constants`
- * (the single source of truth). A guest shell must render the Phase-1
- * identity: the Foundations Learn item stays unlocked, Phase-2+ items
- * (Radicals/Grammar/…) render locked — NOT the old all-unlocked
- * `currentPhase: 4` guest.
+ * @description Integration test (Testing Trophy, INTEGRATION tier) — the guest
+ * shell end-to-end. The real `usePhaseGate` hook would fetch
+ * `GET /v1/progression/phase-gate` through `apiClient`; MSW serves the ACTUAL
+ * calibrated guest gate — `createGuestPhaseGate()` → `{currentPhase: 1,
+ * isGuest: true}` — imported from `@mandarin/shared-constants` (the single
+ * source of truth).
+ *
+ * Story 25-3 / A25 inverted this file: a guest at `/learn/grammar` sees the page
+ * and an unimpeded sidebar. The gate handler is kept ON PURPOSE — the shell no
+ * longer reads it for navigation, so if a phase wall (route or nav) ever comes
+ * back it will read this Phase-1 gate, lock Phase-2+ items, and fail here.
+ * Guest state lives on the Browse dashboard, never in this layout.
  */
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { Route, Routes } from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createGuestPhaseGate } from "@mandarin/shared-constants";
+import { LEARN_NAV_ITEMS } from "shared/constants";
 import { server } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { AppLayout } from "../AppLayout";
@@ -47,34 +51,35 @@ function renderGuestShell() {
   );
 }
 
-describe("AppLayout — calibrated guest identity (Story 24-7)", () => {
-  it("renders the Phase-1 guest shape end-to-end (not all-unlocked)", async () => {
+function expectEveryLearnItemEnabled() {
+  for (const item of LEARN_NAV_ITEMS) {
+    const link = screen.getByRole("link", { name: item.label });
+    expect(link).toHaveAttribute("href", item.path);
+    expect(link).not.toHaveAttribute("aria-disabled");
+    expect(link).not.toHaveAttribute("tabindex");
+    expect(link.getAttribute("title") ?? "").not.toMatch(/unlock|locked|requires/i);
+  }
+}
+
+describe("AppLayout — guest shell (A25: no phase wall)", () => {
+  it("renders the guest page and an unimpeded Learn group at /learn/grammar", async () => {
     // Serve the ACTUAL calibrated guest gate from the shared source of truth.
     server.use(http.get(PHASE_GATE_URL, () => HttpResponse.json(createGuestPhaseGate())));
 
     renderGuestShell();
 
-    // Phase-1 Learn item (Foundations) stays unlocked for the guest…
-    await waitFor(() =>
-      expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute(
-        "aria-disabled",
-      ),
-    );
-    // …and Phase-2+ items render locked — the guest is NOT all-unlocked.
-    const grammar = screen.getByRole("link", { name: /Grammar/ });
-    expect(grammar).toHaveAttribute("aria-disabled");
-    expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
+    // The routed page renders for a Phase-1 guest — no gate screen, no redirect.
+    await waitFor(() => expect(screen.getByText("page content")).toBeInTheDocument());
+    expectEveryLearnItemEnabled();
   });
 
-  it("keeps a guest Phase-1 (not all-unlocked) when the phase-gate fetch fails", async () => {
-    // Backend unavailable → `usePhaseGate` falls back to phase-1 for a guest
-    // (never the old all-unlocked `: 4` override).
+  it("renders the same unimpeded shell when the phase-gate fetch fails", async () => {
+    // Backend unavailable → irrelevant now: navigation reads no gate at all.
     server.use(http.get(PHASE_GATE_URL, () => HttpResponse.error()));
 
     renderGuestShell();
 
     await waitFor(() => expect(screen.getByText("page content")).toBeInTheDocument());
-    const grammar = screen.getByRole("link", { name: /Grammar/ });
-    expect(grammar).toHaveAttribute("aria-disabled");
+    expectEveryLearnItemEnabled();
   });
 });

@@ -1,16 +1,17 @@
 /**
  * @file router/__tests__/LearnRoutes.grammar.test.tsx
  * @description Integration test (Testing Trophy, INTEGRATION tier) —
- * `LearnRoutes` Phase-2 gate for `/learn/grammar`.
- * Story 22.3: Grammar UI
+ * `/learn/grammar` is OPEN to every visitor (Story 25-3 / A25; BM-1 §3, L6).
+ * Story 22.3: Grammar UI — inverted by Story 25-3.
  *
- * - currentPhase 1 → PhaseGate redirects to `/learn/foundations` (GrammarPage NOT rendered)
- * - currentPhase 2 → GrammarPage renders (grammar unlocked)
+ * - guest at currentPhase 1 → GrammarPage renders (the old PhaseGate redirect
+ *   to `/learn/foundations` is deleted)
+ * - currentPhase 2 → GrammarPage renders (unchanged)
  *
- * The phase gate is fetched through the real `usePhaseGate` + `apiClient`,
- * intercepted by the MSW node server. `FoundationsPage` is stubbed so the
- * redirect target (which fetches pinyin data on mount) doesn't pull in
- * unrelated network calls.
+ * The MSW gate handler is kept deliberately: it serves the calibrated guest gate
+ * (`currentPhase: 1`), so if a route wall ever comes back it redirects and the
+ * phase-1 assertion fails. `FoundationsPage` is stubbed so the old redirect
+ * target can be asserted ABSENT.
  */
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -20,8 +21,8 @@ import { server, grammarHandlers } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { LearnRoutes } from "../LearnRoutes";
 
-// FoundationsPage fetches pinyin data on mount — stub it so the redirect
-// assertion targets navigation, not Foundations internals.
+// FoundationsPage fetches pinyin data on mount — stub it so the assertion
+// targets the route's page, not unrelated network calls.
 vi.mock("../../pages/learn/foundations/FoundationsPage", () => ({
   FoundationsPage: () => <div>FoundationsPage stub</div>,
 }));
@@ -57,7 +58,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("LearnRoutes — /learn/grammar phase gate", () => {
+describe("LearnRoutes — /learn/grammar is un-gated (A25)", () => {
   // The real app mounts LearnRoutes under `/learn/*` (Router.tsx) — replicate
   // that wiring so LearnRoutes' internal Routes match `/learn/grammar`.
   function renderAtGrammarRoute() {
@@ -69,15 +70,17 @@ describe("LearnRoutes — /learn/grammar phase gate", () => {
     );
   }
 
-  it("redirects to /learn/foundations when the learner is below Phase 2", async () => {
+  it("renders the GrammarPage for a guest at Phase 1 (no gate, no redirect)", async () => {
     usePhaseGate(1);
+    server.use(...grammarHandlers.default());
 
     renderAtGrammarRoute();
 
-    // Phase gate resolves → Navigate to /learn/foundations (stubbed page renders)
-    await waitFor(() => expect(screen.getByText("FoundationsPage stub")).toBeInTheDocument());
-    // GrammarPage is never mounted
-    expect(screen.queryByText(GRAMMAR_PAGE_INTRO)).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(GRAMMAR_PAGE_INTRO)).toBeInTheDocument());
+    // Grammar data flows through the real page.
+    await waitFor(() => expect(screen.getByText("吗 yes/no questions")).toBeInTheDocument());
+    // The retired redirect target never renders.
+    expect(screen.queryByText("FoundationsPage stub")).not.toBeInTheDocument();
   });
 
   it("renders the GrammarPage when the learner is at Phase 2", async () => {

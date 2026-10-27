@@ -2,13 +2,15 @@
  * AppLayout stories
  *
  * Visual stories for the REAL AppLayout (AppTopBar + auth-free SideNav with
- * the phase-gated Learn group + Outlet), rendered inside MemoryRouter + Routes
- * so nav active states work. The global preview decorator provides the
- * authenticated MockAuthProvider + a default phase-4 MSW handler; guest/phase
- * variants override via decorators/parameters.
+ * the Learn group + Outlet), rendered inside MemoryRouter + Routes so nav
+ * active states work. The global preview decorator provides the authenticated
+ * MockAuthProvider + a default phase-4 MSW handler; guest variants override via
+ * decorators.
  *
- * States: authenticated (Dashboard / Learn active) · collapsed rail ·
- * phase-locked Learn group · guest · mobile.
+ * States: authenticated (Dashboard / Learn active) · collapsed rail · guest ·
+ * mobile. A25 / Story 25-3: the shell reads no phase for navigation, so there
+ * is no phase-locked shell story — chrome + <Outlet /> only, and guest state
+ * lives on the dashboard (`DashboardGuest`).
  * A lexical session is a route, not an overlay (S2), so the shell renders no
  * hub content — HubRouteBridge navigates, the detail page renders.
  */
@@ -73,7 +75,7 @@ const meta: Meta<AppLayoutArgs> = {
     docs: {
       description: {
         component:
-          "Root application layout — AppTopBar (UserMenu) + SideNav (phase-gated Learn group, collapsible rail) + Outlet. Lexical sessions are routed detail pages, not an overlay.",
+          "Root application layout — AppTopBar (UserMenu) + SideNav (Learn group, collapsible rail) + Outlet. Lexical sessions are routed detail pages, not an overlay.",
       },
     },
   },
@@ -103,18 +105,6 @@ export const LoggedInLearnActive: Story = {
 export const CollapsedRail: Story = {
   decorators: [withAppLayoutPath("/", true)],
   render: () => <PageContent />,
-};
-
-/**
- * PhaseLocked — authed user at phase 1: Grammar/Phonetic/Readers/Chengyu
- * show locked states in the sidebar Learn group.
- */
-export const PhaseLocked: Story = {
-  decorators: [withAppLayoutPath("/learn/foundations")],
-  render: () => <PageContent />,
-  parameters: {
-    msw: { handlers: [mswHandlers.progression.phaseGate(1)] },
-  },
 };
 
 /**

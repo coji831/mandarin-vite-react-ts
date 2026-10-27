@@ -1,16 +1,18 @@
 /**
  * @file router/__tests__/LearnRoutes.chengyu.test.tsx
  * @description Integration test (Testing Trophy, INTEGRATION tier) —
- * `LearnRoutes` Phase-4 gate for `/learn/chengyu`.
- * Story 23.3: Chengyu UI
+ * `/learn/chengyu` is OPEN to every visitor (Story 25-3 / A25; BM-1 §3, L6).
+ * Story 23.3: Chengyu UI — inverted by Story 25-3.
  *
- * - currentPhase 3 → PhaseGate redirects to `/learn/foundations` (ChengyuPage NOT rendered)
- * - currentPhase 4 → ChengyuPage renders (chengyu unlocked)
+ * - guest at currentPhase 3 → ChengyuPage renders (the old PhaseGate redirect
+ *   to `/learn/foundations` is deleted)
+ * - currentPhase 4 → ChengyuPage renders (unchanged)
  *
- * The phase gate is fetched through the real `usePhaseGate` + `apiClient`,
- * intercepted by the MSW node server. `FoundationsPage` is stubbed so the
- * redirect target (which fetches pinyin data on mount) doesn't pull in
- * unrelated network calls.
+ * The MSW gate handler is kept deliberately: it serves a guest-shaped gate
+ * (`currentPhase: 3` — still below Chengyu's former Phase-4 wall), so if a
+ * route wall ever comes back it redirects and the assertion fails.
+ * `FoundationsPage` is stubbed so the old redirect target can be asserted
+ * ABSENT.
  */
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -20,8 +22,8 @@ import { server, chengyuHandlers } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { LearnRoutes } from "../LearnRoutes";
 
-// FoundationsPage fetches pinyin data on mount — stub it so the redirect
-// assertion targets navigation, not Foundations internals.
+// FoundationsPage fetches pinyin data on mount — stub it so the assertion
+// targets the route's page, not unrelated network calls.
 vi.mock("../../pages/learn/foundations/FoundationsPage", () => ({
   FoundationsPage: () => <div>FoundationsPage stub</div>,
 }));
@@ -57,7 +59,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("LearnRoutes — /learn/chengyu phase gate", () => {
+describe("LearnRoutes — /learn/chengyu is un-gated (A25)", () => {
   // The real app mounts LearnRoutes under `/learn/*` (Router.tsx) — replicate
   // that wiring so LearnRoutes' internal Routes match `/learn/chengyu`.
   function renderAtChengyuRoute() {
@@ -69,15 +71,17 @@ describe("LearnRoutes — /learn/chengyu phase gate", () => {
     );
   }
 
-  it("redirects to /learn/foundations when the learner is below Phase 4", async () => {
+  it("renders the ChengyuPage below the former Phase-4 wall (no gate, no redirect)", async () => {
     usePhaseGate(3);
+    server.use(...chengyuHandlers.default());
 
     renderAtChengyuRoute();
 
-    // Phase gate resolves → Navigate to /learn/foundations (stubbed page renders)
-    await waitFor(() => expect(screen.getByText("FoundationsPage stub")).toBeInTheDocument());
-    // ChengyuPage is never mounted
-    expect(screen.queryByText(CHENGYU_PAGE_INTRO)).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(CHENGYU_PAGE_INTRO)).toBeInTheDocument());
+    // Chengyu data flows through the real page
+    await waitFor(() => expect(screen.getByText("破釜沉舟")).toBeInTheDocument());
+    // The retired redirect target never renders.
+    expect(screen.queryByText("FoundationsPage stub")).not.toBeInTheDocument();
   });
 
   it("renders the ChengyuPage when the learner is at Phase 4", async () => {

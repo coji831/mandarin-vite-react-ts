@@ -20,6 +20,11 @@
  * Story 21.7: Reading Progress — integrates readingStore progress state with
  *   ReaderLibrary and ReadingView.
  *
+ * Access: OPEN for every visitor (Story 25-3 / A25 — BM-1 §3 "Learn — all
+ *   content … browse/demo (no lock)", L6 "signals, not walls"). No route phase
+ *   gate wraps `/learn/readers`; guests at phase 1 render this page like any
+ *   other learner. Phase is sequencing metadata only — never a prerequisite.
+ *
  * Uses a single code path: always fetches data via hooks, always writes to
  * readingStore. Storybook stories use MSW handlers + withReadingStore decorator
  * instead of prop overrides.

@@ -1,14 +1,17 @@
 /**
  * @file shared/components/SideNav/__tests__/SideNav.test.tsx
- * @description Tests for SideNav — nav-only (auth-free), phase-gated Learn
- * group, and desktop collapsed rail. Story 22.4.
+ * @description Tests for SideNav — nav-only (auth-free), the Learn group,
+ * desktop collapsed rail, and the Story 22.5 nav/URL sync.
+ *
+ * Story 25-3 / A25 inverts the old "phase gating" block: the sidebar holds no
+ * user phase, so every Learn item navigates for every visitor (BM-1 §3, L6).
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import type { SideNavProps } from "../SideNav";
 import { SideNav } from "../SideNav";
-import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
+import { LEARN_NAV_ITEMS } from "shared/constants";
 
 const navItems: SideNavProps["navItems"] = [
   { path: "/", label: "Dashboard", icon: "dashboard", exact: true },
@@ -20,8 +23,6 @@ function renderSideNav(props: Partial<SideNavProps> = {}, entries?: string[]) {
   const merged: SideNavProps = {
     navItems,
     currentPath: "/",
-    phaseGate: 4,
-    requiredPhase: (id) => LEARN_REQUIRED_PHASE[id] ?? 1,
     onToggleCollapse: () => {},
     ...props,
   };
@@ -67,40 +68,93 @@ describe("SideNav", () => {
     expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
   });
 
-  describe("phase gating", () => {
-    it("marks children above the phase gate as locked with a lock indicator", () => {
-      renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
-      const grammar = screen.getByRole("link", { name: /Grammar/ });
-      expect(grammar).toHaveAttribute("aria-disabled", "true");
-      expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
-      expect(grammar).toHaveAttribute("tabindex", "-1");
-      expect(within(grammar).getByRole("img", { name: "locked" })).toBeInTheDocument();
-    });
-
-    it("keeps locked children non-navigable (click does not navigate)", () => {
-      render(
-        <MemoryRouter initialEntries={["/learn/foundations"]}>
+  describe("no phase gating (A25 — Learn = no lock; BM-1 §3, L6)", () => {
+    /** Full-location harness: `location` mirrors the router so clicks are observable. */
+    function renderGuestAt(entry: string) {
+      const url = new URL(entry, "http://localhost");
+      return render(
+        <MemoryRouter initialEntries={[entry]}>
           <SideNav
             navItems={navItems}
-            currentPath="/learn/foundations"
-            phaseGate={1}
-            requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
+            currentPath={url.pathname}
+            location={{ pathname: url.pathname, search: url.search }}
           />
           <LocationProbe />
         </MemoryRouter>,
       );
-      const grammar = screen.getByRole("link", { name: /Grammar/ });
-      expect(grammar).toHaveAttribute("aria-disabled", "true");
-      fireEvent.click(grammar);
-      expect(screen.getByTestId("location")).toHaveTextContent("/learn/foundations");
+    }
+
+    it("holds no user-phase props — deleted, not renamed (compile-time tripwire)", () => {
+      // If a phase prop ever returns, under any name, this literal stops
+      // erroring and `tsc -b` fails on the now-unused @ts-expect-error.
+      // @ts-expect-error — A25: SideNav must never accept a user phase again.
+      const legacyProps: SideNavProps = { navItems, currentPath: "/", phaseGate: 1 };
+      expect(legacyProps.currentPath).toBe("/");
     });
 
-    it("keeps unlocked children navigable (real href, no lock)", () => {
-      renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
-      const foundations = screen.getByRole("link", { name: /Foundations/ });
-      expect(foundations).not.toHaveAttribute("aria-disabled");
-      expect(foundations).not.toHaveAttribute("tabindex");
-      expect(foundations).toHaveAttribute("href", "/learn/foundations");
+    it("navigates to every Learn child at phase 1 (no preventDefault, no aria-disabled, no tabIndex=-1)", () => {
+      renderGuestAt("/");
+
+      for (const child of LEARN_NAV_ITEMS) {
+        const link = screen.getByRole("link", { name: child.label });
+        expect(link).toHaveAttribute("href", child.path);
+        expect(link).not.toHaveAttribute("aria-disabled");
+        expect(link).not.toHaveAttribute("tabindex");
+        fireEvent.click(link);
+        // The location actually moved — nothing swallowed the click.
+        expect(screen.getByTestId("location")).toHaveTextContent(child.path);
+      }
+    });
+
+    it("presents phase as tooltip metadata only — never as a permission prompt", () => {
+      renderGuestAt("/learn/foundations");
+
+      for (const child of LEARN_NAV_ITEMS) {
+        const link = screen.getByRole("link", { name: child.label });
+        expect(link).toHaveAttribute("title", `${child.label} · Phase ${child.phase} of 4`);
+        const title = link.getAttribute("title") ?? "";
+        expect(title).not.toMatch(/unlock|locked|complete .* to|requires|available at/i);
+      }
+    });
+
+    it("gives a deep-linked phase-ahead child the active pill (aria-current survives)", () => {
+      // Chengyu is phase 4; a deep link at "phase 1" must still read as the
+      // current page — the retired `:not(.side-nav__child--locked)` CSS guard
+      // is gone, so nothing suppresses the pill.
+      renderGuestAt("/learn/chengyu");
+
+      const chengyu = screen.getByRole("link", { name: "Chengyu" });
+      expect(chengyu).toHaveAttribute("aria-current", "page");
+      expect(chengyu).toHaveClass("bg-primary-bg");
+      expect(chengyu).toHaveClass("fw-600");
+      expect(chengyu).not.toHaveClass("side-nav__child--locked");
+    });
+
+    it("renders an identical rail at phase 1 and at phase 4 (no phase input exists)", () => {
+      // The phase props are deleted, not renamed: the rail is a function of the
+      // URL alone, so two mounts of the same location cannot differ by phase.
+      const phaseOne = renderGuestAt("/learn/foundations");
+      const markupExpanded = phaseOne.container.querySelector("nav")!.innerHTML;
+      phaseOne.unmount();
+
+      const phaseFour = renderGuestAt("/learn/foundations");
+      expect(phaseFour.container.querySelector("nav")!.innerHTML).toBe(markupExpanded);
+      phaseFour.unmount();
+
+      // Same for the collapsed rail.
+      const railOne = renderSideNav({ currentPath: "/learn/foundations", collapsed: true });
+      const railMarkup = railOne.container.querySelector("nav")!.innerHTML;
+      railOne.unmount();
+      const railTwo = renderSideNav({ currentPath: "/learn/foundations", collapsed: true });
+      expect(railTwo.container.querySelector("nav")!.innerHTML).toBe(railMarkup);
+      railTwo.unmount();
+    });
+
+    it("keeps the collapsed Learn group tooltip phase-free (Focus chrome stays phase-free)", () => {
+      renderSideNav({ currentPath: "/learn/grammar", collapsed: true });
+      const header = screen.getByRole("link", { name: "Learn" });
+      expect(header).toHaveAttribute("title", "Learn — Grammar");
+      expect(header.getAttribute("title")).not.toMatch(/phase/i);
     });
   });
 
@@ -177,29 +231,30 @@ describe("SideNav", () => {
       expect(label).not.toHaveAttribute("aria-current");
     });
 
-    it("dims locked children (locked class) and does not mark them current", () => {
-      renderSideNav({ currentPath: "/learn/foundations", phaseGate: 1 });
-      const grammar = screen.getByRole("link", { name: /Grammar/ });
-      expect(grammar).toHaveClass("side-nav__child--locked");
-      expect(grammar).toHaveAttribute("aria-disabled", "true");
-      expect(grammar).not.toHaveAttribute("aria-current");
-      // The unlocked, active Foundations child is NOT dimmed and IS current.
+    it("never dims or disables a Learn child (the locked class is retired — A25)", () => {
+      renderSideNav({ currentPath: "/learn/foundations" });
+      const children = document.querySelectorAll(".side-nav__child");
+      expect(children).toHaveLength(LEARN_NAV_ITEMS.length);
+      children.forEach((child) => {
+        expect(child).not.toHaveClass("side-nav__child--locked");
+        expect(child).not.toHaveAttribute("aria-disabled");
+        expect(child).not.toHaveAttribute("tabindex");
+      });
+      // The active Foundations child IS current — and so is every other row's
+      // ability to become current.
       const foundations = screen.getByRole("link", { name: /Foundations/ });
-      expect(foundations).not.toHaveClass("side-nav__child--locked");
       expect(foundations).toHaveAttribute("aria-current", "page");
     });
 
-    it("keeps a deep-linked locked child dimmed (no active pill) even when aria-current is set", () => {
-      // Deep-link to a locked URL: Grammar (Phase 2) at phaseGate 1. NavLink
-      // auto-sets aria-current="page" on the matching URL, but the locked guard
-      // must keep it dimmed — no ACTIVE_LINK_CLASS pill classes. The CSS
-      // `:not(.side-nav__child--locked)` guard backs this up in real styles.
-      renderSideNav({ currentPath: "/learn/grammar", phaseGate: 1 });
+    it("keeps a deep-linked phase-ahead child fully styled and current", () => {
+      // Deep-link to Grammar (phase 2) with no phase input at all: NavLink sets
+      // aria-current="page" and the active pill classes apply unconditionally.
+      renderSideNav({ currentPath: "/learn/grammar" });
       const grammar = screen.getByRole("link", { name: /Grammar/ });
       expect(grammar).toHaveAttribute("aria-current", "page");
-      expect(grammar).toHaveClass("side-nav__child--locked");
-      expect(grammar).not.toHaveClass("bg-primary-bg");
-      expect(grammar).not.toHaveClass("fw-600");
+      expect(grammar).not.toHaveClass("side-nav__child--locked");
+      expect(grammar).toHaveClass("bg-primary-bg");
+      expect(grammar).toHaveClass("fw-600");
     });
   });
 
@@ -214,8 +269,6 @@ describe("SideNav", () => {
             navItems={navItems}
             currentPath={url.pathname}
             location={{ pathname: url.pathname, search: url.search }}
-            phaseGate={4}
-            requiredPhase={(id) => LEARN_REQUIRED_PHASE[id] ?? 1}
           />
           <UrlProbe />
         </MemoryRouter>,

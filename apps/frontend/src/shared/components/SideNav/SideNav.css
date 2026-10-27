@@ -1,4 +1,10 @@
-/* SideNav.css - Left sidebar navigation (BEM: .side-nav) */
+/* SideNav.css - Left sidebar navigation (BEM: .side-nav)
+ *
+ * Story 25-3 / A25: there is no locked/dimmed nav state. Every row navigates
+ * for every visitor (BM-1 §3 "Learn … no lock"; L6 "signals, not walls"), so
+ * the former `.side-nav__child--locked` affordance is gone and the active pill
+ * is driven by `aria-current` alone. Do not reintroduce a lock style here.
+ */
 
 .side-nav {
   width: 220px;
@@ -121,17 +127,28 @@
   color: var(--ink-2);
 }
 
+/* Keyboard focus — app-wide pattern (3 declarations, tokens only; mirrors
+   Card.css / Button.css). Story 25-3: SideNav declared no focus rule and five
+   Learn rows became newly focusable once the phase walls came down, so every
+   interactive row in the rail gets the same ring. */
+.side-nav__link:focus-visible,
+.side-nav__group-header:focus-visible,
+.side-nav__child:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 /* Active state — single deterministic source for the pill. Driven by
    `aria-current="page"` (specificity 3 beats any bare utility and the shared
    :hover rule above, so an active pill stays active under the cursor). Same
    tokens as ACTIVE_LINK_CLASS (fw-600 bg-primary-bg border-primary-border
    text-primary-light); the JSX keeps ACTIVE_LINK_CLASS for parity + tests.
-   NavLink auto-sets `aria-current="page"` on ANY matching URL — including a
-   deep-linked locked child — so the child branch excludes
-   `.side-nav__child--locked` to keep locked children dimmed/non-highlighted. */
+   NavLink auto-sets `aria-current="page"` on ANY matching URL — and since A25
+   every Learn child is navigable, so a deep-linked phase-ahead child keeps its
+   pill like any other. */
 .side-nav .side-nav__link[aria-current="page"],
 .side-nav .side-nav__group-header[aria-current="page"],
-.side-nav .side-nav__child[aria-current="page"]:not(.side-nav__child--locked) {
+.side-nav .side-nav__child[aria-current="page"] {
   background: var(--accent-tint);
   border-color: var(--edge-control);
   color: var(--accent-ink);
@@ -213,13 +230,6 @@
   padding-left: calc(
     var(--space-sm) + var(--side-nav-icon-w) + var(--space-sm)
   ); /* 48px label-alignment indent */
-}
-
-/* Locked children — dimmed, non-interactive affordance (parity with TabBar op-40) */
-.side-nav__child--locked {
-  color: var(--ink-quiet);
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 
 .side-nav__group-chevron {

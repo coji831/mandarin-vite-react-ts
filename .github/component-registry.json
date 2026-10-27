@@ -553,7 +553,7 @@
       }
     },
     "SideNav": {
-      "description": "Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); phase-gated Learn group + desktop collapsed rail.",
+      "description": "Side navigation panel. Nav-only (auth lives in the AppTopBar UserMenu); Learn group + desktop collapsed rail. A25: phase is sequencing metadata only — every Learn item navigates for every visitor (no lock state, no user-phase props).",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/SideNav/SideNav.stories.tsx",
@@ -562,11 +562,6 @@
       "props": {
         "navItems": { "type": "NavItem[]", "required": true },
         "currentPath": { "type": "string", "required": true },
-        "phaseGate": { "type": "number", "description": "Current user phase for lock logic" },
-        "requiredPhase": {
-          "type": "function",
-          "description": "Maps a Learn child id to the phase required to unlock it"
-        },
         "collapsed": { "type": "boolean", "description": "Desktop icon-rail mode" },
         "onToggleCollapse": { "type": "function" }
       }

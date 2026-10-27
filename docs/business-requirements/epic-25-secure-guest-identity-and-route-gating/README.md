@@ -163,7 +163,7 @@ Each story is independently committable on the epic branch; together they satisf
 - Decision: **Phase is a signal, not a wall (BM-1 L6 / A25)**
   - Rationale: BM-1 §3 ratifies unlimited guest access to all Learn content; L6 retains phase metadata for sequencing only. A wall would contradict the ratified model and hide the funnel's showcase.
   - Alternatives considered: keep the walls (pre-BM-1 shape — rejected); gate only the deepest route (rejected: still a wall).
-  - Implications: `LEARN_REQUIRED_PHASE` survives as **metadata** consumed for sequencing/labels; it must no longer be a navigation prerequisite. The radicals/phonetic-clusters "URL bypass" ceases to be a defect because there is nothing to bypass.
+  - Implications: the phase survives as **sequencing metadata on `LEARN_NAV_ITEMS`** (row order + a `Phase N of 4` tooltip) and is **not** a navigation prerequisite. `SideNav` holds no user-phase state — its `phaseGate`/`requiredPhase` props and the derived `LEARN_REQUIRED_PHASE` map are deleted, because a surviving `REQUIRED` export is how the wall gets re-added. The radicals/phonetic-clusters "URL bypass" ceases to be a defect because there is nothing to bypass.
 
 - Decision: **Guest state is Browse-only**
   - Rationale: chrome is inherited by every route, so a guest affordance there is a permanent, un-dismissable interruption on Focus surfaces (dual-mode chrome law; Focus = one task, one CTA).
@@ -187,7 +187,7 @@ Each story is independently committable on the epic branch; together they satisf
 ## Risks & mitigations
 
 - Risk: **Removing the Learn walls is read as a regression** by a later contributor, who re-adds a `PhaseGate`. — Severity: Medium
-  - Mitigation: the A25 decision is recorded in this BR, in the affected source headers, and in `LEARN_REQUIRED_PHASE`'s doc comment as metadata-only; a test asserts a guest can reach all six routes.
+  - Mitigation: the A25 decision is recorded in this BR, in the affected source headers (`learnNav.ts`, `LearnRoutes.tsx`, `SideNav.tsx`/`.css`, the stories, the registry and `DESIGN.md`), and in six route tests + a compile-time prop-deletion tripwire; a test asserts a guest can reach all six routes.
   - Rollback: re-add gates only via a new BM-1 change-gate decision — never as a local fix.
 
 - Risk: **An `optionalAuth` SRS read is missed** by the 25-1 audit and keeps the leak open. — Severity: High

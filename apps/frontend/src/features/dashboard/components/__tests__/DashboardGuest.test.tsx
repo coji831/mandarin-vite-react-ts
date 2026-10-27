@@ -47,4 +47,15 @@ describe("DashboardGuest", () => {
     renderWithRouter();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
   });
+
+  it("owns the guest-state affordance (A25 — guest state is Browse-only)", () => {
+    // The dashboard is the ONE place a guest prompt lives (BM-1 §3 / A25):
+    // welcome copy + the registration CTA + the all-phase preview of what a
+    // guest may browse. `AppLayout` renders none of this — the absence is
+    // pinned in shared/layouts/__tests__/AppLayout.test.tsx.
+    renderWithRouter();
+    expect(screen.getByText(/no account needed/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sign Up Free/ })).toBeInTheDocument();
+    expect(screen.getByText(/Phase 4: Advanced/i)).toBeInTheDocument();
+  });
 });
