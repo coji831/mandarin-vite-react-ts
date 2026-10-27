@@ -9,6 +9,8 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/README.md`
 
+**PR:** #61 (single epic PR) · **Branch:** `epic-25-guest-identity`
+
 ## Epic Summary
 
 **Goal:** Make guest mode safe and correct on the NestJS shell — pin the P0-1 cross-tenant SRS rejection with an executable audit, collapse the two progression guest answers into one derived source, remove the Learn phase walls A25 does not ratify, and prove both anonymous TTS surfaces are cache-first-free.

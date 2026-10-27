@@ -50,6 +50,6 @@ study history is worse than no funnel.
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: pending (epic PR)
-- **Merge Date**: pending merge (epic PR not yet opened)
+- **PR**: #61
+- **Merge Date**: pending merge (PR #61 open)
 - **Key Commit**: `17fdbcdb` (test(story-25-1): pin P0-1 guest isolation with an executable inventory)

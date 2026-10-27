@@ -21,6 +21,8 @@ type: epic
 
 **Status:** Completed
 
+**PR:** #61 (single epic PR) · **Branch:** `epic-25-guest-identity`
+
 **Last Update:** October 27, 2026
 
 > **Scope authority — A25 amendment (binding, overrides the older epic body).**

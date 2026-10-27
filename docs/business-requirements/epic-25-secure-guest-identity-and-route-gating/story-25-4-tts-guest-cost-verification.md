@@ -51,6 +51,6 @@ miss, and what that path costs today.
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: pending (epic PR)
-- **Merge Date**: pending merge (epic PR not yet opened)
+- **PR**: #61
+- **Merge Date**: pending merge (PR #61 open)
 - **Key Commit**: `0656e243` (test(story-25-4): pin the guest TTS cost surface and hand quotas to epic-29)

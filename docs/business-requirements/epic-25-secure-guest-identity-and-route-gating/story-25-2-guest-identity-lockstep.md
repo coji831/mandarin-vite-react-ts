@@ -51,6 +51,6 @@ keyed by identity, evicted on auth change, removes both.
 ## Implementation Status
 
 - **Status**: Completed
-- **PR**: pending (epic PR)
-- **Merge Date**: pending merge (epic PR not yet opened)
+- **PR**: #61
+- **Merge Date**: pending merge (PR #61 open)
 - **Key Commit**: `1ace7681` (fix(story-25-2): one guest gate source, and a gate cache that cannot cross identities)
