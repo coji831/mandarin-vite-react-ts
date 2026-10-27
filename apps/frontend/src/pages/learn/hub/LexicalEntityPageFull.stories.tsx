@@ -48,3 +48,16 @@ export const Error: Story = {
     msw: { handlers: [grammarHandlers.error(), mswHandlers.progression.phaseGate(2)] },
   },
 };
+
+/**
+ * A session that HOPPED (radical → grammar): the trail strip is the routed
+ * surface's replacement for the retired overlay's in-session navigation.
+ */
+export const SessionTrail: Story = {
+  args: {
+    trail: [{ entityType: "radical", entityId: "rad_0001", label: "氵" }],
+  },
+  parameters: {
+    msw: { handlers: [grammarHandlers.default(), mswHandlers.progression.phaseGate(2)] },
+  },
+};

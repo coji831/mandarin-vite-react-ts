@@ -329,7 +329,7 @@ import { AuthService } from "./services/AuthService";
 
 ## Zustand Stores
 
-- `hubStore` — LexicalHub overlay state (isOpen, currentEntity, navigationStack; open/close/back)
+- `hubStore` — LexicalHub session intent + route mirror (`requestedEntity` = one consumable open request consumed by `HubRouteBridge`; `isOpen`/`currentEntity` = a mirror of the routed session that must never drive navigation; `open`/`consumeRequest`/`syncFromRoute`/`close`)
 - `mnemonicStore` — Mnemonic story state (10-state machine: idle, loading, cached, empty, generating, display, editing, error, timeout, pictograph)
 
 ## CSS & Styling Conventions
