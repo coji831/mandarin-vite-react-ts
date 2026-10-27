@@ -12,6 +12,13 @@
  * `features/auth/context/AuthContext.tsx`. A gate cached for one identity is
  * therefore never served to another while a fetch is failing.
  *
+ * In-flight writes (epic-25 review F1): eviction alone is not enough, because a
+ * request issued under identity A can resolve *after* the transition and the
+ * buckets were already cleared. `fetchPhaseGate()` therefore captures its cache
+ * key before the `await` and writes only while that key is still current — a
+ * response that outlives its identity is returned to its caller but never
+ * cached. Reads on failure use the current identity's bucket (unchanged).
+ *
  * This module owns the namespace: no caller hardcodes a cache key string.
  */
 import { apiClient } from "../api/axiosClient";
@@ -77,11 +84,25 @@ export function purgeLegacyPhaseGateResidue(): void {
 }
 
 export async function fetchPhaseGate(): Promise<PhaseGate> {
+  // Capture the identity bucket BEFORE the request leaves. The token can change
+  // while the fetch is in flight (guest → login, logout → guest), and the write
+  // must land in the bucket of the identity that *issued* the request, not the
+  // one that happens to be current when it resolves: `clearPhaseGateCache()` has
+  // already evicted both buckets at the transition, so a write to the new
+  // identity's key would be un-evictable poison (a guest's `{currentPhase: 1,
+  // isGuest: true}` served to a registered user, or a user's `currentPhase: 4`
+  // served to a guest).
+  const requestCacheKey = phaseGateCacheKey();
   try {
     const response = await apiClient.get(ROUTE_PATTERNS.progressionPhaseGate);
     const data = response.data as PhaseGate;
-    // Cache successfully fetched phase gate (auth-keyed — never cross-identity)
-    localStorage.setItem(phaseGateCacheKey(), JSON.stringify(data));
+    // Cache successfully fetched phase gate (auth-keyed — never cross-identity).
+    // Skip the write if the identity changed mid-flight: the payload describes
+    // an identity that no longer exists on this device, so it is dropped rather
+    // than cached under someone else's key. The caller still gets its answer.
+    if (phaseGateCacheKey() === requestCacheKey) {
+      localStorage.setItem(requestCacheKey, JSON.stringify(data));
+    }
     return data;
   } catch {
     // Backend unavailable — try the localStorage cache for THIS identity

@@ -51,9 +51,29 @@ service owns the namespace so no caller hardcodes a cache key.
 - `purgeLegacyPhaseGateResidue()` — one-shot deletion of the pre-25-2 `phaseGate:user` residue, guarded
   by a marker (`mandarin:phaseGate-identity-purge:v1`) that lives **outside** the `phaseGate:` namespace,
   so `clearPhaseGateCache()` cannot re-arm it and wipe a freshly written gate on the next boot.
-- Both are re-exported from the `shared/services` barrel; `fetchPhaseGate()` is unchanged in behaviour
-  (auth-keyed write on success, auth-keyed read on failure) and the module doc now states the eviction
-  contract.
+- Both are re-exported from the `shared/services` barrel; `fetchPhaseGate()` keeps its return contract
+  (the fetched gate on success, the current identity's cached gate on failure — see the F1 amendment
+  below for the in-flight write rule) and the module doc now states the eviction contract.
+
+#### Amendment — epic-25 review F1: in-flight writes (2026-10-27)
+
+Eviction at the six transition sites closed the _read_ path but not the _write_ path:
+`fetchPhaseGate()` chose its cache key **after** the `await`, so a request issued under identity A that
+resolved after a transition wrote A's payload into the **new** identity's bucket — a bucket
+`clearPhaseGateCache()` had already emptied, so nothing evicted it. Two concrete poisons:
+
+- guest → login: the guest fetch resolves with the token present and writes
+  `{ currentPhase: 1, isGuest: true }` under `phaseGate:user` — a registered user's failed fetch then
+  shows phase 1 + guest messaging;
+- logout → guest: A's authed fetch resolves with the token gone and writes `currentPhase: 4` under
+  `phaseGate:guest` — a later guest sees phase 4.
+
+`fetchPhaseGate()` now captures the key **before** the request and writes only while that key is still
+current (`phaseGateCacheKey() === requestCacheKey`); a response that outlives its identity is returned to
+its caller but dropped from the cache. Failure-path reads are unchanged (current identity's bucket).
+Pinned by two MSW tests that hold the response open and flip the token mid-flight
+(`services/__tests__/phaseGateService.test.ts` — "an in-flight fetch never writes into the other
+identity's bucket").
 
 ### 2. Eviction at every identity transition (`features/auth/context/AuthContext.tsx`)
 

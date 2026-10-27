@@ -739,7 +739,7 @@
       }
     },
     "TopNav": {
-      "description": "Top-level navigation bar with route-based NavLinks. Phase-gated lock support.",
+      "description": "Orphaned component — Learn tabs live in the SideNav Learn group; phase-driven navigation locks are not a sanctioned pattern (A25 / BM-1 L6). The lock props are dead and must not be wired up.",
       "importPath": "shared/components",
       "storybook": {
         "storyFile": "apps/frontend/src/shared/components/TopNav/TopNav.stories.tsx",

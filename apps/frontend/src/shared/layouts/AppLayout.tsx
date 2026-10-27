@@ -30,9 +30,12 @@ import { practices_page, progress_page } from "../constants/paths";
 import { resolvePageMode, chromeForMode } from "../constants/pageChrome";
 import { LEARN_NAV_ITEMS } from "../constants/learnNav";
 import { AppTopBar, SideNav, type NavItem } from "shared/components";
-// NOTE (deliberate exception): AppLayout (shared) imports from features/auth to
-// run the phase-gated sign-in state app-wide. That shared → feature inversion is
-// intentional and should NOT be refactored away by future audits.
+// NOTE (deliberate exception): AppLayout (shared) imports from features/auth for
+// the app-wide account state the TopBar renders — `user`, `isAuthenticated` and
+// `logout`, nothing more. Post-A25 (Story 25-3) the shell reads no phase, so
+// sign-in state here is account chrome, not gating. That shared → feature
+// inversion is intentional and should NOT be refactored away by future audits
+// (allowlisted in `scripts/check-module-boundaries.mjs`).
 import { useAuth } from "features/auth";
 import { HubRouteBridge } from "shared/hub-entry";
 import "./AppLayout.css";

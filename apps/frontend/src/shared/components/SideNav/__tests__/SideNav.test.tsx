@@ -130,24 +130,25 @@ describe("SideNav", () => {
       expect(chengyu).not.toHaveClass("side-nav__child--locked");
     });
 
-    it("renders an identical rail at phase 1 and at phase 4 (no phase input exists)", () => {
-      // The phase props are deleted, not renamed: the rail is a function of the
-      // URL alone, so two mounts of the same location cannot differ by phase.
-      const phaseOne = renderGuestAt("/learn/foundations");
-      const markupExpanded = phaseOne.container.querySelector("nav")!.innerHTML;
-      phaseOne.unmount();
+    it("renders a rail with no phase input available — no lock surface in either register", () => {
+      // The phase props are deleted, not renamed, so there is no phase value to
+      // compare against: what remains to assert is that neither the expanded
+      // nor the collapsed rail renders a lock affordance at all.
+      const expanded = renderGuestAt("/learn/foundations");
+      for (const child of LEARN_NAV_ITEMS) {
+        const link = screen.getByRole("link", { name: child.label });
+        expect(link).not.toHaveClass("side-nav__child--locked");
+        expect(link).not.toHaveAttribute("aria-disabled");
+      }
+      expanded.unmount();
 
-      const phaseFour = renderGuestAt("/learn/foundations");
-      expect(phaseFour.container.querySelector("nav")!.innerHTML).toBe(markupExpanded);
-      phaseFour.unmount();
-
-      // Same for the collapsed rail.
-      const railOne = renderSideNav({ currentPath: "/learn/foundations", collapsed: true });
-      const railMarkup = railOne.container.querySelector("nav")!.innerHTML;
-      railOne.unmount();
-      const railTwo = renderSideNav({ currentPath: "/learn/foundations", collapsed: true });
-      expect(railTwo.container.querySelector("nav")!.innerHTML).toBe(railMarkup);
-      railTwo.unmount();
+      // In rail mode the children are unmounted, so the group header is the only
+      // Learn affordance left — it too carries no lock/disabled state.
+      const rail = renderSideNav({ currentPath: "/learn/foundations", collapsed: true });
+      const header = rail.container.querySelector(".side-nav__group-header");
+      expect(header).not.toBeNull();
+      expect(header).not.toHaveAttribute("aria-disabled");
+      expect(header).not.toHaveClass("side-nav__child--locked");
     });
 
     it("keeps the collapsed Learn group tooltip phase-free (Focus chrome stays phase-free)", () => {

@@ -46,6 +46,20 @@ expect(discovered).toEqual(declared); // an unlisted route AND a stale row both 
 A one-directional check ("every declared row exists") silently accepts a new unlisted route — which is the
 hole the audit was supposed to close.
 
+**Scan the whole tree you claim to scan.** An inventory is only as wide as its file glob: a scan that reads
+`repositories/` and `services/` says nothing about `strategies/` or `types/`, and a controller glob pinned to
+`**/nest/*.controller.ts` cannot see a controller written anywhere else. Discover by FILENAME across the
+roots you actually mean, and classify everything the broadened scan finds — including type-contract rows
+that mirror an implementation, which are cheap and remove "known and dismissed" vs "never seen" ambiguity.
+
+**Backstop the pattern scan with a plain-text sweep.** Patterns are only as complete as their author's
+imagination; a declaration form nobody anticipated renders the inventory blind, and blindness looks exactly
+like "nothing to report". Sweep the same files for the raw shape and require every hit to be either a table
+row or a documented structural exclusion (each with `file:line` + literal text + the reason it is not a
+call-facing unit). Self-test the sweep against a shape the patterns genuinely cannot parse, so the backstop
+is not vacuous. Likewise self-test decorator/declaration scanners with a fixture string driven through the
+same parsing function, and count units per file against the files' own text so a silently dropped unit fails.
+
 ### 4. Cite a live line for every disposition
 
 Store `file`, `line` and the snippet you expect to find there, then read the file and assert the snippet is

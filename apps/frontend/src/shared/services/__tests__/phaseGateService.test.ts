@@ -10,8 +10,12 @@
  * The regression this pins: a gate cached for one identity is never served to
  * the other. `phaseGate:user` residue must not answer a guest fetch, and a
  * cleared cache must surface "unavailable" instead of a stale gate.
+ *
+ * The second regression (epic-25 review F1): a fetch that resolves *after* an
+ * identity transition must not write into the new identity's bucket. Eviction
+ * already ran at the transition, so such a write would be poison nothing clears.
  */
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, type JsonBodyType } from "msw";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { server } from "src/mocks/server";
 import {
@@ -97,6 +101,82 @@ describe("fetchPhaseGate — cache key per identity class", () => {
 
     expect(JSON.parse(localStorage.getItem("phaseGate:user")!)).toEqual(USER_GATE);
     expect(localStorage.getItem("phaseGate:guest")).toBeNull();
+  });
+});
+
+/**
+ * A response that is held open until the test releases it, so an identity
+ * transition can be interleaved deterministically between request and
+ * response — no timers, no `sleep`.
+ */
+function heldResponse(payload: JsonBodyType) {
+  let markStarted!: () => void;
+  const started = new Promise<void>((resolve) => {
+    markStarted = resolve;
+  });
+  let release!: () => void;
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const handler = async () => {
+    markStarted();
+    await released;
+    return HttpResponse.json(payload);
+  };
+  return { handler, started, release };
+}
+
+describe("fetchPhaseGate — an in-flight fetch never writes into the other identity's bucket", () => {
+  it("does not write `phaseGate:user` when a guest fetch resolves after login", async () => {
+    const held = heldResponse(GUEST_GATE);
+    server.use(http.get(PHASE_GATE_URL, held.handler));
+
+    const pending = fetchPhaseGate(); // issued as a guest
+    await held.started;
+
+    // Guest → login: the token appears and AuthContext evicts both buckets.
+    localStorage.setItem("accessToken", USER_TOKEN);
+    clearPhaseGateCache();
+    held.release();
+
+    // The caller still gets its answer…
+    await expect(pending).resolves.toEqual(GUEST_GATE);
+    // …but the guest payload is cached under NO key — least of all the new
+    // identity's, where a registered user would later read `currentPhase: 1`
+    // + `isGuest: true` from a failed fetch.
+    expect(localStorage.getItem("phaseGate:user")).toBeNull();
+    expect(localStorage.getItem("phaseGate:guest")).toBeNull();
+  });
+
+  it("does not write `phaseGate:guest` when an authed fetch resolves after logout", async () => {
+    localStorage.setItem("accessToken", USER_TOKEN);
+    const held = heldResponse(USER_GATE);
+    server.use(http.get(PHASE_GATE_URL, held.handler));
+
+    const pending = fetchPhaseGate(); // issued with the token
+    await held.started;
+
+    // Logout: the token is gone and AuthContext evicts both buckets.
+    localStorage.removeItem("accessToken");
+    clearPhaseGateCache();
+    held.release();
+
+    await expect(pending).resolves.toEqual(USER_GATE);
+    // A guest must never later read A's `currentPhase: 4` from `phaseGate:guest`.
+    expect(localStorage.getItem("phaseGate:guest")).toBeNull();
+    expect(localStorage.getItem("phaseGate:user")).toBeNull();
+  });
+
+  it("still caches when the identity is unchanged across the round trip", async () => {
+    const held = heldResponse(GUEST_GATE);
+    server.use(http.get(PHASE_GATE_URL, held.handler));
+
+    const pending = fetchPhaseGate();
+    await held.started;
+    held.release();
+
+    await expect(pending).resolves.toEqual(GUEST_GATE);
+    expect(JSON.parse(localStorage.getItem("phaseGate:guest")!)).toEqual(GUEST_GATE);
   });
 });
 
