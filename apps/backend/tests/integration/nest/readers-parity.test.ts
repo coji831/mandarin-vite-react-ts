@@ -27,7 +27,9 @@
  * Auth mapping (verified per route): the three passage reads → calibrated
  * `OptionalAuthGuard` (guests browse, never 401; the audio route is
  * cache-first-free-for-guests F5); generate + sessions + bookmarks →
- * `RequireAuthGuard` (guests → 401 AUTH_REQUIRED).
+ * `RequireAuthGuard` (guests → 401 AUTH_REQUIRED). An invalid/garbage token on
+ * the audio POST is a GUEST (F6): 200 with every sentence `source: "gcs"` and
+ * no synthesis — Story 25-4 pins that free-read variant.
  *
  * ## Determinism notes
  *   - The seeded demo passages are the deterministic 2xx fixtures
@@ -422,6 +424,25 @@ describe.skipIf(!db.available)("Nest readers regression (integration, DB)", () =
       // F5: a guest cache hit must NOT trigger a billable TTS generation.
       expect(mockTts.synthesizeSpeech).not.toHaveBeenCalled();
       expect(mockGcs.fileExists).toHaveBeenCalled();
+    });
+
+    it("invalid token — STILL 200 as guest, source 'gcs', NO billable generation (F6 bad token → guest)", async () => {
+      expect(passageId).toBeTruthy();
+      const res = await postBoth(
+        `/api/v1/readers/passages/${passageId}/audio`,
+        {},
+        "Bearer not-a-valid-token",
+      );
+      expectParity2xx(res);
+      // A bad token selects the guest branch: the mocked GCS cache still serves
+      // every sentence, and the billable synthesis path is never reached.
+      const urls = res.nestRes.body.data.audioUrls as Record<number, { source: string }>;
+      expect(Object.keys(urls).length).toBeGreaterThan(0);
+      for (const sentence of Object.values(urls)) {
+        expect(sentence.source).toBe("gcs");
+      }
+      expect(mockTts.synthesizeSpeech).not.toHaveBeenCalled();
+      expect(mockGcs.uploadFile).not.toHaveBeenCalled();
     });
 
     it("guest cache MISS — 200 { audioUrls }, source 'ondemand' (generation allowed today; counter-gated in 29)", async () => {
