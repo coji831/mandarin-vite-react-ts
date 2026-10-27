@@ -55,36 +55,36 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-09-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-10-27 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
 Generated full tree — every tracked leaf (purpose · status · link), nested layer → small branch. `review` = stale > 6 weeks (machine override); scanned .md leaves must carry YAML front-matter (purpose/status/last-verified) — absence is a hard `check:system-map` failure; HTML leaves use a `<!-- last-verified: -->` marker.
 
-- [Layer 1 · Product / Business — active · 5 leaves](#layer-1)
+- [Layer 1 · Product / Business — review · 5 leaves](#layer-1)
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
-- [Layer 3 · Architecture / Decisions — planned · 4 leaves](#layer-3)
-- [Layer 4 · Design System — review · 9 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — active · 31 leaves](#layer-6)
+- [Layer 3 · Architecture / Decisions — planned · 7 leaves](#layer-3)
+- [Layer 4 · Design System — review · 11 leaves](#layer-4)
+- [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
+- [Layer 6 · Agentic System — review · 40 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
-<details id="layer-1"><summary>Layer 1 · Product / Business — active · 5 leaves</summary>
+<details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
 
 #### Model
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for the business domain — the locked product/business model and its supporting research | active | [docs/business/README.md](business/README.md) |
-| Locked business model — demo-guest + data-driven learning road | ratified | [docs/business/business-model.md](business/business-model.md) |
+| Area index for the business domain — the locked product/business model and its supporting research | **review** | [docs/business/README.md](business/README.md) |
+| Locked business model — demo-guest + data-driven learning road | **review** | [docs/business/business-model.md](business/business-model.md) |
 
 #### Research
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Official ratified feature inventory — post-calibration feature set for a registered user (all phases unlocked) | active | [docs/business/research/feature-inventory.md](business/research/feature-inventory.md) |
+| Official ratified feature inventory — post-calibration feature set for a registered user (all phases unlocked) | **review** | [docs/business/research/feature-inventory.md](business/research/feature-inventory.md) |
 | 2026 trend/standard fact-check × LLM/RAG-readiness audit of the feature inventory (Axes 1–2) | active | [docs/business/research/feature-validation-2026.md](business/research/feature-validation-2026.md) |
-| 2026 research round parsed findings (M1–M19) — source data for the business model validation | active | [docs/business/research/research-findings-2026.md](business/research/research-findings-2026.md) |
+| 2026 research round parsed findings (M1–M19) — source data for the business model validation | **review** | [docs/business/research/research-findings-2026.md](business/research/research-findings-2026.md) |
 
 </details>
 
@@ -101,72 +101,77 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for business requirements, epics, user stories, and planning docs | active | [docs/business-requirements/README.md](business-requirements/README.md) |
-| NestJS 11 shell-swap — full-scoped serial Epic 24 runs FIRST to completion (15 stories), then epics 25–28 land on NestJS; 24-16 BLOCKING pre-merge release gate | completed | [docs/business-requirements/epic-24-nestjs-shell-migration/README.md](business-requirements/epic-24-nestjs-shell-migration/README.md) |
+| Area index for business requirements, epics, user stories, and planning docs | **review** | [docs/business-requirements/README.md](business-requirements/README.md) |
+| NestJS 11 shell-swap — full-scoped serial Epic 24 runs FIRST to completion (15 stories), then epics 25–28 land on NestJS; 24-16 BLOCKING pre-merge release gate | **review** | [docs/business-requirements/epic-24-nestjs-shell-migration/README.md](business-requirements/epic-24-nestjs-shell-migration/README.md) |
 | Global Simplified↔Traditional character toggle for Phase 4 learners | deferred | [docs/business-requirements/epic-41-traditional-characters/README.md](business-requirements/epic-41-traditional-characters/README.md) |
 
 #### Issue implementation
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for technical implementation docs (epics and stories) | active | [docs/issue-implementation/README.md](issue-implementation/README.md) |
-| Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS | completed | [docs/issue-implementation/epic-24-nestjs-shell-migration/README.md](issue-implementation/epic-24-nestjs-shell-migration/README.md) |
-| Epic 41 implementation — 简体/繁體 global toggle (Phase 4, deferred) | deferred | [docs/issue-implementation/epic-41-traditional-characters/README.md](issue-implementation/epic-41-traditional-characters/README.md) |
+| Area index for technical implementation docs (epics and stories) | **review** | [docs/issue-implementation/README.md](issue-implementation/README.md) |
+| Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS | **review** | [docs/issue-implementation/epic-24-nestjs-shell-migration/README.md](issue-implementation/epic-24-nestjs-shell-migration/README.md) |
+| Epic 41 implementation — 简体/繁體 global toggle (Phase 4, deferred) | **review** | [docs/issue-implementation/epic-41-traditional-characters/README.md](issue-implementation/epic-41-traditional-characters/README.md) |
 
 </details>
 
-<details id="layer-3"><summary>Layer 3 · Architecture / Decisions — planned · 4 leaves</summary>
+<details id="layer-3"><summary>Layer 3 · Architecture / Decisions — planned · 7 leaves</summary>
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Index of Architecture Decision Records (ADRs) — ADR-001…005 in design-reasoning.md, ADR-006 here, plus the machine decision-log catalog | active | [docs/guides/adr/README.md](guides/adr/README.md) |
+| Index of Architecture Decision Records (ADRs) — ADR-001…005 in design-reasoning.md, ADR-006 and ADR-011/012 here, plus the machine decision-log catalog | active | [docs/guides/adr/README.md](guides/adr/README.md) |
 | Machine catalog of ADR/D/OI/BM decisions | planned | [.github/decision-log.json](../.github/decision-log.json) |
 | High-level system design decisions, architectural patterns, and technology choices | active | [docs/architecture.md](architecture.md) |
+| ADR-013 — composition and portals/focus: extract a shared useFocusTrap hook instead of adopting Radix at epic 31, and the rule for when a portal is allowed | ratified | [docs/guides/adr/composition-portals-focus.md](guides/adr/composition-portals-focus.md) |
 | 4 data tiers — storage, cache, and module dependency rules for content vs user data | **review** | [docs/guides/adr/data-tiering-architecture.md](guides/adr/data-tiering-architecture.md) |
+| ADR-011 — the ratified North Star visual direction for PinyinPal: 'Night Bench' (dark instrument register + a light paper surface for long-form reading only), and the status of the light 'Reading Room' alternative. | ratified | [docs/guides/adr/design-direction-night-bench.md](guides/adr/design-direction-night-bench.md) |
+| ADR-012 — lands ADR-011 consequence 3's paper surface token family through ADR-005's route: the nine names, their values, why they are PinyinPal domain names rather than spine generics, and how the reading page selects the register. | ratified | [docs/guides/adr/paper-surface-tokens.md](guides/adr/paper-surface-tokens.md) |
 
 </details>
 
-<details id="layer-4"><summary>Layer 4 · Design System — review · 9 leaves</summary>
+<details id="layer-4"><summary>Layer 4 · Design System — review · 11 leaves</summary>
 
 #### Design docs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Design tokens and component specifications for the PinyinPal Mandarin learning platform. Amber primary on warm slate backgrounds. | active | [DESIGN.md](../DESIGN.md) |
-| Define "good" operationally — criteria × measurement × threshold — the scored quality bar for designs | active | [docs/guides/design/design-quality-rubric.md](guides/design/design-quality-rubric.md) |
-| Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them | active | [docs/guides/design/design-reasoning.md](guides/design/design-reasoning.md) |
+| The dense-data spec (uiux fundamental #10) — the row/column density contract, tabular numerals, status-via-roles, and how the reports and timed-scan surfaces compose with the archetypes; written ahead of epics 36/37 so dense lists are never invented ad hoc | active | [docs/guides/design/data-density-spec.md](guides/design/data-density-spec.md) |
+| Define "good" operationally — criteria × measurement × threshold — the scored quality bar for designs | **review** | [docs/guides/design/design-quality-rubric.md](guides/design/design-quality-rubric.md) |
+| Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them | **review** | [docs/guides/design/design-reasoning.md](guides/design/design-reasoning.md) |
+| Per-epic design revalidation guide — each UI epic revalidates the surfaces in its scope against the ratified contract, and reworks from scratch when revalidation fails. | active | [docs/guides/design/design-revalidation-guide.md](guides/design/design-revalidation-guide.md) |
 | The page-level contract — a finite set of named Focus-First page skeletons every page parameterizes | active | [docs/guides/design/page-archetypes.md](guides/design/page-archetypes.md) |
-| The canonical per-epic design-spec template — one doc per UI epic (e.g. `features/*/docs/design.md`), replacing each `UI: … — design spec TBD` line | active | [docs/guides/design/per-epic-design-spec.md](guides/design/per-epic-design-spec.md) |
-| The 12 UIUX fundamentals applied to PinyinPal, the 7-layer QA pyramid, the consolidated AI-slop checklist, and the 2026 fact-check corrections — the committed source of record for UI quality | active | [docs/guides/design/uiux-fundamentals.md](guides/design/uiux-fundamentals.md) |
-| Reference index of the 29 verified UI/UX study resources (what each teaches, its PinyinPal application, and adoption status) — the entry point for future UI research | active | [docs/guides/design/uiux-resources.md](guides/design/uiux-resources.md) |
+| The canonical per-epic design-spec template — one doc per UI epic (e.g. `features/*/docs/design.md`), replacing each `UI: … — design spec TBD` line | **review** | [docs/guides/design/per-epic-design-spec.md](guides/design/per-epic-design-spec.md) |
+| The 12 UIUX fundamentals applied to PinyinPal, the 7-layer QA pyramid, the consolidated AI-slop checklist, and the 2026 fact-check corrections — the committed source of record for UI quality | **review** | [docs/guides/design/uiux-fundamentals.md](guides/design/uiux-fundamentals.md) |
+| Reference index of the 29 verified UI/UX study resources (what each teaches, its PinyinPal application, and adoption status) — the entry point for future UI research | **review** | [docs/guides/design/uiux-resources.md](guides/design/uiux-resources.md) |
 
 #### Catalogs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Shared-component registry — the machine-checked catalog | green | [.github/component-registry.json](../.github/component-registry.json) |
-| Page route→archetype→story consistency ledger — 13/16 conform · 3/16 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
+| Page route→archetype→story consistency ledger — 17/17 conform · 0/17 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 128 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 129 leaves</summary>
 
 #### Getting started
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Comprehensive setup and workflow documentation for the PinyinPal project | active | [docs/guides/getting-started/README.md](guides/getting-started/README.md) |
-| Single source of truth for all environment variables used by the system | active | [docs/guides/getting-started/environment-setup.md](guides/getting-started/environment-setup.md) |
-| High-level overview of the monorepo structure, tech stack, and development workflow | active | [docs/guides/getting-started/project-overview.md](guides/getting-started/project-overview.md) |
+| Comprehensive setup and workflow documentation for the PinyinPal project | **review** | [docs/guides/getting-started/README.md](guides/getting-started/README.md) |
+| Single source of truth for all environment variables used by the system | **review** | [docs/guides/getting-started/environment-setup.md](guides/getting-started/environment-setup.md) |
+| High-level overview of the monorepo structure, tech stack, and development workflow | **review** | [docs/guides/getting-started/project-overview.md](guides/getting-started/project-overview.md) |
 | Get the frontend running in 5 minutes | **review** | [docs/guides/getting-started/quickstart.md](guides/getting-started/quickstart.md) |
 
 #### Setup
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices | active | [docs/guides/setup/backend-development.md](guides/setup/backend-development.md) |
+| Complete guide for running the NestJS backend locally, understanding architecture, and following development best practices | **review** | [docs/guides/setup/backend-development.md](guides/setup/backend-development.md) |
 | Comprehensive PostgreSQL and Prisma setup for local development and production | **review** | [docs/guides/setup/database.md](guides/setup/database.md) |
-| Comprehensive guide for frontend development with React, TypeScript, and Vite | active | [docs/guides/setup/frontend-development.md](guides/setup/frontend-development.md) |
+| Comprehensive guide for frontend development with React, TypeScript, and Vite | **review** | [docs/guides/setup/frontend-development.md](guides/setup/frontend-development.md) |
 | Configure ESLint, Prettier, and TypeScript checking in the project | **review** | [docs/guides/setup/linting.md](guides/setup/linting.md) |
 | Configure Redis for caching, session management, and rate limiting | **review** | [docs/guides/setup/redis.md](guides/setup/redis.md) |
 | Monorepo-wide ESLint, Prettier, TypeScript, and Vitest configuration standards | **review** | [docs/guides/setup/tooling-standards.md](guides/setup/tooling-standards.md) |
@@ -177,24 +182,25 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Application-specific Redis caching patterns, key strategies, monitoring, and performance tuning | **review** | [docs/guides/operations/caching-patterns.md](guides/operations/caching-patterns.md) |
-| Step-by-step guide to deploy or add a new deployment environment | active | [docs/guides/operations/deployment.md](guides/operations/deployment.md) |
-| Env-isolation verification — separated-vs-shared matrix, R1–R6 risks, and the 7 owner verification items for the Epic 24 release | active | [docs/guides/operations/env-isolation.md](guides/operations/env-isolation.md) |
+| Step-by-step guide to deploy or add a new deployment environment | **review** | [docs/guides/operations/deployment.md](guides/operations/deployment.md) |
+| Env-isolation verification — separated-vs-shared matrix, R1–R6 risks, and the 7 owner verification items for the Epic 24 release | **review** | [docs/guides/operations/env-isolation.md](guides/operations/env-isolation.md) |
 | How the system's infrastructure services work together — dependencies, data flow, and ops tasks | **review** | [docs/guides/operations/infrastructure.md](guides/operations/infrastructure.md) |
 | Code review criteria, pre-commit checks, and PR review standards | **review** | [docs/guides/operations/review.md](guides/operations/review.md) |
-| Canonical secrets/resources ledger — one logical credential traced across GitHub, Railway, Vercel, GCP, Neon, Upstash, and local surfaces (store map, master registry, fixed identifiers, aliases/fan-out, dead names, refresh cadence) | active | [docs/guides/operations/secret-inventory.md](guides/operations/secret-inventory.md) |
-| Production + preview secrets/keys rotation — GitHub secrets/vars master table, T+0 rotation decisions, fixed identifiers, and rotation ordering | active | [docs/guides/operations/secret-rotation.md](guides/operations/secret-rotation.md) |
-| Runbook for Terraform state-loss recovery now that state is remote (GCS gs://pinyin-pal-tfstate, versioned) — restore state from the bucket (Path A) or reconstruct by import (Path B), with the plan guard and post-apply GCP_PREVIEW_SA_KEY steps | active | [docs/guides/operations/terraform-state-recovery.md](guides/operations/terraform-state-recovery.md) |
-| Common development, deployment, and integration issues and how to resolve them | active | [docs/guides/operations/troubleshooting.md](guides/operations/troubleshooting.md) |
-| Step-by-step development workflow — design, plan, implement, test, review | active | [docs/guides/operations/workflow.md](guides/operations/workflow.md) |
+| Canonical secrets/resources ledger — one logical credential traced across GitHub, Railway, Vercel, GCP, Neon, Upstash, and local surfaces (store map, master registry, fixed identifiers, aliases/fan-out, dead names, refresh cadence) | **review** | [docs/guides/operations/secret-inventory.md](guides/operations/secret-inventory.md) |
+| Production + preview secrets/keys rotation — GitHub secrets/vars master table, T+0 rotation decisions, fixed identifiers, and rotation ordering | **review** | [docs/guides/operations/secret-rotation.md](guides/operations/secret-rotation.md) |
+| Runbook for Terraform state-loss recovery now that state is remote (GCS gs://pinyin-pal-tfstate, versioned) — restore state from the bucket (Path A) or reconstruct by import (Path B), with the plan guard and post-apply GCP_PREVIEW_SA_KEY steps | **review** | [docs/guides/operations/terraform-state-recovery.md](guides/operations/terraform-state-recovery.md) |
+| Common development, deployment, and integration issues and how to resolve them | **review** | [docs/guides/operations/troubleshooting.md](guides/operations/troubleshooting.md) |
+| Step-by-step development workflow — design, plan, implement, test, review | **review** | [docs/guides/operations/workflow.md](guides/operations/workflow.md) |
 
 #### Testing
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Patterns, examples, and configuration for testing backend services (apps/backend) | active | [docs/guides/testing/backend.md](guides/testing/backend.md) |
-| Patterns, examples, and configuration for testing frontend code | active | [docs/guides/testing/frontend.md](guides/testing/frontend.md) |
+| Patterns, examples, and configuration for testing backend services (apps/backend) | **review** | [docs/guides/testing/backend.md](guides/testing/backend.md) |
+| How to pin a security or coverage audit as a test that re-derives its subject from source, and how to leave tripwires when a feature is deliberately removed | active | [docs/guides/testing/executable-audits.md](guides/testing/executable-audits.md) |
+| Patterns, examples, and configuration for testing frontend code | **review** | [docs/guides/testing/frontend.md](guides/testing/frontend.md) |
 | Maintained, versioned list of KNOWN pre-existing failures so agents don't re-triage the same known-broken items | active | [docs/guides/testing/known-failures.md](guides/testing/known-failures.md) |
-| Reusable per-surface human visual-QA procedure — the judgment layer of the QA pyramid. Who runs it, on which stories, against which exemplar, and where the evidence lands. | active | [docs/guides/testing/visual-qa.md](guides/testing/visual-qa.md) |
+| Reusable per-surface human visual-QA procedure — the judgment layer of the QA pyramid. Who runs it, on which stories, against which exemplar, and where the evidence lands. | **review** | [docs/guides/testing/visual-qa.md](guides/testing/visual-qa.md) |
 
 #### Integrations
 
@@ -202,24 +208,24 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Unified guide for cookie-based authentication, CORS setup, API communication, and frontend-backend sync | **review** | [docs/guides/integrations/frontend-backend.md](guides/integrations/frontend-backend.md) |
 | Step-by-step guide for integrating the Google Gemini API for natural language generation, text analysis, and AI-powered features | **review** | [docs/guides/integrations/gemini-api.md](guides/integrations/gemini-api.md) |
-| Narrative companion to the storybook-production-alignment instruction — why the rules keep stories and pages in sync | active | [docs/guides/integrations/storybook-alignment.md](guides/integrations/storybook-alignment.md) |
-| How spoken audio is delivered to the browser — the unified audio capability and per-sentence resolution | active | [docs/guides/integrations/tts-audio-pipeline.md](guides/integrations/tts-audio-pipeline.md) |
+| Narrative companion to the storybook-production-alignment instruction — why the rules keep stories and pages in sync | **review** | [docs/guides/integrations/storybook-alignment.md](guides/integrations/storybook-alignment.md) |
+| How spoken audio is delivered to the browser — the unified audio capability and per-sentence resolution | **review** | [docs/guides/integrations/tts-audio-pipeline.md](guides/integrations/tts-audio-pipeline.md) |
 
 #### Data
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Canonical reference for the 32-step hash-gated delta seed pipeline (all-in-DB content) | active | [docs/guides/data/seed-pipeline.md](guides/data/seed-pipeline.md) |
+| Canonical reference for the 32-step hash-gated delta seed pipeline (all-in-DB content) | **review** | [docs/guides/data/seed-pipeline.md](guides/data/seed-pipeline.md) |
 
 #### Conventions
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| API client conventions, error handling, and service layer patterns for frontend-backend communication | active | [docs/guides/conventions/api-client.md](guides/conventions/api-client.md) |
-| Standard for creating and maintaining backend modules in the modular monolith | active | [docs/guides/conventions/backend.md](guides/conventions/backend.md) |
-| Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma | active | [docs/guides/conventions/data-import-scripts.md](guides/conventions/data-import-scripts.md) |
-| Frontend coding standards, conventions, and patterns | active | [docs/guides/conventions/frontend.md](guides/conventions/frontend.md) |
-| Branch management strategy, commit conventions (Conventional Commits), and PR workflow | active | [docs/guides/conventions/git.md](guides/conventions/git.md) |
+| API client conventions, error handling, and service layer patterns for frontend-backend communication | **review** | [docs/guides/conventions/api-client.md](guides/conventions/api-client.md) |
+| Standard for creating and maintaining backend modules in the modular monolith | **review** | [docs/guides/conventions/backend.md](guides/conventions/backend.md) |
+| Standard pattern for creating one-time data seeding, migration, and external dataset import scripts using Prisma | **review** | [docs/guides/conventions/data-import-scripts.md](guides/conventions/data-import-scripts.md) |
+| Frontend coding standards, conventions, and patterns | **review** | [docs/guides/conventions/frontend.md](guides/conventions/frontend.md) |
+| Branch management strategy, commit conventions (Conventional Commits), and PR workflow | **review** | [docs/guides/conventions/git.md](guides/conventions/git.md) |
 | File, folder, and naming conventions for both frontend and backend code across the monorepo | **review** | [docs/guides/conventions/naming-standards.md](guides/conventions/naming-standards.md) |
 | Mandatory security standards for all backend and frontend code across the monorepo | **review** | [docs/guides/conventions/security.md](guides/conventions/security.md) |
 | Reducer, action, selector, and React Context state management patterns | **review** | [docs/guides/conventions/state-management.md](guides/conventions/state-management.md) |
@@ -228,43 +234,43 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Redirect index for the old flat docs/guides/ structure | active | [docs/guides/references/README.md](guides/references/README.md) |
+| Redirect index for the old flat docs/guides/ structure | **review** | [docs/guides/references/README.md](guides/references/README.md) |
 
 #### Knowledge base
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for deep-dive concepts, patterns, and reference materials | active | [docs/knowledge-base/README.md](knowledge-base/README.md) |
+| Area index for deep-dive concepts, patterns, and reference materials | **review** | [docs/knowledge-base/README.md](knowledge-base/README.md) |
 | Area index for agent-operations articles — development pipeline, design workflows, tooling, prompting | **review** | [docs/knowledge-base/agentics/README.md](knowledge-base/agentics/README.md) |
 | Conceptual deep-dive into the full development lifecycle — requirements to commit, and the why behind each phase | **review** | [docs/knowledge-base/agentics/agent-development-pipeline.md](knowledge-base/agentics/agent-development-pipeline.md) |
 | Deep-dive into how agents handle visual design — Storybook-first, token integrity, MCP toolchain, verification | **review** | [docs/knowledge-base/agentics/agent-visual-understanding.md](knowledge-base/agentics/agent-visual-understanding.md) |
 | Deep-dive into structured prompting patterns for consistent, predictable agent behavior | **review** | [docs/knowledge-base/agentics/structured-prompts.md](knowledge-base/agentics/structured-prompts.md) |
 | API response patterns — wrapper vs direct | **review** | [docs/knowledge-base/backend/api-response-patterns.md](knowledge-base/backend/api-response-patterns.md) |
 | Advanced backend patterns | **review** | [docs/knowledge-base/backend/backend-advanced-patterns.md](knowledge-base/backend/backend-advanced-patterns.md) |
-| Backend architecture patterns | active | [docs/knowledge-base/backend/backend-architecture.md](knowledge-base/backend/backend-architecture.md) |
-| Authentication & security — auth patterns in the backend | active | [docs/knowledge-base/backend/backend-authentication.md](knowledge-base/backend/backend-authentication.md) |
+| Backend architecture patterns | **review** | [docs/knowledge-base/backend/backend-architecture.md](knowledge-base/backend/backend-architecture.md) |
+| Authentication & security — auth patterns in the backend | **review** | [docs/knowledge-base/backend/backend-authentication.md](knowledge-base/backend/backend-authentication.md) |
 | Cloud database providers | **review** | [docs/knowledge-base/backend/backend-database-cloud.md](knowledge-base/backend/backend-database-cloud.md) |
 | PostgreSQL setup & migrations | **review** | [docs/knowledge-base/backend/backend-database-postgres.md](knowledge-base/backend/backend-database-postgres.md) |
 | SQLite for local development | **review** | [docs/knowledge-base/backend/backend-database-sqlite.md](knowledge-base/backend/backend-database-sqlite.md) |
-| Shared / kernel layer in a modular monolith | active | [docs/knowledge-base/backend/backend-shared-kernel-layer.md](knowledge-base/backend/backend-shared-kernel-layer.md) |
+| Shared / kernel layer in a modular monolith | **review** | [docs/knowledge-base/backend/backend-shared-kernel-layer.md](knowledge-base/backend/backend-shared-kernel-layer.md) |
 | Character-level SRS with reading context | **review** | [docs/knowledge-base/backend/character-level-srs-reading-context.md](knowledge-base/backend/character-level-srs-reading-context.md) |
 | Module-level container pattern | retired | [docs/knowledge-base/backend/module-level-containers.md](knowledge-base/backend/module-level-containers.md) |
 | Pre-adaptation rules for static/dynamic data separation | **review** | [docs/knowledge-base/backend/pre-adaptation-static-dynamic-separation.md](knowledge-base/backend/pre-adaptation-static-dynamic-separation.md) |
 | TypeScript error handling best practices | **review** | [docs/knowledge-base/backend/typescript-error-handling.md](knowledge-base/backend/typescript-error-handling.md) |
-| Shared data model across packages | active | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
+| Shared data model across packages | **review** | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
 | Discriminated union state machines with useReducer | **review** | [docs/knowledge-base/frontend/discriminated-union-state-machine.md](knowledge-base/frontend/discriminated-union-state-machine.md) |
-| Advanced React patterns | active | [docs/knowledge-base/frontend/frontend-advanced-patterns.md](knowledge-base/frontend/frontend-advanced-patterns.md) |
+| Advanced React patterns | **review** | [docs/knowledge-base/frontend/frontend-advanced-patterns.md](knowledge-base/frontend/frontend-advanced-patterns.md) |
 | Data migration & versioning on the frontend | **review** | [docs/knowledge-base/frontend/frontend-data-migration.md](knowledge-base/frontend/frontend-data-migration.md) |
 | Frontend development server concepts | **review** | [docs/knowledge-base/frontend/frontend-development-server.md](knowledge-base/frontend/frontend-development-server.md) |
 | Frontend modular monolith vs micro frontend | **review** | [docs/knowledge-base/frontend/frontend-modular-monolith.md](knowledge-base/frontend/frontend-modular-monolith.md) |
 | React patterns | **review** | [docs/knowledge-base/frontend/frontend-react-patterns.md](knowledge-base/frontend/frontend-react-patterns.md) |
 | State management patterns | **review** | [docs/knowledge-base/frontend/frontend-state-management.md](knowledge-base/frontend/frontend-state-management.md) |
 | UI & component patterns | **review** | [docs/knowledge-base/frontend/frontend-ui-patterns.md](knowledge-base/frontend/frontend-ui-patterns.md) |
-| URL search-param persistence rule | active | [docs/knowledge-base/frontend/frontend-url-search-params.md](knowledge-base/frontend/frontend-url-search-params.md) |
-| Hub entity-ID contract | active | [docs/knowledge-base/frontend/hub-entity-id-contract.md](knowledge-base/frontend/hub-entity-id-contract.md) |
-| Storybook MSW handler factories | active | [docs/knowledge-base/frontend/storybook-msw-handlers.md](knowledge-base/frontend/storybook-msw-handlers.md) |
+| URL search-param persistence rule | **review** | [docs/knowledge-base/frontend/frontend-url-search-params.md](knowledge-base/frontend/frontend-url-search-params.md) |
+| Hub entity-ID contract | **review** | [docs/knowledge-base/frontend/hub-entity-id-contract.md](knowledge-base/frontend/hub-entity-id-contract.md) |
+| Storybook MSW handler factories | **review** | [docs/knowledge-base/frontend/storybook-msw-handlers.md](knowledge-base/frontend/storybook-msw-handlers.md) |
 | Strategy pattern on the frontend | **review** | [docs/knowledge-base/frontend/strategy-pattern-frontend.md](knowledge-base/frontend/strategy-pattern-frontend.md) |
-| IaC migration — Phase 1 deployment runbook | active | [docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md](knowledge-base/infrastructure/iac-phase1-migration-runbook.md) |
+| IaC migration — Phase 1 deployment runbook | **review** | [docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md](knowledge-base/infrastructure/iac-phase1-migration-runbook.md) |
 | Infrastructure configuration management | **review** | [docs/knowledge-base/infrastructure/infra-configuration-management.md](knowledge-base/infrastructure/infra-configuration-management.md) |
 | Deployment & infrastructure | **review** | [docs/knowledge-base/infrastructure/infra-deployment.md](knowledge-base/infrastructure/infra-deployment.md) |
 | Caching strategies (third-party integrations) | **review** | [docs/knowledge-base/infrastructure/integration-caching.md](knowledge-base/infrastructure/integration-caching.md) |
@@ -277,29 +283,29 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Modeling Chinese as a knowledge graph | **review** | [docs/knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md](knowledge-base/learning-theory/modeling-chinese-knowledge-graph.md) |
 | Spaced repetition algorithms — SM-2 vs FSRS | **review** | [docs/knowledge-base/learning-theory/spaced-repetition-algorithms.md](knowledge-base/learning-theory/spaced-repetition-algorithms.md) |
 | Integrated design strategies for Mandarin vocabulary retention | **review** | [docs/knowledge-base/learning-theory/vocabulary-retention-research.md](knowledge-base/learning-theory/vocabulary-retention-research.md) |
-| Central reference for Mandarin language structure | active | [docs/knowledge-base/mandarin/mandarin-fundamentals.md](knowledge-base/mandarin/mandarin-fundamentals.md) |
-| Agent browser verification practices | active | [docs/knowledge-base/practices/agent-browser-verification.md](knowledge-base/practices/agent-browser-verification.md) |
-| Async progressive enrichment pattern | active | [docs/knowledge-base/practices/async-progressive-enrichment.md](knowledge-base/practices/async-progressive-enrichment.md) |
-| Which document holds which information — business vs technical, and how to cross-reference | active | [docs/knowledge-base/practices/documentation-patterns.md](knowledge-base/practices/documentation-patterns.md) |
+| Central reference for Mandarin language structure | **review** | [docs/knowledge-base/mandarin/mandarin-fundamentals.md](knowledge-base/mandarin/mandarin-fundamentals.md) |
+| Agent browser verification practices | **review** | [docs/knowledge-base/practices/agent-browser-verification.md](knowledge-base/practices/agent-browser-verification.md) |
+| Async progressive enrichment pattern | **review** | [docs/knowledge-base/practices/async-progressive-enrichment.md](knowledge-base/practices/async-progressive-enrichment.md) |
+| Which document holds which information — business vs technical, and how to cross-reference | **review** | [docs/knowledge-base/practices/documentation-patterns.md](knowledge-base/practices/documentation-patterns.md) |
 | .NET backend patterns — retired; preserved as historical appendix | retired | [docs/knowledge-base/practices/dotnet-patterns.md](knowledge-base/practices/dotnet-patterns.md) |
-| Git workflow & conventions | active | [docs/knowledge-base/practices/git-workflow.md](knowledge-base/practices/git-workflow.md) |
+| Git workflow & conventions | **review** | [docs/knowledge-base/practices/git-workflow.md](knowledge-base/practices/git-workflow.md) |
 | Integration gap diagnosis checklist | **review** | [docs/knowledge-base/practices/integration-gap-diagnosis.md](knowledge-base/practices/integration-gap-diagnosis.md) |
 | Planning & estimation strategies | **review** | [docs/knowledge-base/practices/planning-estimation-strategies.md](knowledge-base/practices/planning-estimation-strategies.md) |
 | SOLID principles for React and TypeScript | **review** | [docs/knowledge-base/practices/solid-principles.md](knowledge-base/practices/solid-principles.md) |
-| Storybook story tests via @storybook/addon-vitest | active | [docs/knowledge-base/testing/storybook-addon-vitest.md](knowledge-base/testing/storybook-addon-vitest.md) |
+| Storybook story tests via @storybook/addon-vitest | **review** | [docs/knowledge-base/testing/storybook-addon-vitest.md](knowledge-base/testing/storybook-addon-vitest.md) |
 | ES modules + testing patterns (Jest/Vitest) | **review** | [docs/knowledge-base/testing/testing-es-modules-vitest.md](knowledge-base/testing/testing-es-modules-vitest.md) |
-| Vitest version conflicts in a monorepo | active | [docs/knowledge-base/testing/vitest-monorepo-version-conflicts.md](knowledge-base/testing/vitest-monorepo-version-conflicts.md) |
+| Vitest version conflicts in a monorepo | **review** | [docs/knowledge-base/testing/vitest-monorepo-version-conflicts.md](knowledge-base/testing/vitest-monorepo-version-conflicts.md) |
 
 #### Templates
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Central index of all documentation templates and format files | active | [docs/templates/README.md](templates/README.md) |
-| Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature) | active | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
+| Central index of all documentation templates and format files | **review** | [docs/templates/README.md](templates/README.md) |
+| Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature) | **review** | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
 | Conventional Commits message format reference — type(scope): description | **review** | [docs/templates/commit-message-template.md](templates/commit-message-template.md) |
-| Copyable epic business-requirements template | active | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
+| Copyable epic business-requirements template | **review** | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
 | Copyable epic implementation template | **review** | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
-| Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md` | active | [docs/templates/feature-design-spec-template.md](templates/feature-design-spec-template.md) |
+| Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md` | **review** | [docs/templates/feature-design-spec-template.md](templates/feature-design-spec-template.md) |
 | Copyable file-summary template | **review** | [docs/templates/file-summary-template.md](templates/file-summary-template.md) |
 | Copyable story business-requirements template | **review** | [docs/templates/story-business-requirements-template.md](templates/story-business-requirements-template.md) |
 | Copyable story implementation template | **review** | [docs/templates/story-implementation-template.md](templates/story-implementation-template.md) |
@@ -320,34 +326,34 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| iac onboarding | active | [docs/guides/iac-onboarding.html](guides/iac-onboarding.html) |
-| epic21 data architecture | active | [docs/visualizations/epic21-data-architecture.html](visualizations/epic21-data-architecture.html) |
+| iac onboarding | **review** | [docs/guides/iac-onboarding.html](guides/iac-onboarding.html) |
+| epic21 data architecture | **review** | [docs/visualizations/epic21-data-architecture.html](visualizations/epic21-data-architecture.html) |
 
 #### Backend docs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Backend API reference — 7 domains (auth, health, caching, TTS, AI feedback, errors, env) | active | [apps/backend/docs/api/README.md](../apps/backend/docs/api/README.md) |
+| Backend API reference — 7 domains (auth, health, caching, TTS, AI feedback, errors, env) | **review** | [apps/backend/docs/api/README.md](../apps/backend/docs/api/README.md) |
 | Legacy monolithic API spec — superseded by the per-domain api/ files | superseded | [apps/backend/docs/api-spec.md](../apps/backend/docs/api-spec.md) |
-| AI feedback endpoints — Gemini-based error explanations with Redis caching | active | [apps/backend/docs/api/ai-feedback.md](../apps/backend/docs/api/ai-feedback.md) |
-| Authentication endpoints — register/login at /api/v1/auth | active | [apps/backend/docs/api/auth.md](../apps/backend/docs/api/auth.md) |
-| Redis-based caching strategy — reduce external API calls and improve response times | active | [apps/backend/docs/api/caching.md](../apps/backend/docs/api/caching.md) |
-| Environment variables — required (fail-fast) and optional | active | [apps/backend/docs/api/env.md](../apps/backend/docs/api/env.md) |
-| Error response format — the unified error structure | active | [apps/backend/docs/api/errors.md](../apps/backend/docs/api/errors.md) |
-| Health check endpoint — /api/v1/health with Redis status | active | [apps/backend/docs/api/health.md](../apps/backend/docs/api/health.md) |
-| TTS endpoints — POST /v1/tts | active | [apps/backend/docs/api/tts.md](../apps/backend/docs/api/tts.md) |
-| Backend modulith architecture — modules, shared infrastructure, layer responsibilities | active | [apps/backend/docs/design.md](../apps/backend/docs/design.md) |
+| AI feedback endpoints — Gemini-based error explanations with Redis caching | **review** | [apps/backend/docs/api/ai-feedback.md](../apps/backend/docs/api/ai-feedback.md) |
+| Authentication endpoints — register/login at /api/v1/auth | **review** | [apps/backend/docs/api/auth.md](../apps/backend/docs/api/auth.md) |
+| Redis-based caching strategy — reduce external API calls and improve response times | **review** | [apps/backend/docs/api/caching.md](../apps/backend/docs/api/caching.md) |
+| Environment variables — required (fail-fast) and optional | **review** | [apps/backend/docs/api/env.md](../apps/backend/docs/api/env.md) |
+| Error response format — the unified error structure | **review** | [apps/backend/docs/api/errors.md](../apps/backend/docs/api/errors.md) |
+| Health check endpoint — /api/v1/health with Redis status | **review** | [apps/backend/docs/api/health.md](../apps/backend/docs/api/health.md) |
+| TTS endpoints — POST /v1/tts | **review** | [apps/backend/docs/api/tts.md](../apps/backend/docs/api/tts.md) |
+| Backend modulith architecture — modules, shared infrastructure, layer responsibilities | **review** | [apps/backend/docs/design.md](../apps/backend/docs/design.md) |
 
 #### Feature docs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Feature docs index — per-feature design docs (8 of 13 features documented) | active | [apps/frontend/src/features/README.md](../apps/frontend/src/features/README.md) |
-| Authentication feature — JWT-based login/register UI | active | [apps/frontend/src/features/auth/README.md](../apps/frontend/src/features/auth/README.md) |
+| Feature docs index — per-feature design docs (8 of 13 features documented) | **review** | [apps/frontend/src/features/README.md](../apps/frontend/src/features/README.md) |
+| Authentication feature — JWT-based login/register UI | **review** | [apps/frontend/src/features/auth/README.md](../apps/frontend/src/features/auth/README.md) |
 | Design spec for login/register pages and JWT token-based authentication UI | **review** | [apps/frontend/src/features/auth/docs/design.md](../apps/frontend/src/features/auth/docs/design.md) |
 | Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words) | **review** | [apps/frontend/src/features/character-hub/docs/design.md](../apps/frontend/src/features/character-hub/docs/design.md) |
-| Design spec for the Dashboard demo (hub-launcher) — guest + authenticated landing | active | [apps/frontend/src/features/dashboard/docs/design.md](../apps/frontend/src/features/dashboard/docs/design.md) |
-| Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs | **review** | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
+| Design spec for the Dashboard demo (overview) — guest + authenticated landing | **review** | [apps/frontend/src/features/dashboard/docs/design.md](../apps/frontend/src/features/dashboard/docs/design.md) |
+| Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs | active | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
 | Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes | **review** | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
 | Design spec for the radicals browser, trees, and detail views (phase 2/3) | **review** | [apps/frontend/src/features/radicals/docs/design.md](../apps/frontend/src/features/radicals/docs/design.md) |
 | Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave | active | [apps/frontend/src/features/readers/docs/design.md](../apps/frontend/src/features/readers/docs/design.md) |
@@ -357,64 +363,73 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Shared presentational component catalog — reusable UI primitives and conventions | active | [apps/frontend/src/shared/components/README.md](../apps/frontend/src/shared/components/README.md) |
+| Shared presentational component catalog — reusable UI primitives and conventions | **review** | [apps/frontend/src/shared/components/README.md](../apps/frontend/src/shared/components/README.md) |
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — active · 31 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — review · 40 leaves</summary>
 
 #### Instructions
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Consistent error response format for API controllers | active | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
-| Documentation template compliance, technical challenges, KB extraction | active | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
-| API calls go through service layer, never direct | active | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
-| Component architecture — state colocation, logic placement, 3-tier hierarchy, design-system drift prevention | active | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
-| CSS conventions — use design tokens, never hardcode values | active | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
-| Input debounce, timer edge cases | active | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
-| Pre-ship UI quality checklist — tokens, states, interaction, layout | active | [.github/instructions/frontend-pre-delivery-checklist.instructions.md](../.github/instructions/frontend-pre-delivery-checklist.instructions.md) |
-| Database schema change safety checks and migration commands | active | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
-| Quiz strategy pattern, routing, component reuse | active | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
-| Hanzi-writer, D3, canvas library integration with React | active | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
-| Page-container delegation, MSW mocking, state parity, drift prevention | active | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
-| Testing requirements for frontend and backend | active | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
-| Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law | active | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
-| UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification | active | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
+| a11y-floor (no description) | **review** | [.github/instructions/a11y-floor.instructions.md](../.github/instructions/a11y-floor.instructions.md) |
+| Consistent error response format for API controllers | **review** | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
+| Documentation template compliance, technical challenges, KB extraction | **review** | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
+| API calls go through service layer, never direct | **review** | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
+| Component architecture — state colocation, logic placement, 3-tier hierarchy, design-system drift prevention | **review** | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
+| CSS conventions — use design tokens, never hardcode values | **review** | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
+| Input debounce, timer edge cases | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
+| Pre-ship UI quality checklist — tokens, states, interaction, layout | **review** | [.github/instructions/frontend-pre-delivery-checklist.instructions.md](../.github/instructions/frontend-pre-delivery-checklist.instructions.md) |
+| Database schema change safety checks and migration commands | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
+| Quiz strategy pattern, routing, component reuse | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
+| Hanzi-writer, D3, canvas library integration with React | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
+| SOLAR v5 driver-orchestrated chain contract — the coordinator (Governor v5 / --auto) runs each link in order; you are ONE link. Never spawn or compose downstream links yourself (nested agents lack the spawn tool). | **review** | [.github/instructions/solar-agent-chain.instructions.md](../.github/instructions/solar-agent-chain.instructions.md) |
+| Page-container delegation, MSW mocking, state parity, drift prevention | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
+| Testing requirements for frontend and backend | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
+| theme-delta (no description) | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
+| token-discipline (no description) | **review** | [.github/instructions/token-discipline.instructions.md](../.github/instructions/token-discipline.instructions.md) |
+| Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
+| UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_14 instruction leaves · 15 on disk — project-workflow is the control-plane gate table._
+_18 instruction leaves · 19 on disk — project-workflow is the control-plane gate table._
 
 #### Agents
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Use when: designing system architecture, reviewing technical designs, evaluating architectural tradeoffs, defining tech strategy, or producing implementation plans. | active | [.github/agents/architect.agent.md](../.github/agents/architect.agent.md) |
-| Use when: building backend APIs, writing NestJS routes/controllers/services/modules, modifying Prisma schema and running migrations, implementing database queries, writing backend tests, performing backend audits, or ensuring database safety. | active | [.github/agents/backend-engineer.agent.md](../.github/agents/backend-engineer.agent.md) |
-| Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | active | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
-| Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | active | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
-| Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | active | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
-| Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | active | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
-| Use when: starting a new task, coordinating multi-step workflows, routing work to specialist agents, managing execution flow, or determining which agent to use for a request. | active | [.github/agents/orchestrator.agent.md](../.github/agents/orchestrator.agent.md) |
-| Use when: designing UI — wireframes, Storybook Step 1 (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | active | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
+| Use when: designing system architecture, reviewing technical designs, evaluating architectural tradeoffs, defining tech strategy, or producing implementation plans. | **review** | [.github/agents/architect.agent.md](../.github/agents/architect.agent.md) |
+| Use when: building backend APIs, writing NestJS routes/controllers/services/modules, modifying Prisma schema and running migrations, implementing database queries, writing backend tests, performing backend audits, or ensuring database safety. | **review** | [.github/agents/backend-engineer.agent.md](../.github/agents/backend-engineer.agent.md) |
+| Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | **review** | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
+| Design lead for the PinyinPal design system. SYNTHESIS pass: use when synthesising the per-route design reviews into cross-route calls - which routes need ALIGNMENT (against ADR-011, an archetype, or their peers), what needs FIXING and in what order, and where a decided thing should be CONDENSED (a decision promoted to the live token layer, or a live artefact demoted to a receipt). EXTRACTION pass: use when leading the lift of a shared component out of routes that have already been judged. The two passes read different things: the synthesis pass is barred from route source and stylesheets, the extraction pass is not. | **review** | [.github/agents/design-lead.agent.md](../.github/agents/design-lead.agent.md) |
+| Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | **review** | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
+| Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | **review** | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
+| Use when: running a task through the SOLAR v5 governor graph — ONE entry point that deterministically routes to a specialist (or orchestrates an epic as a chain of specialist runs), gates the result, and completes with run-cards (v5 pilot, e.g. epic 25). Also use when the user asks for 'governor', 'v5 run', 'graph-governed', 'run the chain', or wants the same orchestrator UX but with durable checkpoints + run-cards. For ad-hoc single-agent requests with no governor need, delegate straight to the matching specialist instead. | **review** | [.github/agents/governor-v5.agent.md](../.github/agents/governor-v5.agent.md) |
+| Use when: decoding the user's request into an intent + flow before a SOLAR run (intake only). Governor v5 calls Hermes as the FIRST step of every new task. Also answers 'what would you route this as?'. Do NOT use for executing, coding, or designing — Hermes only classifies. | **review** | [.github/agents/hermes.agent.md](../.github/agents/hermes.agent.md) |
+| Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | **review** | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
+| Design critic for ONE route of the PinyinPal app. Use when: reviewing one route VISUALLY against ADR-011 (the ratified Night Bench direction) and the page archetype it belongs to, and returning, per finding, either a BRIEF update (the direction/archetype is wrong or silent) or a VISUAL update (the page does not deliver it). Looks at the rendered route only - never the route's source, never a measurement table, never another route's report. Parallel-safe: one route per spawn, one output file per route. External research allowed and must be cited. | **review** | [.github/agents/layout-critic.agent.md](../.github/agents/layout-critic.agent.md) |
+| Use when: designing UI — wireframes, Storybook Step 1 (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | **review** | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
 
 #### Skills
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Extract a lesson from recent agent struggles and create a .instructions.md file to prevent recurrence. Use when: agent made a mistake, discovered a new convention, found a recurring issue pattern. | active | [.github/skills/add-instruction/SKILL.md](../.github/skills/add-instruction/SKILL.md) |
-| Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | active | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
-| Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | active | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
-| Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | active | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
-| Run Prisma schema changes safely after editing schema.prisma. Use when: editing schema.prisma, adding new models, changing columns, database migration. | active | [.github/skills/prisma-migration/SKILL.md](../.github/skills/prisma-migration/SKILL.md) |
+| Extract a lesson from recent agent struggles and create a .instructions.md file to prevent recurrence. Use when: agent made a mistake, discovered a new convention, found a recurring issue pattern. | **review** | [.github/skills/add-instruction/SKILL.md](../.github/skills/add-instruction/SKILL.md) |
+| > | **review** | [.github/skills/add-theme/SKILL.md](../.github/skills/add-theme/SKILL.md) |
+| Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | **review** | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
+| > | **review** | [.github/skills/design-review/SKILL.md](../.github/skills/design-review/SKILL.md) |
+| Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | **review** | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
+| Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | **review** | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
+| Run Prisma schema changes safely after editing schema.prisma. Use when: editing schema.prisma, adding new models, changing columns, database migration. | **review** | [.github/skills/prisma-migration/SKILL.md](../.github/skills/prisma-migration/SKILL.md) |
 
 #### Control plane
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Agent roles, behavior rules, prohibited patterns, and the agentic-layer enumerator | active | [.github/AGENTS.md](../.github/AGENTS.md) |
-| Operational playbook for AI agents — quick start, architecture, rule index | active | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
-| Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | active | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
-| Visualized dev flow — generation stages, verification, gates | active | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |
+| Agent roles, behavior rules, prohibited patterns, and the agentic-layer enumerator | **review** | [.github/AGENTS.md](../.github/AGENTS.md) |
+| Operational playbook for AI agents — quick start, architecture, rule index | **review** | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
+| Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | **review** | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
+| Visualized dev flow — generation stages, verification, gates | **review** | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |
 
 </details>
 
@@ -434,28 +449,47 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | Area | Documented | Partial | Undocumented | Active | Deep-link |
 | --- | --- | --- | --- | --- | --- |
 | A1 Frontend Features | 2 | 6 | 5 | 13 | [coverage.md](coverage.md#a1) |
-| A2 Frontend Pages | 13 | 3 | 0 | 16 | [coverage.md](coverage.md#a2) |
+| A2 Frontend Pages | 17 | 0 | 0 | 17 | [coverage.md](coverage.md#a2) |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | [coverage.md](coverage.md#a3) |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | [coverage.md](coverage.md#a4) |
-| A5 Backend Shared / Infra | 8 | 0 | 0 | 8 | [coverage.md](coverage.md#a5) |
+| A5 Backend Shared / Infra | 0 | 8 | 0 | 8 | [coverage.md](coverage.md#a5) |
 | A6 Packages | 0 | 0 | 3 | 3 | [coverage.md](coverage.md#a6) |
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
-| A8 Infra | 2 | 1 | 0 | 3 | [coverage.md](coverage.md#a8) |
+| A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 36 | 3 | 0 | 39 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 37 | 11 | 0 | 48 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
-- ⚠️ shared/components/README.md lists 7 of 35 shared components — stale
+- ⚠️ shared/components/README.md lists 7 of 38 shared components — stale
 - ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
-- ⚠️ A1 foundations: review (2026-07-20 > 6 weeks)
+- ⚠️ A1 dashboard: review (2026-08-18 > 6 weeks)
 - ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
 - ⚠️ A1 review: review (2026-07-20 > 6 weeks)
+- ⚠️ A3 components: review (2026-08-18 > 6 weeks)
+- ⚠️ A5 app: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/config: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/docs: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/errors: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/infrastructure: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/middleware: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/types: review (2026-08-23 > 6 weeks)
+- ⚠️ A5 shared/utils: review (2026-08-23 > 6 weeks)
+- ⚠️ A8 terraform/: review (2026-09-04 > 6 weeks)
 - ⚠️ A8 .github/workflows/: review (2026-06-12 > 6 weeks)
+- ⚠️ A10 conventions/api-client: review (2026-08-07 > 6 weeks)
+- ⚠️ A10 conventions/backend: review (2026-09-03 > 6 weeks)
+- ⚠️ A10 conventions/data-import-scripts: review (2026-07-24 > 6 weeks)
+- ⚠️ A10 conventions/frontend: review (2026-08-18 > 6 weeks)
+- ⚠️ A10 conventions/git: review (2026-08-02 > 6 weeks)
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
+- ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
+- ⚠️ A10 copilot-instructions.md: review (August 24, 2026 > 6 weeks)
+- ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
+- ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
 - ⚠️ features/README.md declares a docs/ per-feature convention; 5 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, phonetic-clusters, word-hub)
 <!-- /system-map:generated -->

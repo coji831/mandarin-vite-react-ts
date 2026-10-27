@@ -3,9 +3,10 @@
 # Implementation 25-1: P0-1 Guest Isolation — Repository-Level SRS Rejection
 
 > **BR Reference:** `docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/story-25-1-optional-auth-srs-guest-isolation.md`
-> **Status:** In Progress
+> **Epic Implementation:** [README.md](README.md)
+> **Status:** Completed
 > **Last Update:** October 27, 2026
-> **Key Commit:** pending (coordinator commits)
+> **Key Commit:** `17fdbcdb` (test(story-25-1): pin P0-1 guest isolation with an executable inventory)
 
 ## Implementation Summary
 
@@ -208,6 +209,10 @@ identity-scoped SRS row is exposed, which is what the dispositions assert.
 - [x] Last Updated / Last Update date is current (same commit as the edit)
 
 ## Testing Implementation
+
+> **Extracted pattern:** the scanner/table design, the disposition vocabulary and the positive-control rule
+> are written up as a reusable guide — [`docs/guides/testing/executable-audits.md`](../../guides/testing/executable-audits.md).
+> This section keeps the story-specific counts; the how-to lives there.
 
 **Unit tier — `apps/backend/src/nest/guards/__tests__/optional-auth-coverage.test.ts`** (5 tests, ~400 ms,
 no DB, no Nest bootstrap):

@@ -1,6 +1,6 @@
 ---
 purpose: A25 — remove the six Learn phase walls; guest state lives on the Browse dashboard, never in AppLayout
-status: planned
+status: completed
 last-verified: 2026-10-27
 type: story
 ---
@@ -33,16 +33,16 @@ dashboard, which is where a guest actually lands and where the register CTA (epi
 
 ## Acceptance Criteria
 
-- [ ] A guest navigating directly to each of the six Learn routes — `/learn/foundations`, `/learn/radicals`, `/learn/grammar`, `/learn/phonetic-clusters`, `/learn/readers`, `/learn/chengyu` — renders the page; no gate screen and no redirect. Verified by a route test per route (six assertions). The two existing wall tests (`LearnRoutes.grammar`, `LearnRoutes.chengyu`) are **inverted**, not deleted; the other four routes get new assertions.
-- [ ] `router/LearnRoutes.tsx` no longer wraps any Learn route in a phase `PhaseGate`, and the local `PhaseGate` helper is removed (it has no other consumer).
-- [ ] A guest can also **click through** the sidebar to every Learn item: no `preventDefault`, no `aria-disabled`, no `tabIndex={-1}` for phase reasons. Phase is presented as **metadata** (label/indicator) only — asserted by a SideNav interaction test that clicks each child at phase 1 and asserts the location changed.
-- [ ] `LEARN_NAV_ITEMS[].phase` (renamed from `requiredPhase`) survives **only as sequencing metadata** — the doc comment states this explicitly (BM-1 L6 / A25) so a future contributor does not re-add a wall — and the derived `LEARN_REQUIRED_PHASE` map is **deleted** with its last consumers, because a surviving export named `REQUIRED` is the re-entry point for the wall this epic removed. `SideNav` holds **no** user-phase state: the `phaseGate`/`requiredPhase` props are deleted, not renamed-and-kept, and `AppLayout` stops reading the gate for navigation entirely.
-- [ ] `shared/layouts/AppLayout.tsx` renders chrome + `<Outlet />` only — a regression test asserts no guest banner/badge/persistent guest region is rendered for a guest.
-- [ ] The guest-state affordance remains on the Browse dashboard surface only (`features/dashboard` `DashboardGuest`), asserted by a dashboard test and reflected in its Storybook story.
-- [ ] The stale `verification-artifacts/epic-25-route-gating-verification.md` (it describes `LockedSurface`/`LEARN_ROUTE_CONFIG`/`LearnRouteGate`, none of which exist in `apps/frontend/src`) is corrected or marked superseded by A25, and `wip/guest-access-calibration.md` D5 ("radicals + phonetic get route gates — Decided") is annotated as superseded.
-- [ ] `ContentBrowser`'s second phase-lock map (`ContentBrowser.tsx:65-71`, inert today because `LibraryPage` passes `userPhase={4}`) is recorded as out-of-scope in the story impl doc rather than left as an undocumented wall.
-- [ ] No orphaned imports/exports left behind (`LEARN_REQUIRED_PHASE` consumers updated; `npm run build` passes).
-- [ ] Existing guest flows — browse, quiz attempt, review view — still function (frontend suite green).
+- [x] A guest navigating directly to each of the six Learn routes — `/learn/foundations`, `/learn/radicals`, `/learn/grammar`, `/learn/phonetic-clusters`, `/learn/readers`, `/learn/chengyu` — renders the page; no gate screen and no redirect. Verified by a route test per route (six assertions). The two existing wall tests (`LearnRoutes.grammar`, `LearnRoutes.chengyu`) are **inverted**, not deleted; the other four routes get new assertions. _Verified: `LearnRoutes.guestAtPhase1.test.tsx` covers foundations / radicals / phonetic-clusters / readers; `LearnRoutes.grammar` and `LearnRoutes.chengyu` are inverted in place. Each serves the calibrated Phase-1 gate through MSW and asserts the old redirect target is absent._
+- [x] `router/LearnRoutes.tsx` no longer wraps any Learn route in a phase `PhaseGate`, and the local `PhaseGate` helper is removed (it has no other consumer). _Verified: the file contains no `PhaseGate` and no `usePhaseGate` import._
+- [x] A guest can also **click through** the sidebar to every Learn item: no `preventDefault`, no `aria-disabled`, no `tabIndex={-1}` for phase reasons. Phase is presented as **metadata** (label/indicator) only — asserted by a SideNav interaction test that clicks each child at phase 1 and asserts the location changed. _Verified: `SideNav.test.tsx` "navigates to every Learn child at phase 1 (no preventDefault, no aria-disabled, no tabIndex=-1)", plus the tooltip-metadata and deep-linked-pill cases._
+- [x] `LEARN_NAV_ITEMS[].phase` (renamed from `requiredPhase`) survives **only as sequencing metadata** — the doc comment states this explicitly (BM-1 L6 / A25) so a future contributor does not re-add a wall — and the derived `LEARN_REQUIRED_PHASE` map is **deleted** with its last consumers, because a surviving export named `REQUIRED` is the re-entry point for the wall this epic removed. `SideNav` holds **no** user-phase state: the `phaseGate`/`requiredPhase` props are deleted, not renamed-and-kept, and `AppLayout` stops reading the gate for navigation entirely. _Verified: `shared/constants/learnNav.ts` declares `phase: number` with the metadata-only doc and exports no `LEARN_REQUIRED_PHASE` (the barrel is clean too); `SideNav.tsx` has no phase prop; `AppLayout.tsx` has no `usePhaseGate`/`effectivePhase`._
+- [x] `shared/layouts/AppLayout.tsx` renders chrome + `<Outlet />` only — a regression test asserts no guest banner/badge/persistent guest region is rendered for a guest. _Verified: `AppLayout.test.tsx` "renders chrome + `<Outlet />` only — no guest region, banner, or badge (A25)"._
+- [x] The guest-state affordance remains on the Browse dashboard surface only (`features/dashboard` `DashboardGuest`), asserted by a dashboard test and reflected in its Storybook story. _Verified: `DashboardGuest.test.tsx` (ownership case) and the `DashboardPageFull` guest story._
+- [x] The stale `verification-artifacts/epic-25-route-gating-verification.md` (it describes `LockedSurface`/`LEARN_ROUTE_CONFIG`/`LearnRouteGate`, none of which exist in `apps/frontend/src`) is corrected or marked superseded by A25, and `wip/guest-access-calibration.md` D5 ("radicals + phonetic get route gates — Decided") is annotated as superseded. _Verified in the worktree on 2026-10-27 — the artifact carries the SUPERSEDED banner at line 99 and the calibration note's D5 is annotated at line 694 — **but both files are gitignored/untracked, so neither banner is in the commit.** The durable supersession is the tracked `verification-artifacts/README.md` index row (marked SUPERSEDED), the [implementation's supersession record](../../issue-implementation/epic-25-secure-guest-identity-and-route-gating/story-25-3-learn-ungating-browse-guest-state.md) and the 15-row tripwire inventory. See the epic [implementation README](../../issue-implementation/epic-25-secure-guest-identity-and-route-gating/README.md) for the reasoning._
+- [x] `ContentBrowser`'s second phase-lock map (`ContentBrowser.tsx:65-71`, inert today because `LibraryPage` passes `userPhase={4}`) is recorded as out-of-scope in the story impl doc rather than left as an undocumented wall. _Verified: comment-only tripwire added in the component; recorded in the impl doc's "Deliberately left alone" table._
+- [x] No orphaned imports/exports left behind (`LEARN_REQUIRED_PHASE` consumers updated; `npm run build` passes). _Verified: `npm run build` passes; `LEARN_REQUIRED_PHASE` has no surviving consumer (only the explanatory doc comments in `learnNav.ts` mention it)._
+- [x] Existing guest flows — browse, quiz attempt, review view — still function (frontend suite green). _Verified: full frontend suite 157 files / 1156 tests pass, storybook 64 files / 364 tests pass._
 
 ## Business Rules
 
@@ -59,7 +59,7 @@ dashboard, which is where a guest actually lands and where the register CTA (epi
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD (epic PR)
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Completed
+- **PR**: pending (epic PR)
+- **Merge Date**: pending merge (epic PR not yet opened)
+- **Key Commit**: `8f507c66` (feat(story-25-3): un-gate the Learn routes and move guest state out of the shell)

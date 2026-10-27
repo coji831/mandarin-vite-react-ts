@@ -1,6 +1,6 @@
 ---
 purpose: Guest identity lockstep — one server-computed guest gate, one cache key, shell consumes it
-status: planned
+status: completed
 last-verified: 2026-10-27
 type: story
 ---
@@ -26,14 +26,14 @@ keyed by identity, evicted on auth change, removes both.
 
 ## Acceptance Criteria
 
-- [ ] `createGuestPhaseGate()` returns exactly `{ currentPhase: 1, isGuest: true }` (plus its normalized timestamps) — asserted by unit test on the shared constant.
-- [ ] `GET /v1/progression/gates` and `GET /v1/progression/phase-gate` return **agreeing** guest payloads for the same anonymous identity, proven by an integration test that requests **both** endpoints (not by two independent unit assertions).
-- [ ] **One source, not two literals.** `getGates`'s hand-written guest branch (`progression-nest.controller.ts:173-180`, six hardcoded `"Guest — Phase 1 only"` strings) is derived from the same shared answer as `getPhaseGate` (`createGuestPhaseGate()` or a shared builder), so the two payloads cannot drift.
-- [ ] **The frontend gate cache is identity-scoped and evicted on auth change.** Today the only gate cache is localStorage keyed by identity _class_ (`phaseGate:user` / `phaseGate:guest`, `phaseGateService.ts:19`) and `phaseGate:user` is never cleared, so user A's gate can be served to user B on the same device while a fetch is failing. Logout (and login) must clear it, or the key must include the user id — proven by a test: user A gate → logout → user B login → gate fetch fails → B never sees A's `currentPhase`.
-- [ ] Tests exist for the frontend gate path (`usePhaseGate` + `phaseGateService` have **no** test file today): one fetch path, one key, refetch on identity change.
-- [ ] The frontend shell derives the Learn phase from the server gate only: `AppLayout` has no hardcoded phase fallback that grants a **guest** more than Phase 1, and no shell component synthesises `isGuest` locally. (An authenticated user's `Infinity` fallback while the fetch is in flight is a documented deliberate exception — keep it.)
-- [ ] Page-level phase fallbacks are clamped or documented: `GrammarPage.tsx:33` (`DEV ? 4 : 2`) and `RadicalsPage.tsx:82` (`DEV ? 3 : 1`) must not present a guest with a phase above 1, or must be recorded as card-badge-only signals with the rationale.
-- [ ] Affected backend + frontend suites pass; `npm run typecheck --workspace=@mandarin/backend` passes.
+- [x] `createGuestPhaseGate()` returns exactly `{ currentPhase: 1, isGuest: true }` (plus its normalized timestamps) — asserted by unit test on the shared constant. _Verified: `packages/shared-constants/src/__tests__/guestPhaseGate.test.js` — `currentPhase === 1`, `isGuest === true`, `phase4Unlocked === false`, sentinel `id: "guest-unlocked"`, `createdAt`/`updatedAt` stamped._
+- [x] `GET /v1/progression/gates` and `GET /v1/progression/phase-gate` return **agreeing** guest payloads for the same anonymous identity, proven by an integration test that requests **both** endpoints (not by two independent unit assertions). _Verified: `tests/integration/nest/quiz-progression-parity.test.ts` — one anonymous identity requests both; the gate payload is inverted back (`details` → phase, `reason` → isGuest, `passed` → `currentPhase >= 2`) and must match `/phase-gate`. A controller unit case additionally deep-equals the `/gates` body against `buildGuestGateStatus(<the body /phase-gate returned>)`._
+- [x] **One source, not two literals.** `getGates`'s hand-written guest branch (`progression-nest.controller.ts:173-180`, six hardcoded `"Guest — Phase 1 only"` strings) is derived from the same shared answer as `getPhaseGate` (`createGuestPhaseGate()` or a shared builder), so the two payloads cannot drift. _Verified: `getGates` now returns `buildGuestGateStatus(createGuestPhaseGate())` (`:184`); the retired literal held three `details: "Guest — Phase 1 only"` strings plus three `reason: "GUEST"` literals (six hardcoded strings in total)._
+- [x] **The frontend gate cache is identity-scoped and evicted on auth change.** Today the only gate cache is localStorage keyed by identity _class_ (`phaseGate:user` / `phaseGate:guest`, `phaseGateService.ts:19`) and `phaseGate:user` is never cleared, so user A's gate can be served to user B on the same device while a fetch is failing. Logout (and login) must clear it, or the key must include the user id — proven by a test: user A gate → logout → user B login → gate fetch fails → B never sees A's `currentPhase`. _Verified via the second option: eviction, not identity-in-key (identity-in-key is blocked — `shared/` may not import `features/auth` and no user id is persisted). `clearPhaseGateCache()` runs at six identity transitions + a one-shot legacy purge; `AuthContext.phaseGateEviction.test.tsx` is exactly the A → logout → B → failing-fetch regression, plus the refresh-cookie restore leg._
+- [x] Tests exist for the frontend gate path (`usePhaseGate` + `phaseGateService` have **no** test file today): one fetch path, one key, refetch on identity change. _Verified: `shared/services/__tests__/phaseGateService.test.ts` and `shared/hooks/__tests__/usePhaseGate.test.tsx` now exist._
+- [x] The frontend shell derives the Learn phase from the server gate only: `AppLayout` has no hardcoded phase fallback that grants a **guest** more than Phase 1, and no shell component synthesises `isGuest` locally. (An authenticated user's `Infinity` fallback while the fetch is in flight is a documented deliberate exception — keep it.) _Verified, and stronger as built: after the A25 un-gating the shell reads **no** phase for navigation at all (`AppLayout.tsx` has no `usePhaseGate`, no `effectivePhase`, no `Infinity`) and no `isGuest` is computed anywhere under `shared/`. The `Infinity` fallback disappeared with the gate read it belonged to; `AppLayout.test.tsx` pins the resulting shape._
+- [x] Page-level phase fallbacks are clamped or documented: `GrammarPage.tsx:33` (`DEV ? 4 : 2`) and `RadicalsPage.tsx:82` (`DEV ? 3 : 1`) must not present a guest with a phase above 1, or must be recorded as card-badge-only signals with the rationale. _Verified: both clamps shipped — `GrammarPage.tsx:40` and `RadicalsPage.tsx:87` read `phaseGate?.currentPhase ?? (isAuthenticated ? defaultPhase : 1)`; the authenticated dev-preview fallback is documented as card-badge-only._
+- [x] Affected backend + frontend suites pass; `npm run typecheck --workspace=@mandarin/backend` passes. _Verified at epic close: backend 55 files / 631 tests, frontend 157 files / 1156 tests, `tsc --noEmit` exit 0._
 
 ## Business Rules
 
@@ -50,7 +50,7 @@ keyed by identity, evicted on auth change, removes both.
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD (epic PR)
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Completed
+- **PR**: pending (epic PR)
+- **Merge Date**: pending merge (epic PR not yet opened)
+- **Key Commit**: `1ace7681` (fix(story-25-2): one guest gate source, and a gate cache that cannot cross identities)

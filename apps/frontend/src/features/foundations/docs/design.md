@@ -1,13 +1,13 @@
 ---
 purpose: Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs
 status: active
-last-verified: 2026-07-20
+last-verified: 2026-10-27
 type: design
 ---
 
 # Foundations Feature Design
 
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-10-27
 
 ## Overview
 
@@ -53,7 +53,7 @@ Backend API (/v1/foundations/data/pinyin-tones)
   → Tab components render data
 ```
 
-Phase gating is handled by `LearnRoutes.tsx` and `usePhaseGate`.
+Access: `/learn/foundations` is **not** phase-gated — no route gate wraps it and the page reads no phase (`LearnRoutes.tsx` renders it for every visitor, guests included).
 
 ## Dependencies
 

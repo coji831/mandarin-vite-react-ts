@@ -1,13 +1,13 @@
 ---
 purpose: Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave
 status: active
-last-verified: 2026-08-03
+last-verified: 2026-10-27
 type: design
 ---
 
 # Feature: Readers — Design Spec
 
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-10-27
 **Status:** Delivered (Epic 21 — Graded Readers MVP) · Phase D1 audio migrated to the shared `AudioManager`
 
 ---
@@ -24,7 +24,7 @@ The feature folder is `features/readers/` (not `graded-readers`).
 | ---------------- | ------------------------------------- | ----------------------------------- |
 | `/learn/readers` | `pages/learn/readers/ReadersPage.tsx` | Library view + reading view routing |
 
-`ReadersPage` is phase-gated (requires Phase 3 via `usePhaseGate`). Guests can browse the 6 demo passages read-only (no generate / sessions / bookmarks).
+`ReadersPage` has **no phase gate** (never called `usePhaseGate`): `/learn/readers` renders for every visitor, including a Phase-1 guest — phase is sequencing metadata only. Guests can browse the 6 demo passages read-only (no generate / sessions / bookmarks).
 
 ## Components
 
@@ -87,4 +87,4 @@ Reading progress: Zustand (`readingStore`) updates immediately → debounced (2s
 - `@mandarin/shared-constants` — `ROUTE_PATTERNS.readers*` route patterns
 - `shared/hub-entry` — `openHub()` for inline word lookup (LexicalHub)
 - `shared/components` — `ErrorScreen`, `LoadingScreen`, `FilterChip`, shared `Button`, etc.
-- Phase gate: `usePhaseGate` (readers require Phase 3)
+- Phase: sequencing metadata only — the readers route is **not** phase-gated (guests at Phase 1 render it like any other learner)

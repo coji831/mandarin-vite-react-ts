@@ -5,8 +5,9 @@
  *
  * Before 25-2 the two guest surfaces answered independently: `getPhaseGate`
  * returned `createGuestPhaseGate()` (`{ currentPhase: 1, isGuest: true }`)
- * while `getGates` hand-wrote a second payload with six hardcoded
- * `"Guest — Phase 1 only"` strings. Two literals, two chances to drift — the
+ * while `getGates` hand-wrote a second payload of six hardcoded strings (three
+ * `reason: "GUEST"` + three `details: "Guest — Phase 1 only"`). Two literals,
+ * two chances to drift — the
  * same anonymous identity could be told Phase 1 by one endpoint and something
  * else by the other. This builder removes the second literal: every field
  * below is a function of the guest identity (`guest.currentPhase`), so `/gates`

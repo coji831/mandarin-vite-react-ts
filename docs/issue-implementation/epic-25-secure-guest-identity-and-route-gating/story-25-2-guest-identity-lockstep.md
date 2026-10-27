@@ -3,9 +3,10 @@
 # Implementation 25-2: Guest Identity Lockstep — One Guest Gate, One Cache Key
 
 > **BR Reference:** `docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/story-25-2-guest-identity-lockstep.md`
-> **Status:** In Progress
+> **Epic Implementation:** [README.md](README.md)
+> **Status:** Completed
 > **Last Update:** October 27, 2026
-> **Key Commit:** pending
+> **Key Commit:** `1ace7681` (fix(story-25-2): one guest gate source, and a gate cache that cannot cross identities)
 
 ## Implementation Summary
 
@@ -124,7 +125,10 @@ Mutation check performed: with sites 3 and 6 removed, the regression test fails 
 ### 6. Doc truth
 
 `docs/architecture.md:344` said guests receive an **all-passed** response from `/gates`; corrected to the
-shipped Phase-1-only `createGuestPhaseGate()` answer. No other line in that file changed.
+shipped Phase-1-only `createGuestPhaseGate()` answer. No other line in that file changed. _(Epic close,
+2026-10-27: that same paragraph also called `"Guest — Phase 1 only"` the gate's **reason**; on the wire the
+reason is `GUEST` and `"Guest — Phase 1 only"` is the `details` field, so the sentence was corrected to name
+both, and the surrounding phase-gated Learn prose in the same file was brought to A25 state.)_
 
 ### Validation
 
@@ -158,10 +162,10 @@ shipped Phase-1-only `createGuestPhaseGate()` answer. No other line in that file
 ### 1. One answer, two shapes (`gateStatus.factory.ts`)
 
 `getPhaseGate` returned `createGuestPhaseGate()` while `getGates` hand-wrote a **second** guest payload —
-three gate objects, each carrying its own `"Guest — Phase 1 only"` string, i.e. three hand-copied versions
-of an answer `/phase-gate` was already serving (`progression-nest.controller.ts:173-180` before this
-change). Two independently written answers for one identity is a drift bug: change the guest phase in one
-place and `/gates` keeps asserting Phase 1 forever.
+three gate objects, each carrying its own `"Guest — Phase 1 only"` `details` string and its own
+`reason: "GUEST"` literal (six hardcoded strings across the three objects, `progression-nest.controller.ts:173-180`
+before this change). Two independently written answers for one identity is a drift bug: change the guest
+phase in one place and `/gates` keeps asserting Phase 1 forever.
 
 `buildGuestGateStatus(guest)` is now the only producer of the guest gates, called as
 `buildGuestGateStatus(createGuestPhaseGate())` — the same value `/phase-gate` returns. Every field is a

@@ -1,6 +1,6 @@
 ---
 purpose: Both optionalAuth TTS surfaces are cache-first-free for guests; generated-audio quota machinery handed to epic-29
-status: in-progress
+status: completed
 last-verified: 2026-10-27
 type: implementation
 ---
@@ -10,9 +10,10 @@ type: implementation
 # Implementation 25-4: Guest Cost Surface — TTS Cache-First Verification
 
 > **BR Reference:** `docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/story-25-4-tts-guest-cost-verification.md`
-> **Status:** In Progress
+> **Epic Implementation:** [README.md](README.md)
+> **Status:** Completed
 > **Last Update:** October 27, 2026
-> **Key Commit:** pending
+> **Key Commit:** `0656e243` (test(story-25-4): pin the guest TTS cost surface and hand quotas to epic-29)
 
 > **Full local artifact (gitignored):** `verification-artifacts/epic-25-tts-guest-cost-surface.md` — measured
 > 2026-10-27 at `8f507c66`, including the verbatim runner output, the per-surface source walk, and the

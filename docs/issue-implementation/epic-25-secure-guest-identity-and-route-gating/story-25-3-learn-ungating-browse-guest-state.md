@@ -1,6 +1,6 @@
 ---
 purpose: A25 — Learn route/nav walls removed; phase demoted to sequencing metadata; guest state stays Browse-only
-status: in-progress
+status: completed
 last-verified: 2026-10-27
 type: implementation
 ---
@@ -10,9 +10,10 @@ type: implementation
 # Implementation 25-3: A25 Learn Un-Gating + Browse-Only Guest State
 
 > **BR Reference:** `docs/business-requirements/epic-25-secure-guest-identity-and-route-gating/story-25-3-learn-ungating-browse-guest-state.md`
-> **Status:** In Progress
+> **Epic Implementation:** [README.md](README.md)
+> **Status:** Completed
 > **Last Update:** October 27, 2026
-> **Key Commit:** pending
+> **Key Commit:** `8f507c66` (feat(story-25-3): un-gate the Learn routes and move guest state out of the shell)
 
 ## Implementation Summary
 
@@ -217,15 +218,38 @@ and two route tests (`LearnRoutes.radicals.test.tsx`, `LearnRoutes.phonetic.test
 exist in `apps/frontend/src`**, while `wip/guest-access-calibration.md` D5 records "radicals + phonetic
 get route gates — **Decided**". Both read as precedent; neither is.
 
+**AC disposition (decided at epic close, 2026-10-27).** The story's stale-artifact AC asks for the two
+local files to be corrected or marked superseded. Both banners were verified **in this worktree**: the
+artifact carries the banner at line 99 and the calibration note's D5 row is annotated at line 694 — but
+`verification-artifacts/` is gitignored and that calibration note is untracked, so **neither annotation can
+reach `main`**. That is a property of the AC's target files, not of the work: on a fresh clone neither
+file exists, so neither can mislead a contributor.
+
+What the AC's _intent_ — "the next contributor must not re-add the wall" — now rests on, durably:
+
+1. the tracked artifact index (`verification-artifacts/README.md`, "Current Artifacts") carries a
+   **SUPERSEDED** row for the route-gating artifact, so the record that survives names it as dead;
+2. this section, which holds the exact banner text and the reason;
+3. the 15-row tripwire inventory above (source doc comments, the `@ts-expect-error` prop-deletion tripwire,
+   the six route tests + SideNav click-through + AppLayout pins, and the registry / `DESIGN.md` / story
+   records), plus the epic implementation README's Challenge 4;
+4. `docs/planning/epics-25-40.md` §Epic 25, whose body now carries dated A25 reversal pointers on the
+   goal, the route-gates bullet, AC 3 and the UI scope.
+
+The AC is therefore **ticked**: the requested annotation exists in both named files (verified by line
+number above) and the supersession is durable through four tracked channels. The residual risk is
+honest — a contributor reading a _local_ copy of the untracked artifact sees the banner only because this
+worktree wrote it; on another machine the file is absent rather than misleading.
+
 ## Deliberately left alone (recorded, not silently ignored)
 
-| Surface                                                             | Why untouched                                                                                                                          | Owner / next step                                                              |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `shared/components/ContentBrowser/ContentBrowser.tsx` phase tab map | Inert: the only caller (`LibraryPage`) passes `userPhase={4}`. Annotated as unsanctioned; behaviour unchanged (comment-only tripwire). | Epic 26 copy pass — remove the map or re-frame it as readiness metadata        |
-| `shared/components/TopNav/TopNav.tsx` `phaseGate` / `requiredPhase` | Orphan: no consumer; `TopNav` itself is orphaned since Story 22.4. Annotated; behaviour unchanged.                                     | Epic 26 copy pass — delete the component or strip the lock props               |
-| `features/radicals/components/RadicalTreesTab.tsx:39-40`            | `isPhase3 = effectivePhase >= 3` with a **DEV-only** `defaultPhase = 3` fallback: a feature-level phase gate that predates A25.        | **Epic-26 copy debt** — out of A25's stated boundary; recorded, not re-derived |
-| `docs/architecture.md:128` ("sidebar's phase-gated Learn group")    | The story forbids touching `docs/architecture.md`; the stale phrase is accepted debt.                                                  | Docs pass on epic close                                                        |
-| `usePhaseGate`, `phaseGateService`, `features/auth`                 | Story 25-2 delivered them (committed at `1ace7681`); 25-3 only removes the now-unused imports from `LearnRoutes` / `AppLayout`.        | —                                                                              |
+| Surface                                                             | Why untouched                                                                                                                          | Owner / next step                                                                                                                                                                                                                                         |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shared/components/ContentBrowser/ContentBrowser.tsx` phase tab map | Inert: the only caller (`LibraryPage`) passes `userPhase={4}`. Annotated as unsanctioned; behaviour unchanged (comment-only tripwire). | Epic 26 copy pass — remove the map or re-frame it as readiness metadata                                                                                                                                                                                   |
+| `shared/components/TopNav/TopNav.tsx` `phaseGate` / `requiredPhase` | Orphan: no consumer; `TopNav` itself is orphaned since Story 22.4. Annotated; behaviour unchanged.                                     | Epic 26 copy pass — delete the component or strip the lock props                                                                                                                                                                                          |
+| `features/radicals/components/RadicalTreesTab.tsx:39-40`            | `isPhase3 = effectivePhase >= 3` with a **DEV-only** `defaultPhase = 3` fallback: a feature-level phase gate that predates A25.        | **Epic-26 copy debt** — out of A25's stated boundary; recorded, not re-derived                                                                                                                                                                            |
+| `docs/architecture.md:128` ("sidebar's phase-gated Learn group")    | The story forbade touching `docs/architecture.md`; the stale phrase was accepted debt.                                                 | **Done at epic close (2026-10-27)** — the phase-gated phrasing in `docs/architecture.md` (LearnRoutes, SideNav/Learn group, layouts, hooks, the Phase-4-gated chengyu row, and the `/gates` guest `reason`/`details` sentence) was corrected to A25 state |
+| `usePhaseGate`, `phaseGateService`, `features/auth`                 | Story 25-2 delivered them (committed at `1ace7681`); 25-3 only removes the now-unused imports from `LearnRoutes` / `AppLayout`.        | —                                                                                                                                                                                                                                                         |
 
 ## A25 evidence (what the tests now prove)
 

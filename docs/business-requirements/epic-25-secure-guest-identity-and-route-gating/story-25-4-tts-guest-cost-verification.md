@@ -1,6 +1,6 @@
 ---
 purpose: Verify both optionalAuth TTS surfaces are cache-first-free for guests; quota mechanics handed to epic-29
-status: planned
+status: completed
 last-verified: 2026-10-27
 type: story
 ---
@@ -28,12 +28,12 @@ miss, and what that path costs today.
 
 ## Acceptance Criteria
 
-- [ ] `POST /v1/tts`: a guest (no token / invalid token) is **never** 401'd, and the response shape is unchanged (`{ audioUrl, cached }`) — asserted by test.
-- [ ] `POST /v1/tts`: on a cache HIT the response is `{ cached: true }` and the synthesis path is **not invoked** (spy/assert on the generator), proving the guest read is free.
-- [ ] `POST /v1/readers/passages/:id/audio`: the same two assertions hold for the guest path (no 401; cache hit returns a signed URL without generation).
-- [ ] The cache-MISS path on both surfaces is documented as the **billable generated path**, explicitly assigned to epic-29's counter + `AICallLog` + circuit breaker — with the statement that no quota counter ships in this epic.
-- [ ] Per-surface evidence (route, guard, cache lookup, signing, generation call, observed test log) is captured in `verification-artifacts/epic-25-tts-guest-cost-surface.md` **and** condensed into a committed summary in this story's implementation doc — `verification-artifacts/` is gitignored by design (`verification-artifacts/README.md`), so the impl-doc summary is the record that survives on `main`.
-- [ ] Backend audio + readers suites pass; `npm run typecheck --workspace=@mandarin/backend` passes.
+- [x] `POST /v1/tts`: a guest (no token / invalid token) is **never** 401'd, and the response shape is unchanged (`{ audioUrl, cached }`) — asserted by test. _Verified: `audio-health-parity.test.ts` — the no-token case (200 + `{ audioUrl, cached: true }`) and the invalid-token case (`:289`) both assert 2xx._
+- [x] `POST /v1/tts`: on a cache HIT the response is `{ cached: true }` and the synthesis path is **not invoked** (spy/assert on the generator), proving the guest read is free. _Verified: `synthesizeSpeech` not called at `:264`/`:286`; strengthened in this story so the invalid-token case also asserts no `synthesizeSpeech` (`:299`) and no `uploadFile` (`:300`)._
+- [x] `POST /v1/readers/passages/:id/audio`: the same two assertions hold for the guest path (no 401; cache hit returns a signed URL without generation). _Verified: `readers-parity.test.ts:414` (no token) and the **new** bad-token case at `:429-445` — 2xx, every sentence `source === "gcs"`, no `synthesizeSpeech`, no `uploadFile`._
+- [x] The cache-MISS path on both surfaces is documented as the **billable generated path**, explicitly assigned to epic-29's counter + `AICallLog` + circuit breaker — with the statement that no quota counter ships in this epic. _Verified: "Exposure statement" + "Epic-29 handoff" sections in the implementation doc, including "**No counter, quota or `AICallLog` write ships in Epic 25.**"_
+- [x] Per-surface evidence (route, guard, cache lookup, signing, generation call, observed test log) is captured in `verification-artifacts/epic-25-tts-guest-cost-surface.md` **and** condensed into a committed summary in this story's implementation doc — `verification-artifacts/` is gitignored by design (`verification-artifacts/README.md`), so the impl-doc summary is the record that survives on `main`. _Verified: the artifact exists in the worktree (untracked, by design) and is now listed in the tracked `verification-artifacts/README.md` index; the condensed per-surface tables are in the implementation doc._
+- [x] Backend audio + readers suites pass; `npm run typecheck --workspace=@mandarin/backend` passes. _Verified at epic close: `npx vitest run tests/integration/nest/audio-health-parity.test.ts tests/integration/nest/readers-parity.test.ts --config vitest.integration.config.ts` → 2 files / 40 tests (none skipped); backend full suite 55 files / 631 tests; `tsc --noEmit` exit 0._
 
 ## Business Rules
 
@@ -50,7 +50,7 @@ miss, and what that path costs today.
 
 ## Implementation Status
 
-- **Status**: Planned
-- **PR**: TBD (epic PR)
-- **Merge Date**: TBD
-- **Key Commit**: TBD
+- **Status**: Completed
+- **PR**: pending (epic PR)
+- **Merge Date**: pending merge (epic PR not yet opened)
+- **Key Commit**: `0656e243` (test(story-25-4): pin the guest TTS cost surface and hand quotas to epic-29)
