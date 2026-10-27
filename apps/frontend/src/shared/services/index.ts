@@ -1,4 +1,8 @@
-export { fetchPhaseGate } from "./phaseGateService";
+export {
+  fetchPhaseGate,
+  clearPhaseGateCache,
+  purgeLegacyPhaseGateResidue,
+} from "./phaseGateService";
 export { createMockContentSource } from "./mockContentSource";
 
 // Audio service (shared/services/audio sub-barrel) — so the eslint

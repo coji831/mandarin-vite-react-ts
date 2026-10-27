@@ -11,7 +11,7 @@
  */
 import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { server, grammarHandlers } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { GrammarPage } from "../GrammarPage";
@@ -21,6 +21,9 @@ const GRAMMAR_URL = "http://localhost:3001/api/v1/grammar/patterns";
 const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
 
 const SEARCH_LABEL = "Search grammar by keyword or pattern name...";
+
+/** Every test starts from an empty gate cache (Story 25-2 eviction contract). */
+beforeEach(() => localStorage.clear());
 
 /** Phase-gate body — guests are Phase 1 (calibrated, Story 24-7); tests pin a specific phase. */
 function phaseGateBody(currentPhase: number) {
@@ -173,6 +176,28 @@ describe("GrammarPage (integration + MSW)", () => {
     renderWithProviders(<GrammarPage />, { route: "/learn/grammar" });
 
     await waitFor(() => expect(screen.getByText("No grammar patterns found")).toBeInTheDocument());
+  });
+
+  it("clamps a guest to Phase 1 when the gate fetch fails (Story 25-2)", async () => {
+    // Guest + backend outage: the fetch fails, so there is no gate at all. The
+    // page must not fall back to the dev preview phase — every above-Phase-1
+    // pattern stays locked (business rule 3: a failed fetch never unlocks).
+    server.use(
+      ...grammarHandlers.default(),
+      http.get(PHASE_GATE_URL, () => HttpResponse.json({ error: "unavailable" }, { status: 500 })),
+    );
+
+    renderWithProviders(<GrammarPage />, {
+      route: "/learn/grammar",
+      auth: { isAuthenticated: false, user: null },
+    });
+
+    await waitFor(() => expect(screen.getByText("吗 yes/no questions")).toBeInTheDocument());
+
+    // All three seeded patterns are Phase 2 / 4 / 4 — all locked for a guest.
+    expect(screen.getAllByLabelText(/^Locked until Phase/)).toHaveLength(3);
+    expect(screen.getAllByLabelText("Locked until Phase 2")).toHaveLength(1);
+    expect(screen.getAllByLabelText("Locked until Phase 4")).toHaveLength(2);
   });
 
   it("renders the error state with a working retry", async () => {

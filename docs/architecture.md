@@ -341,7 +341,7 @@ Computed per-user gate status is served by `GET /api/v1/progression/gates` (`ROU
 - **`characterCountGate`** — ≥500 distinct characters learned (`CharacterProgress` rows with `confidence > 0`).
 - **`phase3To4Gate`** — comprehension: ≥60% on the passage comprehension quiz AND ≥90% known-word ratio in a passage at the learner's HSK level; falls back to a 5-question qualification quiz when no passage exists at that level.
 
-The route uses `optionalAuth` — **guest users receive an all-passed response**; authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
+The route uses `optionalAuth` — **guest users receive Phase-1-only gates** (Phase 2–4 locked with the `"Guest — Phase 1 only"` reason, matching the `{ currentPhase: 1, isGuest: true }` answer `GET /v1/progression/phase-gate` serves for the same anonymous identity); authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
 
 > **Known gap:** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
 

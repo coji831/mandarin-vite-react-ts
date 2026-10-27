@@ -1,6 +1,14 @@
 /**
  * AuthContext - Manages authentication state and operations
  * Provides user data, login, register, logout, and token refresh functionality
+ *
+ * Story 25-2 (guest identity lockstep): every identity transition evicts the
+ * cached phase gate (`clearPhaseGateCache()` from `shared/services`) so a gate
+ * cached for one identity is never served to the next person on a shared
+ * device while a gate fetch is failing. The six transitions are login,
+ * register, explicit logout, the api-client silent-401 logout callback,
+ * boot-time refresh-failure cleanup, and refresh-cookie session restore. The
+ * provider also runs the one-shot purge of pre-25-2 residue at boot.
  */
 
 import { ROUTE_PATTERNS } from "@mandarin/shared-constants";
@@ -8,6 +16,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useState 
 
 import { API_CONFIG } from "config";
 import { clearLogoutCallback, requestAccessToken, setLogoutCallback } from "services";
+import { clearPhaseGateCache, purgeLegacyPhaseGateResidue } from "shared/services";
 import type { AuthContextValue, LoginCredentials, RegisterData, User } from "../types";
 import { authService } from "../services";
 
@@ -52,6 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true; // Prevent state updates after unmount (React Strict Mode)
 
     const initAuth = async () => {
+      // One-shot: destroy any `phaseGate:user` residue written by a pre-25-2
+      // build (that cache was never evicted, so it may belong to someone else).
+      purgeLegacyPhaseGateResidue();
+
       const accessToken = localStorage.getItem(TOKEN_KEY);
 
       // If no access token, try to refresh using httpOnly cookie.
@@ -65,6 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const user = await authService.getCurrentUser();
             if (isMounted) {
               setUser(user);
+              // Refresh-cookie restore is an identity transition (the earlier
+              // `phaseGate:user` may belong to a different person) — evict it
+              // before `usePhaseGate` re-fetches with the restored token.
+              clearPhaseGateCache();
             }
           }
         } catch {
@@ -88,8 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         // Refresh failed — the shared refresh already cleared the token and
-        // user (via the logout callback). Just ensure no stale local token.
+        // user (via the logout callback). Just ensure no stale local token,
+        // and no gate cached for the identity that was just lost.
         localStorage.removeItem(TOKEN_KEY);
+        clearPhaseGateCache();
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -128,7 +147,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Register logout callback for apiClient (Story 14.3)
   useEffect(() => {
     const handleApiClientLogout = () => {
+      // Silent 401 logout (refresh token expired/revoked) is an identity
+      // transition too — drop the previous identity's cached gate.
       localStorage.removeItem(TOKEN_KEY);
+      clearPhaseGateCache();
       setUser(null);
     };
 
@@ -156,6 +178,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user: userData, accessToken } = data.data;
 
       localStorage.setItem(TOKEN_KEY, accessToken);
+      // Identity transition (possibly A → B without a logout): evict the gate
+      // cache BEFORE `setUser` so `usePhaseGate`'s refetch can never fall back
+      // to the previous identity's cached gate.
+      clearPhaseGateCache();
       setUser(userData);
     } finally {
       setIsLoading(false);
@@ -181,6 +207,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user: userData, accessToken } = responseData.data;
 
       localStorage.setItem(TOKEN_KEY, accessToken);
+      // guest → user: evict BOTH buckets (the guest gate must not survive the
+      // sign-up) before `setUser` triggers `usePhaseGate`'s refetch.
+      clearPhaseGateCache();
       setUser(userData);
     } finally {
       setIsLoading(false);
@@ -197,7 +226,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Logout failed — still clear local state
     } finally {
+      // The leak path (Story 25-2): without this eviction, user A's
+      // `phaseGate:user` would answer user B's failing gate fetch on the same
+      // device. Evict before `setUser` triggers `usePhaseGate`'s refetch.
       localStorage.removeItem(TOKEN_KEY);
+      clearPhaseGateCache();
       setUser(null);
       setIsLoading(false);
     }

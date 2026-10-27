@@ -12,12 +12,16 @@
  *
  * Locked-card state derives from `usePhaseGate()`'s numeric currentPhase
  * (guests = 1 — calibrated guest identity, Story 24-7) — never from
- * `userStore`. If the phase-gate fetch fails (null gate), defaults to Phase 2
- * in prod and Phase 4 in dev so locked preview cards never hide content.
+ * `userStore`. If the phase-gate fetch fails (null gate), an authenticated
+ * learner defaults to Phase 2 in prod / Phase 4 in dev so locked preview cards
+ * never hide content; an unauthenticated visitor is clamped to Phase 1
+ * (Story 25-2, business rule 3) — a failed fetch never unlocks content the
+ * server has not granted.
  */
 import { usePhaseGate } from "shared/hooks";
 import { PageHeader, PageShell, PageStack } from "shared/components";
 import { openHub } from "shared/hub-entry";
+import { useAuth } from "features/auth";
 import {
   GrammarFilterBar,
   GrammarList,
@@ -26,12 +30,14 @@ import {
 } from "features/grammar";
 
 export function GrammarPage() {
+  const { isAuthenticated } = useAuth();
   const { patterns, filter, setFilter, resetFilter, isLoading, error, refetch } = useGrammar();
   const { phaseGate } = usePhaseGate();
 
-  // If API fails (null phaseGate), default to Phase 2 in prod, Phase 4 in dev
+  // If API fails (null phaseGate): authed learners get the dev/prod preview
+  // phase; guests stay Phase 1 (never above — Story 25-2).
   const defaultPhase = import.meta.env.DEV ? 4 : 2;
-  const currentPhase = phaseGate?.currentPhase ?? defaultPhase;
+  const currentPhase = phaseGate?.currentPhase ?? (isAuthenticated ? defaultPhase : 1);
 
   const handlePatternClick = (pattern: GrammarPatternData) => {
     openHub({

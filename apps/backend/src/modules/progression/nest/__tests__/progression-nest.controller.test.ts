@@ -5,13 +5,16 @@
  * the Nest controller shape — same guest session-local/empty shapes, same
  * service delegation + ReviewService side-effect, same 4xx/5xx codes. The
  * CALIBRATED `/gates` guest branch (24-13) is asserted explicitly: Phase-1-only
- * gates, NEVER the all-passed GUEST shape.
+ * gates, NEVER the all-passed GUEST shape — and, since Story 25-2, byte-equal
+ * to the projection of the `/phase-gate` guest answer (one source, not two
+ * literals).
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import type { Request } from "express";
 import { ProgressionNestController } from "../progression-nest.controller.js";
+import { buildGuestGateStatus, type GuestGateIdentity } from "../../services/gateStatus.factory.js";
 
 vi.mock("../../../../shared/utils/logger.js", () => ({
   createLogger: vi.fn(() => ({
@@ -174,6 +177,17 @@ describe("ProgressionNestController (Story 24-13)", () => {
           details: "Guest — Phase 1 only",
         });
       }
+    });
+
+    it("guest → /gates is exactly what /phase-gate's guest answer derives (ONE source, 25-2)", async () => {
+      const req = makeReq({ userId: undefined });
+
+      const guestPhaseGate = (await controller.getPhaseGate(req)) as GuestGateIdentity;
+      const gates = (await controller.getGates(req)) as Record<string, unknown>;
+
+      // Both endpoints project the same `createGuestPhaseGate()` value → the
+      // gates can never disagree with the phase gate for one guest identity.
+      expect(gates).toEqual(buildGuestGateStatus(guestPhaseGate));
     });
 
     it("registered user → delegates to the service", async () => {
