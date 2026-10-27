@@ -1,10 +1,16 @@
 /**
  * @file WordPopover.tsx
  * @description Inline popover near the tapped word — compact card with glyph,
- * pinyin, meaning, and "Open in Word Hub" button.
+ * pinyin, meaning, and a "View Details" button that opens the routed lexical hub.
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Story 21.x: Migrated onOpenHub prop → direct Zustand hubStore access.
  * Phase 4: Reads glyph, position, and closePopover from readingStore.
+ *
+ * Entity typing (regression fix, epic-25): a tapped token is not always a WORD. A
+ * single hanzi with no word row used to be sent as `entityType: "word"`
+ * (`/learn/hub/word/喜` → `GET /words/喜` → 404). It now opens the character hub,
+ * which always renders; a token the word API returns detail for still opens the
+ * word hub.
  *
  * Reads readingStore directly for popover state (glyph, position).
  * Must handle viewport edges (positions correctly near any edge).
@@ -15,6 +21,9 @@ import { openHub } from "shared/store";
 import { useReadingStore } from "../stores";
 import { useWordDetail } from "features/word-hub/hooks";
 import "./WordPopover.css";
+
+/** Exactly one Han character (surrogate-pair safe). */
+const SINGLE_HAN_CHARACTER = /^\p{Script=Han}$/u;
 
 export function WordPopover() {
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -89,10 +98,14 @@ export function WordPopover() {
   const displayMeaning = wordDetail?.definitions?.join("; ") ?? "";
 
   const viewDetailHandler = () => {
+    // A single hanzi the word API has no row for has no word hub to open — the
+    // character hub always renders, so prefer it instead of emitting a 404 route.
+    const opensCharacterHub = SINGLE_HAN_CHARACTER.test(displayGlyph) && !wordDetail;
+
     openHub({
-      entityType: "word",
+      entityType: opensCharacterHub ? "character" : "word",
       entityId: displayGlyph,
-      label: displayPinyin,
+      label: displayPinyin || undefined,
     });
   };
   return (
