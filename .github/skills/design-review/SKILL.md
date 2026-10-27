@@ -22,6 +22,16 @@ round's receipts are on disk.
 `docs/guides/design/page-archetypes.md` owns the page shapes. This skill is the sequence; it does not
 restate either.
 
+The review also applies `docs/guides/design/design-revalidation-guide.md` — a surface that fails the
+contract is **reworked from scratch**, not patched, and "session = route, not modal" is a binding rule.
+Dense surfaces are judged against `docs/guides/design/data-density-spec.md` (fundamental #10) and
+overlays against ADR-013 (`useFocusTrap`).
+
+> **Roles are generic and skill-driven.** The review runs through the generic `layout-critic` → `design-lead`
+> roles in `.solar/registry.json`, each executing this skill. Do not proliferate one-off specialist agents
+> per surface; the experimental workspace-only Stage 3 Judge/Runner agents are NOT part of this repo's
+> flow.
+
 ## R0 · deterministic gates (machine-owned, blocking)
 
 CI and the reviewer run the same commands. Nothing in R1 may be raised against a file R0 has already

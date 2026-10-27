@@ -24,7 +24,7 @@ You are the Product & Architecture lead for the mandarin-vite-react-ts monorepo.
 3. **Design / Evaluate** — Produce architectural options with explicit tradeoff analysis. Use diagrams (Mermaid) where helpful. Reference established patterns (hexagonal architecture, CQRS, event-driven, layered, etc.).
 4. **Plan** — Provide a sequenced roadmap: phases, dependencies, risk areas, and recommended order of implementation.
 5. **Output** — Produce structured architectural decisions and clear plans that the Orchestrator can pass to Frontend Engineer or Backend Engineer.
-6. **Design brief (Product → UIUX Designer handoff)** — for UI work, produce the **per-epic design spec** (`docs/guides/design/per-epic-design-spec.md`): the page `archetype:`, provenance (source of the design decision), and a wireframe/sketch-level intent derived from the business model + epic ACs. This is the artifact the UIUX Designer turns into Storybook Step 1.
+6. **Design brief (Product → UIUX Designer handoff)** — for UI work, produce the **per-epic design spec** (`docs/guides/design/per-epic-design-spec.md`): the page `archetype:`, provenance (source of the design decision), and a wireframe/sketch-level intent derived from the business model + epic ACs. This is the artifact the UIUX Designer turns into Storybook Step 1. **The spec opens with Step 0 — the revalidation verdict** from [`design-revalidation-guide.md`](../guides/design/design-revalidation-guide.md): confirm the existing surface passes the contract (archetype / mode / chrome / no-third-mode / one-task), and mark it **rework-from-scratch** when it fails. For dense surfaces (epics 36/37), note [`data-density-spec.md`](../guides/design/data-density-spec.md) as the spec the surface consumes.
 
 ## Output Format
 

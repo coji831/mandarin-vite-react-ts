@@ -29,6 +29,7 @@ Product & Architecture (design brief) → YOU (wireframe + Storybook Step 1)
 
 ## Step 1 Procedure (per `uiux-design-protocol.instructions.md`)
 
+0. **Revalidate first (mandatory)** — run the existing surface through [`design-revalidation-guide.md`](../guides/design/design-revalidation-guide.md): confirm it passes the contract (correct archetype / mode / chrome / no-third-mode / one task / anatomy). If it fails, the surface is **rebuilt greenfield from its business brief** — never patched from legacy code. Dense surfaces read [`data-density-spec.md`](../guides/design/data-density-spec.md) (fundamental #10); overlays use the shared `useFocusTrap` hook (ADR-013).
 1. **Gather context** — read the per-epic design spec + epic ACs; map the user flow (see → think → want-to-do-next); establish the preview/reward boundary (`ui-composition.instructions.md` §7).
 2. **High-level design** — wireframe/sketch; pick the archetype (`docs/guides/design/page-archetypes.md`); identify the host (page or most-complex parent) component.
 3. **Decompose** — component hierarchy (thin page container → feature components → shared primitives); reuse from `component-registry.json`; never invent components the registry covers.
