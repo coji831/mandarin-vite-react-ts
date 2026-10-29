@@ -318,24 +318,28 @@ function runChromeCheck() {
   return chromeFindings;
 }
 
-// ─── Session/route check (session = route, not modal — S2) ──────────────────
+// ─── Session/route check (session = route, navigator = peek) ────────────────
 //
 // The revalidation contract (docs/guides/design/design-revalidation-guide.md §4)
-// says a surface that IS a learning session is a routed `detail`/Focus surface,
-// and a modal may host only a transient action (confirm, quota prompt, quick
-// reveal that is not itself a session). "Session = route" must fail the gate,
-// not be a convention, so this check machine-enforces both halves:
+// classifies surfaces two ways. A surface with a bounded start/end, a completion
+// action and progress state is a SESSION and must be a routed `detail`/Focus
+// surface; a surface with none of the three is a NAVIGATOR and may be a
+// transient overlay. The lexical hub is a navigator (rework-proposal §0.3), so
+// this check machine-enforces both halves:
 //
 //   session-modal — no <Modal> may wrap a session surface. Session surfaces are
 //                   derived, not hand-listed: every entity hub in
 //                   entityHubRegistry.tsx, the hub dispatcher (LexicalHubRouter),
 //                   and any JSX tag whose name ends in Hub / DetailContent /
 //                   Session / SessionView / DetailScreen.
-//   session-route — the dispatcher must be reached THROUGH a route: the app
-//                   shell must not mount it, the router must register the hub
-//                   route, pageChrome must declare that route `detail` (→ Focus
-//                   chrome), and the page rendering it must use PageShell(detail)
-//                   with no overlay inside.
+//   session-route — the two laws a hub must not confuse:
+//                   (a) the navigator is a PEEK: the app shell mounts HubSheet
+//                       (portalled, so it is not page content), and there is NO
+//                       `/learn/hub` route registered, declared in pageChrome, or
+//                       rendered by a page — a lookup is not a location, and a
+//                       route would make Back a transcript of peeks.
+//                   (b) the dispatcher is still reachable (the sheet renders it),
+//                       so removing the route never leaves the hub unreachable.
 //
 // WHAT THE HUMAN RUBRIC STILL CATCHES (design-quality-rubric.md): a session
 // rendered inline in a Browse page — a third mode with no modal at all; a
@@ -345,11 +349,23 @@ function runChromeCheck() {
 const SRC_DIR = path.join(ROOT, "apps", "frontend", "src");
 const ENTITY_REGISTRY_PATH = path.join(SRC_DIR, "features", "lexical-hub", "entityHubRegistry.tsx");
 const ROUTER_DIR = path.join(SRC_DIR, "router");
-const SESSION_PAGE_PATH = path.join(SRC_DIR, "pages", "learn", "hub", "LexicalEntityPage.tsx");
+const HUB_SHEET_PATH = path.join(
+  SRC_DIR,
+  "features",
+  "lexical-hub",
+  "components",
+  "HubSheet",
+  "HubSheet.tsx",
+);
 const HUB_ROUTE_BASE = "/learn/hub";
 
 /** Session vocabulary: a tag with one of these suffixes can only be a session body. */
 const SESSION_TAG_RE = /(?:Hub|DetailContent|Session|SessionView|DetailScreen)$/;
+
+/** Drop block and line comments so a rule cannot fire on the prose that explains it. */
+function stripComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+}
 
 function walkSourceFiles(dir, out = []) {
   if (!fs.existsSync(dir)) return out;
@@ -428,91 +444,79 @@ function runSessionRouteCheck() {
   const findings = [];
   const add = (file, line, message) => findings.push({ file, line, message });
 
-  // 1. The app shell must not mount the dispatcher — that is the overlay wiring
-  //    this rule removed.
+  // 1. The app shell mounts the PEEK, and the peek is what renders the body.
+  //    Mounting the dispatcher directly would put the hub's content in page flow
+  //    instead of the popover layer.
   if (!fs.existsSync(APP_LAYOUT_PATH)) {
-    add(
-      APP_LAYOUT_PATH,
-      1,
-      "missing AppLayout.tsx — cannot verify the shell renders no hub overlay",
-    );
+    add(APP_LAYOUT_PATH, 1, "missing AppLayout.tsx — cannot verify the shell mounts the hub peek");
   } else {
     const shell = fs.readFileSync(APP_LAYOUT_PATH, "utf-8");
+    if (!shell.includes("<HubSheet")) {
+      add(
+        APP_LAYOUT_PATH,
+        lineOf(shell, "<Outlet"),
+        "AppLayout does not mount <HubSheet /> — the lexical hub peek has no host, so no surface can open it",
+      );
+    }
     if (shell.includes("LexicalHubRouter") || shell.includes("entityHubRegistry")) {
       add(
         APP_LAYOUT_PATH,
         Math.max(lineOf(shell, "LexicalHubRouter"), lineOf(shell, "entityHubRegistry"), 1),
-        "AppLayout mounts the lexical session dispatcher — a session must be a routed detail surface, not an app-shell overlay",
+        "AppLayout mounts the lexical hub dispatcher directly — the sheet owns the body; the shell owns the sheet",
       );
     }
   }
 
-  // 2. The router must register the hub route.
+  // 2. The sheet must render the dispatcher: removing the route must never
+  //    leave the hub unreachable.
+  if (!fs.existsSync(HUB_SHEET_PATH)) {
+    add(HUB_SHEET_PATH, 1, "missing HubSheet.tsx — the lexical hub peek has no content host");
+  } else {
+    const sheet = fs.readFileSync(HUB_SHEET_PATH, "utf-8");
+    if (!sheet.includes("LexicalHubRouter")) {
+      add(
+        HUB_SHEET_PATH,
+        lineOf(sheet, "HubErrorBoundary"),
+        "the hub sheet does not render the entity dispatcher (LexicalHubRouter)",
+      );
+    }
+  }
+
+  // 3. NO route may register the hub. A peek is not a location: a route would
+  //    make Back a transcript of peeks and hand the hub Focus chrome it does not
+  //    earn. Comments are stripped first so the rule cannot fire on the rationale
+  //    that documents it.
   const routerFiles = walkSourceFiles(ROUTER_DIR).filter((f) => fs.existsSync(f));
-  const registersHubRoute = routerFiles.some((file) => {
-    const source = fs.readFileSync(file, "utf-8");
+  const hubRouteOwner = routerFiles.find((file) => {
+    const source = stripComments(fs.readFileSync(file, "utf-8"));
     return source.includes("lexical_entity_route") || source.includes("hub/:entityType/:entityId");
   });
-  if (!registersHubRoute) {
+  if (hubRouteOwner) {
     add(
-      ROUTER_DIR,
+      hubRouteOwner,
       1,
-      "no route registers the lexical session (`hub/:entityType/:entityId` / lexical_entity_route) — a session must be reachable at a real URL",
+      `a route registers the lexical hub (\`${HUB_ROUTE_BASE}/:entityType/:entityId\`) — the hub is a navigator/peek; opening it must not change the URL or write one history entry per hop`,
     );
   }
 
-  // 3. pageChrome must declare that route `detail`, i.e. Focus chrome.
+  // 4. pageChrome must NOT declare the hub route: a declared `detail` route is
+  //    exactly the chrome flip ("looking a word up is not a change of intent").
   if (!fs.existsSync(PAGE_CHROME_PATH)) {
-    add(PAGE_CHROME_PATH, 1, "missing pageChrome.ts — cannot verify the session route is Focus");
+    add(
+      PAGE_CHROME_PATH,
+      1,
+      `missing pageChrome.ts — cannot verify ${HUB_ROUTE_BASE} is undeclared`,
+    );
   } else {
     const chromeSource = fs.readFileSync(PAGE_CHROME_PATH, "utf-8");
-    const entries = parseRouteTable(chromeSource);
-    const hubEntry = entries
-      .filter((e) => HUB_ROUTE_BASE.startsWith(e.path))
-      .sort((a, b) => b.path.length - a.path.length)[0];
-    if (!hubEntry) {
-      add(
-        PAGE_CHROME_PATH,
-        lineOf(chromeSource, "ROUTE_ARCHETYPES"),
-        `pageChrome.ts declares no route for ${HUB_ROUTE_BASE} — the routed lexical session would resolve to Browse chrome`,
-      );
-    } else if (hubEntry.archetype !== "detail") {
+    const hubEntry = parseRouteTable(chromeSource).find(
+      (e) => e.path === HUB_ROUTE_BASE || e.path.startsWith(`${HUB_ROUTE_BASE}/`),
+    );
+    if (hubEntry) {
       add(
         PAGE_CHROME_PATH,
         lineOf(chromeSource, `path: "${hubEntry.path}"`),
-        `route ${HUB_ROUTE_BASE} resolves to archetype "${hubEntry.archetype}" but a learning session must be "detail" (Focus: rail collapsed + recessed top bar)`,
-      );
-    }
-  }
-
-  // 4. The page hosting the session must be a detail page with no overlay.
-  if (!fs.existsSync(SESSION_PAGE_PATH)) {
-    add(
-      SESSION_PAGE_PATH,
-      1,
-      "missing the routed lexical session page (pages/learn/hub/LexicalEntityPage.tsx) — the session has no Focus surface to live on",
-    );
-  } else {
-    const page = fs.readFileSync(SESSION_PAGE_PATH, "utf-8");
-    if (!/PageShell\s+archetype="detail"/.test(page)) {
-      add(
-        SESSION_PAGE_PATH,
-        lineOf(page, "PageShell"),
-        'the lexical session page must render <PageShell archetype="detail"> (the detail/Focus anatomy)',
-      );
-    }
-    if (!page.includes("LexicalHubRouter")) {
-      add(
-        SESSION_PAGE_PATH,
-        lineOf(page, "PageShell"),
-        "the lexical session page does not render the session dispatcher (LexicalHubRouter)",
-      );
-    }
-    if (page.includes("<Modal")) {
-      add(
-        SESSION_PAGE_PATH,
-        lineOf(page, "<Modal"),
-        "the lexical session page renders a <Modal> — the session itself must be the page, not a dialog inside it",
+        `pageChrome.ts declares ${hubEntry.path} as "${hubEntry.archetype}" — the hub is an overlay, not a page; declaring it flips chrome for a lookup`,
       );
     }
   }

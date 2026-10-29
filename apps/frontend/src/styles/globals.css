@@ -241,6 +241,7 @@
   --size-touch: 28px; /* 28px — minimum touch-target dimension (WCAG 2.5.8) */
   --size-well: 40px; /* tile well — the glyph tile's square (spine `size.well`) */
   --size-focal-glyph: 48px; /* the focal hanzi (the character in play) — domain; no spine name */
+  --size-hub-sheet: 420px; /* the lexical hub peek sheet's inline size — domain; spine owns no sheet */
 
   /* ===== Border Radius ===== */
 

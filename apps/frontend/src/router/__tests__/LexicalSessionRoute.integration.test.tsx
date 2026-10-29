@@ -1,9 +1,10 @@
 /**
  * @file __tests__/LexicalSessionRoute.integration.test.tsx
- * @description Integration test (Testing Trophy, INTEGRATION tier) for S2 —
- * "session = route, not modal". Renders the REAL router + AppLayout + GrammarPage
- * with MSW-mocked APIs, clicks a grammar pattern, and proves the session lands as
- * a routed Focus page (detail archetype chrome) instead of a dialog overlay.
+ * @description Integration test (Testing Trophy, INTEGRATION tier) for the
+ * lexical hub PEEK. Renders the REAL router + AppLayout + GrammarPage with
+ * MSW-mocked APIs, clicks a grammar pattern, and proves the rework's promise
+ * (rework-proposal §0): the hub opens as a cross-page sheet OVER the page, the
+ * URL does not change, and the chrome does not flip to Focus.
  */
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -41,8 +42,8 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe("lexical session as a route", () => {
-  it("opens a grammar pattern as a routed Focus detail page, not a modal", async () => {
+describe("lexical hub as a peek", () => {
+  it("opens a grammar pattern as a sheet over the page — URL unchanged, chrome untouched", async () => {
     server.use(
       ...grammarHandlers.default(),
       http.get(PHASE_GATE_URL, () => HttpResponse.json(phaseGateBody(4))),
@@ -54,19 +55,23 @@ describe("lexical session as a route", () => {
     const card = await screen.findByRole("button", {
       name: /把 \(bǎ\) disposal construction/,
     });
+    const urlBefore = window.location.pathname;
+
     fireEvent.click(card);
 
-    // The session body renders through the ROUTE (`/learn/hub/grammar/:id`).
+    // The entity body renders inside the SHEET.
+    const sheet = await screen.findByRole("dialog");
+    expect(sheet).toHaveAttribute("data-modal", "false");
     await waitFor(() => expect(screen.getByText("Structure")).toBeInTheDocument());
     expect(screen.getByText("Explanation")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
 
-    // Focus chrome, derived from the detail archetype: recessed top bar + the
-    // rail forced to icons (Browse's expandable Learn group is gone).
-    expect(container.querySelector(".app-top-bar--recessed")).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Chengyu/ })).not.toBeInTheDocument();
+    // It is a peek, not a location: the URL never becomes `/learn/hub/...`.
+    expect(window.location.pathname).toBe(urlBefore);
+    expect(window.location.pathname).not.toContain("/learn/hub");
 
-    // And it is NOT an overlay.
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // Chrome does NOT flip: Browse keeps its standard top bar and the origin
+    // list is still mounted behind the sheet (nothing was dismantled).
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Chengyu/ })).toBeInTheDocument();
   });
 });

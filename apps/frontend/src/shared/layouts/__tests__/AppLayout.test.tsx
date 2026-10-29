@@ -28,12 +28,6 @@ vi.mock("features/auth", () => ({
   useAuth: mockUseAuth,
 }));
 
-// The bridge only navigates (renders nothing) — stub it so the shell is isolated.
-vi.mock("shared/hub-entry", async () => {
-  const actual = await vi.importActual<typeof import("shared/hub-entry")>("shared/hub-entry");
-  return { ...actual, HubRouteBridge: () => null };
-});
-
 function renderAppLayout(initialPath: string, initialCollapsed?: boolean) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>

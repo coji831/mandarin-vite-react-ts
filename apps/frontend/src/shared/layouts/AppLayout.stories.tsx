@@ -11,8 +11,9 @@
  * mobile. A25 / Story 25-3: the shell reads no phase for navigation, so there
  * is no phase-locked shell story — chrome + <Outlet /> only, and guest state
  * lives on the dashboard (`DashboardGuest`).
- * A lexical session is a route, not an overlay (S2), so the shell renders no
- * hub content — HubRouteBridge navigates, the detail page renders.
+ * A lexical lookup is a PEEK, not a route (rework epic-25): HubSheet is mounted
+ * by the shell but portals to <body> and renders nothing until a peek is open,
+ * so no shell story needs hub content.
  */
 import type { Meta, StoryObj, Decorator } from "@storybook/react-vite";
 import type { ReactNode } from "react";

@@ -57,10 +57,12 @@ describe("resolvePageMode", () => {
     expect(resolvePageMode("/practices/quiz")).toBe("focus");
   });
 
-  it("resolves a lexical session (routed detail) to focus — session = route, not modal", () => {
-    expect(resolvePageMode("/learn/hub")).toBe("focus");
-    expect(resolvePageMode("/learn/hub/character/%E5%A5%B3")).toBe("focus");
-    expect(resolvePageMode("/learn/hub/grammar/gr_0018")).toBe("focus");
+  it("keeps every Learn surface in Browse — a lookup is not a change of intent", () => {
+    // The hub is a cross-page PEEK, not a route (rework-proposal §0.3): no
+    // `/learn/hub` path exists, so opening one never flips chrome to Focus.
+    expect(resolvePageMode("/learn")).toBe("browse");
+    expect(resolvePageMode("/learn/grammar")).toBe("browse");
+    expect(resolvePageMode("/learn/hub")).toBe("browse");
   });
 
   it("resolves auth routes to auth (no rail)", () => {

@@ -16,9 +16,11 @@
  * chrome is inherited by every route, so a guest region in this file would
  * occupy Focus surfaces permanently. Don't add one.
  *
- * S2 (session = route, not modal): the app-wide HubModal is gone. HubRouteBridge
- * turns an `openHub()` intent into a navigation to the routed detail surface, so
- * the shell renders chrome + an Outlet and nothing else — no overlay.
+ * S2 (session = route, not modal): the app-wide HubModal is gone. The hub is a
+ * standalone cross-page PEEK instead (rework-proposal §0): HubSheet is mounted
+ * once here, portalled to <body>, so it floats above the top bar and over the
+ * rail and the origin surface is never unmounted. It is a navigator, not a
+ * session, so it changes no chrome and owns one history entry per open.
  *
  * Phase 2 (original note): Sidebar redesign — replaces top navbar with left
  * sidebar. Uses shared SideNav component for the sidebar.
@@ -30,14 +32,16 @@ import { practices_page, progress_page } from "../constants/paths";
 import { resolvePageMode, chromeForMode } from "../constants/pageChrome";
 import { LEARN_NAV_ITEMS } from "../constants/learnNav";
 import { AppTopBar, SideNav, type NavItem } from "shared/components";
-// NOTE (deliberate exception): AppLayout (shared) imports from features/auth for
-// the app-wide account state the TopBar renders — `user`, `isAuthenticated` and
-// `logout`, nothing more. Post-A25 (Story 25-3) the shell reads no phase, so
-// sign-in state here is account chrome, not gating. That shared → feature
-// inversion is intentional and should NOT be refactored away by future audits
-// (allowlisted in `scripts/check-module-boundaries.mjs`).
+// NOTE (deliberate exception): AppLayout (shared) imports from features for the
+// two app-wide surfaces that MUST be mounted once at the shell — the account
+// chrome from `features/auth` (`user`, `isAuthenticated`, `logout`) and the
+// lexical hub peek sheet from `features/lexical-hub/components`. Post-A25
+// (Story 25-3) the shell reads no phase, so sign-in state here is account chrome,
+// not gating. Both shared → feature inversions are intentional and should NOT be
+// refactored away by future audits (allowlisted in
+// `scripts/check-module-boundaries.mjs`).
 import { useAuth } from "features/auth";
-import { HubRouteBridge } from "shared/hub-entry";
+import { HubSheet } from "features/lexical-hub/components";
 import "./AppLayout.css";
 
 export { AppLayout };
@@ -126,7 +130,9 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
           <Outlet />
         </main>
       </div>
-      <HubRouteBridge />
+      {/* The hub peek lives OUTSIDE .app-content and portals to <body>: it must
+          never be a child of a page's scroll container. */}
+      <HubSheet />
     </div>
   );
 }

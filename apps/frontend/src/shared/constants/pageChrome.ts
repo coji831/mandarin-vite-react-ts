@@ -83,10 +83,6 @@ const ROUTE_ARCHETYPES: RouteArchetypeEntry[] = [
   { path: "/practices/review", archetype: "detail" }, // ReviewPage (Focus exemplar)
   { path: "/practices/quiz", archetype: "detail" }, // QuizPage (Focus exemplar)
   { path: "/library", archetype: "list" }, // LibraryPage
-  // Lexical entity detail (character/word/radical/chengyu/grammar) — a learning
-  // session is a routed Focus surface, not a modal (design-revalidation-guide §4).
-  // Keep in sync with `learn_lexical_hub` in shared/constants/paths.ts.
-  { path: "/learn/hub", archetype: "detail" }, // LexicalEntityPage
   { path: "/learn", archetype: "overview" }, // Learn subtree (foundations/radicals/… — all Browse)
   { path: "/progress", archetype: "settings" }, // ProgressPage
   { path: "/profile", archetype: "profile" }, // ProfilePage

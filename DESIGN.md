@@ -155,6 +155,7 @@ tokens:
     touch: "28px" # --size-touch: minimum touch-target dimension (WCAG 2.5.8)
     well: "40px" # --size-well: tile-well square (spine's `size.well` primitive — the glyph tile)
     focal-glyph: "48px" # --size-focal-glyph: the focal hanzi (the character in play); PinyinPal domain name — spine has no equivalent
+    hub-sheet: "420px" # --size-hub-sheet: the lexical hub peek sheet's inline size (rework-proposal §0.4); PinyinPal domain name — spine owns no sheet
   radii: ["0px", "0px", "0px", "0px"]
   shadows:
     xp-glow: "0 0 8px rgba(251, 191, 36, 0.3)"
@@ -198,9 +199,11 @@ tokens:
     success: "linear-gradient(90deg, #34D399 0%, #059669 100%)"
 ---
 
-**Last Updated:** 2026-10-27
+**Last Updated:** 2026-10-29
 
 ## Changelog
+
+- **2026-10-29** — `tokens.size.hub-sheet` (`--size-hub-sheet: 420px`) added under ADR-005 for the lexical hub peek sheet (ADR-014). The hub is a navigator, not a session, so it is a cross-page right-edge sheet in the popover layer (`--z-modal`, no scrim above 767px) rather than a routed `detail` page: `--size-hub-sheet` is the sheet's inline size, and it is a PinyinPal domain name because spine owns no sheet. Gate #14's covered `size` family and gate #15's product-domain set both gained the name in the same change.
 
 - **2026-10-27** — Shared-component catalog rows for A25 (Story 25-3): the `SideNav` row now records the Learn group as phase-as-sequencing-metadata (every item navigates — no lock state) and the `TopNav` row is restated as orphaned with its lock props dead (BM-1 L6: signals, not walls). Catalog text only — no token or component change.
 

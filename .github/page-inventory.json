@@ -217,32 +217,6 @@
       "note": "List idiom library; edge = paginated list (3 pages)."
     },
     {
-      "route": "/learn/hub/:entityType/:entityId",
-      "component": "LexicalEntityPage",
-      "archetype": "detail",
-      "mode": "focus",
-      "chrome": {
-        "rail": "collapsed",
-        "topbar": "recessed"
-      },
-      "story": "apps/frontend/src/pages/learn/hub/LexicalEntityPageFull.stories.tsx",
-      "states": ["default", "loading", "error"],
-      "status": "conforms",
-      "composition": {
-        "shell": "PageShell",
-        "stack": "PageStack",
-        "action": "Button",
-        "notice": "Box"
-      },
-      "anatomy": {
-        "shell": "PageShell",
-        "measure": "detail",
-        "gutter": "default",
-        "header": null
-      },
-      "note": "Lexical session (character/word/radical/chengyu/grammar detail) as a ROUTED detail surface — 'session = route, not modal' (design-revalidation-guide §4). Replaces the retired app-wide hub overlay; the entity body owns its heading, the page owns the Back control."
-    },
-    {
       "route": "/practices/review",
       "component": "ReviewPage",
       "archetype": "detail",

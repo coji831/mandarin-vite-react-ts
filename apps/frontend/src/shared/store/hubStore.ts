@@ -1,23 +1,18 @@
 /**
  * @file shared/store/hubStore.ts
- * @description Zustand store for the lexical hub: a single-use open INTENT plus a
- * MIRROR of the routed session. The two are deliberately separate fields.
- * Story 18.5: Character Detail Hub (Phase 1 Minimal)
- * Story 21.4: Reading UI + LexicalHub Phase 1 — generalized to support any entity type
- * S2 (session = route, not modal): the hub is a routed detail surface, so this
- *   store renders nothing and keeps no hop stack — the ROUTER owns history.
- * Regression fix (epic-25): `open()` and `syncFromRoute()` used to write the SAME
- *   `isOpen` flag, so a hub ROUTE (a permanent "open" state) read as a permanent
- *   pending intent and HubRouteBridge rewrote every departure back to the hub.
- *   `isOpen`/`currentEntity` are now a mirror of the route and MUST NOT drive
- *   navigation; only `requestedEntity` does, and it is consumed once.
+ * @description Zustand store for the lexical hub PEEK — the standalone
+ * cross-page navigator (rework-proposal §0: "a standalone, cross-page lexical
+ * drawer in the popover layer — not a routed subpage").
  *
- * Invariant: navigating away from a hub route is never corrected back. Only an
- * explicit `open()` records an intent, and an intent is spent the moment the
- * bridge acts on it.
+ * The hub is a NAVIGATOR, not a session: it has no task, no completion and no
+ * progress, so it may be a transient overlay over any surface (proposal §0.3).
+ * The store therefore owns a hop STACK, and the router is never touched for a
+ * hop — that is the whole point of the rework: Back closes the peek instead of
+ * walking a transcript of peeks.
  *
- * Each hub section fetches its own data independently via dedicated hooks/services.
- * Follows patterns from shared/store/uiStore.ts.
+ * DOM (history, scroll, focus) is deliberately NOT here. `shared/hub-entry`
+ * owns it, so this store stays a pure, trivially testable state machine and the
+ * entry point stays the single place that talks to the browser.
  */
 
 import { create } from "zustand";
@@ -25,68 +20,126 @@ import type { EntityRef } from "../types";
 
 // ─── Store type ────────────────────────────────────────────────────
 
-/**
- * One consumable open request. `token` makes two opens of the SAME entity
- * distinct, so a repeat click still navigates while a re-render does not.
- */
-export type HubRequest = {
-  ref: EntityRef;
-  token: number;
+/** Everything `close()` needs to put the learner back exactly where they were. */
+export type HubOrigin = {
+  /**
+   * `pathname + search` of the surface the peek was opened on, stamped by the
+   * sheet (only it knows the ROUTER's location). A different path while the peek
+   * is open means a REAL navigation — the peek then closes without restoring.
+   * `""` until stamped, and a blank marker never closes anything.
+   */
+  path: string;
+  /** The app content scroller's offset at open (nothing was dismantled, so
+   *  closing only has to put it back). */
+  scrollTop: number;
+  /** The token / chip / glyph that opened the peek — the focus return target. */
+  invoker: HTMLElement | null;
+};
+
+export type HubPeek = {
+  /** Hop stack; `stack[stack.length - 1]` is the entity the sheet shows. */
+  stack: EntityRef[];
+  origin: HubOrigin;
 };
 
 export type HubState = {
-  /** Mirror: a hub session route is showing. Display only — never a nav trigger. */
+  /** The open peek (null = no peek). Hops live here, never in history. */
+  peek: HubPeek | null;
+  /**
+   * Derived from `peek` — kept as a field so every existing reader (stories,
+   * entity bodies, feature tests) keeps working. Only `applyPeek` writes it.
+   */
   isOpen: boolean;
-  /** Mirror: the entity the ROUTE names (null = no session route). */
+  /** Derived from `peek`: the entity at the top of the hop stack. */
   currentEntity: EntityRef | null;
-  /** Intent: the pending, single-use request to open a hub route. */
-  requestedEntity: HubRequest | null;
 
   /**
-   * @internal Use openHub() from shared/hub-entry instead.
-   * Records the intent to open the hub with the given entity reference.
+   * Open the hub, or hop when one is already open.
+   *
+   * `origin` is captured by the caller (only hub-entry can read scroll/focus)
+   * and is IGNORED on a hop: a hop is not a new peek, so the entry origin and
+   * the single history entry both survive. Re-opening the entity already on top
+   * of the stack is a no-op.
    */
-  open: (entityRef: EntityRef) => void;
-
+  open: (entityRef: EntityRef, origin: HubOrigin) => void;
   /**
-   * @internal Called by HubRouteBridge once it has acted on the intent.
-   * A stale token (the intent was superseded) is ignored.
+   * Pop one hop. At the stack root this is a no-op rather than a close: the
+   * route-less peek's ← is disabled there and Close is the only exit, so the
+   * history drain in hub-entry can never be skipped.
    */
-  consumeRequest: (token: number) => void;
-
+  hopBack: () => void;
+  /** Truncate the stack to `index` — a trail chip click. An index that would
+   *  remove nothing (the current chip) is a no-op. */
+  jumpTo: (index: number) => void;
   /**
-   * @internal Called by LexicalEntityPage — the route is the source of truth.
-   * Adopts the entity the URL names. Writes the mirror ONLY.
+   * Record where the peek was opened, once. The sheet calls this on its first
+   * render after an open, because `pathname + search` must come from the ROUTER
+   * (window.location can legitimately differ, e.g. under MemoryRouter).
    */
-  syncFromRoute: (entityRef: EntityRef | null) => void;
-
-  /** Close the hub session: clear the mirror and any unspent intent. */
+  stampOriginPath: (path: string) => void;
+  /** Drop the peek. Focus/scroll restore belongs to the caller. */
   close: () => void;
 };
 
+// ─── Derivation ────────────────────────────────────────────────────
+
+type PeekFields = Pick<HubState, "peek" | "isOpen" | "currentEntity">;
+
+/** The ONLY place `peek`, `isOpen` and `currentEntity` are written together. */
+function applyPeek(peek: HubPeek): PeekFields {
+  return {
+    peek,
+    isOpen: true,
+    currentEntity: peek.stack.length > 0 ? peek.stack[peek.stack.length - 1] : null,
+  };
+}
+
+function sameEntity(a: EntityRef, b: EntityRef): boolean {
+  return a.entityType === b.entityType && a.entityId === b.entityId;
+}
+
 // ─── Initial state ─────────────────────────────────────────────────
-const initialState = {
+
+export const initialHubState: PeekFields = {
+  peek: null,
   isOpen: false,
-  currentEntity: null as EntityRef | null,
-  requestedEntity: null as HubRequest | null,
+  currentEntity: null,
 };
 
-let nextRequestToken = 1;
+// ─── Store ─────────────────────────────────────────────────────────
 
 export const useHubStore = create<HubState>()((set) => ({
-  ...initialState,
+  ...initialHubState,
 
-  open: (entityRef) =>
-    set({
-      isOpen: true,
-      currentEntity: entityRef,
-      requestedEntity: { ref: entityRef, token: nextRequestToken++ },
+  open: (entityRef, origin) =>
+    set((state) => {
+      if (!state.peek) return applyPeek({ stack: [entityRef], origin });
+
+      const top = state.peek.stack[state.peek.stack.length - 1];
+      if (top && sameEntity(top, entityRef)) return {};
+      return applyPeek({ ...state.peek, stack: [...state.peek.stack, entityRef] });
     }),
 
-  consumeRequest: (token) =>
-    set((state) => (state.requestedEntity?.token === token ? { requestedEntity: null } : {})),
+  hopBack: () =>
+    set((state) => {
+      const { peek } = state;
+      if (!peek || peek.stack.length < 2) return {};
+      return applyPeek({ ...peek, stack: peek.stack.slice(0, -1) });
+    }),
 
-  syncFromRoute: (entityRef) => set({ isOpen: entityRef != null, currentEntity: entityRef }),
+  jumpTo: (index) =>
+    set((state) => {
+      const { peek } = state;
+      if (!peek || index < 0 || index >= peek.stack.length - 1) return {};
+      return applyPeek({ ...peek, stack: peek.stack.slice(0, index + 1) });
+    }),
 
-  close: () => set({ isOpen: false, currentEntity: null, requestedEntity: null }),
+  stampOriginPath: (path) =>
+    set((state) => {
+      const { peek } = state;
+      if (!peek || peek.origin.path !== "") return {};
+      return { peek: { ...peek, origin: { ...peek.origin, path } } };
+    }),
+
+  close: () => set({ ...initialHubState }),
 }));

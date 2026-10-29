@@ -1,7 +1,8 @@
 /**
  * @file WordPopover.tsx
  * @description Inline popover near the tapped word — compact card with glyph,
- * pinyin, meaning, and a "View Details" button that opens the routed lexical hub.
+ * pinyin, meaning, and a "View Details" button that escalates to the lexical hub
+ * PEEK (a sheet over the passage, not a navigation — ADR-014).
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Story 21.x: Migrated onOpenHub prop → direct Zustand hubStore access.
  * Phase 4: Reads glyph, position, and closePopover from readingStore.
@@ -101,6 +102,11 @@ export function WordPopover() {
     // A single hanzi the word API has no row for has no word hub to open — the
     // character hub always renders, so prefer it instead of emitting a 404 route.
     const opensCharacterHub = SINGLE_HAN_CHARACTER.test(displayGlyph) && !wordDetail;
+
+    // The glance tier hands over to the peek: the sheet opens OVER the passage
+    // (the origin is never dismantled), so this popover must stand down rather
+    // than leave two surfaces showing the same word.
+    closePopover();
 
     openHub({
       entityType: opensCharacterHub ? "character" : "word",

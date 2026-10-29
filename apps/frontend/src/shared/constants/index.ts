@@ -17,8 +17,6 @@ export {
   learn_phonetic_clusters,
   learn_readers,
   learn_chengyu,
-  learn_lexical_hub,
-  lexical_entity_route,
   practices_page,
   practices_review,
   practices_quiz,

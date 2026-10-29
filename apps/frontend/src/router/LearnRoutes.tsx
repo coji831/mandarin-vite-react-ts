@@ -20,11 +20,15 @@
  * deleted here; the aliases and the index redirect are unaffected. Phase is
  * sequencing metadata only (`shared/constants/learnNav.ts`) and no route may
  * turn it into a prerequisite again.
+ *
+ * Rework (epic-25): there is no `/learn/hub/:entityType/:entityId` route. A
+ * lexical lookup is a PEEK, not a location (rework-proposal §0.6): the sheet is
+ * mounted once in AppLayout and hops live in a store stack, so the breadth is
+ * de-routed and the URL never becomes `/learn/hub/...`.
  */
 import { Navigate, Route, Routes } from "react-router-dom";
-import { lexical_entity_route, practices_quiz, practices_review } from "shared/constants";
+import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { LexicalEntityPage } from "../pages/learn/hub/LexicalEntityPage";
 import {
   FoundationsPage,
   RadicalsPage,
@@ -46,9 +50,6 @@ export function LearnRoutes() {
         <Route path="phonetic-clusters" element={<PhoneticClustersPage />} />
         <Route path="readers" element={<ReadersPage mode="library" />} />
         <Route path="chengyu" element={<ChengyuPage />} />
-        {/* Lexical session === routed detail surface (Focus). The entity bodies
-            render exactly as they did in the old overlay; the shell is a route. */}
-        <Route path={lexical_entity_route} element={<LexicalEntityPage />} />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />
         <Route path="quiz" element={<Navigate to={practices_quiz} replace />} />
