@@ -7,12 +7,19 @@
  *
  * For IME Simulator strategy, shows character-focused feedback instead.
  *
+ * Rework (§7 close-out): the verdict is stated ONCE — the badge carries
+ * "Correct"/"Incorrect" and the explanation beneath it only explains (it used to
+ * repeat "❌ Incorrect." inside the sentence). The actions keep exactly ONE
+ * primary: `Next Question` is the learner's way on, so `Play Again` is the ghost
+ * beside it (it was a second filled button). The verdict marks are the shared
+ * `Icon`, not emoji (ADR-010 / Q8).
+ *
  * Wireframe Section 4.6 bottom portion.
  */
 
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { AudioPlayer } from "./AudioPlayer";
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 
 /** Tone descriptions for feedback text */
 const TONE_DESCS: Record<number, string> = {
@@ -35,9 +42,10 @@ function FeedbackCard({ correct, children }: { correct: boolean; children: React
       className="quiz-feedback__card flex-col gap-md"
     >
       <Box
-        className={`quiz-feedback__badge fw-700 flex-center font-md p-xs radius-pill text-white self-start ${correct ? "bg-success-bg" : "bg-error-bg"}`}
+        className={`quiz-feedback__badge fw-700 flex-center gap-xs font-md p-xs radius-pill text-white self-start ${correct ? "bg-success-bg" : "bg-error-bg"}`}
       >
-        <span>{correct ? "✅ Correct!" : "❌ Incorrect"}</span>
+        <Icon name={correct ? "check" : "cross"} size={16} aria-hidden />
+        <span>{correct ? "Correct" : "Incorrect"}</span>
       </Box>
       {children}
     </Box>
@@ -80,15 +88,15 @@ export function FeedbackView() {
           <div className="ime-quiz-feedback__hint flex-col gap-xs mt-sm p-sm radius-md bg-surface-dark">
             {phoneticHint ? (
               <p className="font-sm text-secondary m-0 lh-normal">
-                💡 <strong>Hint:</strong> This character contains phonetic component{" "}
+                <strong>Hint:</strong> This character contains phonetic component{" "}
                 <strong>{phoneticHint.glyph}</strong> (pinyin:{" "}
                 <strong>{phoneticHint.pinyin}</strong>, meaning:{" "}
                 <strong>{phoneticHint.meaning}</strong>). Try to connect the sound!
               </p>
             ) : (
               <p className="font-sm text-secondary m-0 lh-normal">
-                💡 This character doesn&apos;t have a phonetic component — try memorizing it by its
-                visual structure.
+                <strong>Hint:</strong> This character doesn&apos;t have a phonetic component — try
+                memorizing it by its visual structure.
               </p>
             )}
           </div>
@@ -128,10 +136,10 @@ export function FeedbackView() {
         )}
       </div>
 
-      {/* Description (when incorrect) */}
+      {/* Description (when incorrect) — the badge already said "Incorrect". */}
       {!lastAnswer.correct && (
         <p className="quiz-feedback__comparison text-tertiary font-md font-italic">
-          ❌ Incorrect. The audio was &ldquo;{question.displayPinyin || question.correctPinyin}
+          The audio was &ldquo;{question.displayPinyin || question.correctPinyin}
           &rdquo; ({TONE_DESCS[lastAnswer.correctTone] ?? "unknown"}).
         </p>
       )}
@@ -146,6 +154,7 @@ export function FeedbackView() {
           audioKey={question.audioKey}
           character={question.character}
           label="Play Again"
+          variant="ghost"
         />
         <Button variant="primary" className="quiz-feedback__next-btn" onClick={nextQuestion}>
           Next Question &rarr;

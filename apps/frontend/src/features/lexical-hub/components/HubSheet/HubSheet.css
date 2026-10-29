@@ -99,3 +99,13 @@
   grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: min-content;
 }
+
+/* Same reason, vertically: the cardinal NORTH zone is a fixed 110px box with its
+   own scrollbar so the 670px page never jumps. Inside the peek that box becomes a
+   second scroll region nested in the body's — the double scrollbar — and it cuts
+   the gloss mid-word. In this host the identity card is non-clipping: the body is
+   the ONE scroller and the card grows to its content. */
+.hub-sheet .hub-cardinal__identity {
+  block-size: auto;
+  overflow-y: visible;
+}
