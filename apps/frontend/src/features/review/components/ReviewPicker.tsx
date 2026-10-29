@@ -71,16 +71,6 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
-      <div className="flex-col gap-xs">
-        <h2 className="review-picker__title text-primary font-xl m-0 flex-center gap-xs">
-          <Icon name="review" size={20} aria-hidden />
-          <span>Review</span>
-        </h2>
-        <p className="review-picker__description text-muted font-sm m-0">
-          No timer, no scoring. Self-rated: Again / Good / Easy.
-        </p>
-      </div>
-
       {/* Step 1: Content Type */}
       <div className="flex-col gap-md">
         <label className="review-picker__step-label text-secondary fw-600 font-md">

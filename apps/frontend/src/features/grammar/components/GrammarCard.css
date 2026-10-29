@@ -3,39 +3,44 @@
  * @description GrammarCard feature styles (Story 22.3).
  * Uses design tokens only — no hardcoded colors/spacing/font sizes.
  * No-motion: hover changes border color only (no transition/animation).
+ *
+ * The card's layout (flex-col / gap-sm / flex-between) is className utilities in
+ * the JSX; what stays here is only what a selector needs — hover/focus states
+ * and the rules that must beat the shared Box/Button classes.
  */
 .grammar-card {
+  /* the whole card is the click target (role=button) — no utility on a div */
   cursor: pointer;
 }
 
 .grammar-card:hover {
+  /* :hover pseudo-class — a utility class cannot express this state */
   border-color: var(--edge-control);
 }
 
 .grammar-card:focus-visible {
+  /* :focus-visible pseudo-class — the ring must follow the card, not a child */
   outline: 2px solid var(--focus-ring);
+  /* bundled with the ring above */
   outline-offset: 2px;
 }
 
 .grammar-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  /* the header row wraps its badge under the name on narrow cards */
+  flex-wrap: wrap;
 }
 
 .grammar-card__name {
+  /* the UA heading margin would break the card rhythm */
   margin: 0;
 }
 
-.grammar-card__lock {
-  white-space: nowrap;
-}
-
 .grammar-card__structure {
+  /* paragraph margin would double the flex gap */
   margin: 0;
 }
 
 .grammar-card__preview {
+  /* paragraph margin would double the flex gap */
   margin: 0;
 }

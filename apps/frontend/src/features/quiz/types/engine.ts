@@ -107,6 +107,17 @@ export interface QuizStrategy {
   /** Phase level number */
   readonly phase: number;
 
+  /**
+   * Whether the question's Chinese glyph belongs in the prompt.
+   *
+   * `"hide"` is required whenever the glyph IS the answer — audio→pinyin+tone
+   * asks "what is this syllable", so printing the character leaks the answer
+   * (rework-proposal §7). The contract lives on the strategy, not in the view,
+   * because whether a glyph is a prompt or the answer is a property of the
+   * exercise. The glyph still reaches `AudioPlayer` — TTS needs it either way.
+   */
+  readonly promptGlyph: "show" | "hide";
+
   /** Generate questions for a session */
   generateQuestions(count?: number): Promise<QuizQuestion[]>;
 

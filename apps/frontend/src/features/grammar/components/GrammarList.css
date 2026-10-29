@@ -2,8 +2,13 @@
  * @file GrammarList.css
  * @description GrammarList feature styles (Story 22.3).
  * Uses design tokens only — no hardcoded colors/spacing/font sizes.
+ *
+ * Everything a global utility can express lives in the JSX classNames; the
+ * declarations below are the ones that must beat a shared class or that no
+ * utility carries, each with the one-line reason the audit asks for.
  */
 .grammar-list {
+  /* the card column must fill the page measure — no utility carries "fill" */
   width: 100%;
 }
 
@@ -12,6 +17,7 @@
 }
 
 .grammar-list__item {
+  /* a list item inside a flex column must stretch to the column width */
   width: 100%;
 }
 
@@ -21,11 +27,13 @@
 }
 
 .grammar-list__skeleton-header {
+  /* skeleton proportions are a visual contract, not spacing rhythm */
   width: 60%;
   height: 16px;
 }
 
 .grammar-list__skeleton-line {
+  /* skeleton proportions are a visual contract, not spacing rhythm */
   width: 100%;
   height: 14px;
 }
@@ -37,6 +45,7 @@
 .grammar-list__skeleton-chip {
   width: 56px;
   height: 20px;
+  /* a pill skeleton mirrors the badge it replaces */
   border-radius: var(--radius-pill);
 }
 

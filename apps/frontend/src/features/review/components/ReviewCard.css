@@ -2,6 +2,10 @@
  * ReviewCard.css
  * Phase 1 Review — Single flip-card with 3 sides.
  * Merged styles from the old three-step components.
+ *
+ * Utilities carry the layout; the rules here are the ones a selector needs
+ * (pseudo-classes, the glyph button reset) plus the two that must beat a shared
+ * Box class — each with its one-line reason.
  */
 .review-card {
   max-width: 600px;
@@ -13,6 +17,7 @@
    .box-dark.review-card so it beats the shared .box-dark border regardless of
    stylesheet order. */
 .review-card.box-dark {
+  /* shared .box-dark paints a stronger border; the card stays a hairline */
   border-color: var(--hairline);
 }
 
@@ -22,6 +27,14 @@
   min-height: 140px;
 }
 
+/* The glyph under test is the session's <h1> (rework-proposal §4). The wrapper
+   must not re-scale it: the UA heading size/margin would out-shout the card's
+   own glyph scale, so the heading inherits the card's font entirely (margin is
+   the `m-0` utility). */
+.review-card__character-heading {
+  font: inherit;
+}
+
 .review-card__meaning {
   line-height: var(--lh-1-4); /* legacy meaning line-height — kept exact via --lh-1-4 token */
 }
@@ -29,16 +42,21 @@
 /* ── Character glyph → Character Hub entry ──────────── */
 /* Reset button chrome so the glyph renders exactly like the previous span. */
 .review-card__character-btn {
+  /* the glyph must read as text, not as a control */
   background: none;
+  /* bundled with the text-not-control reset */
   border: none;
+  /* bundled with the text-not-control reset */
   padding: 0;
+  /* the glyph is a leaf target inside the h1 */
   cursor: pointer;
+  /* inherit the card's display type */
   font: inherit;
   color: inherit;
   line-height: inherit;
 }
 .review-card__character-btn:hover {
-  /* :hover pseudo — token bg tint, no motion */
+  /* :hover pseudo-class — token bg tint, no motion */
   background: var(--surface-light-5);
 }
 
@@ -48,24 +66,24 @@
   height: 56px;
   /* color/cursor migrated to utility classes: text-primary cursor-pointer */
 }
-.review-card__audio-btn:hover {
-  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
-}
 .review-card__audio-btn:focus-visible {
-  /* focus parity with rating buttons (C.2) */
+  /* focus parity with rating buttons (C.2) — pseudo-class selector */
   outline: 2px solid var(--focus-ring);
+  /* bundled with the ring above */
   outline-offset: 2px;
 }
 
 /* ── Pinyin input ────────────────────────────────── */
 .review-card__pinyin-input {
+  /* spaced typing reads as syllables; short placeholder avoids clipping */
   letter-spacing: 0.1em;
 }
 .review-card__pinyin-input::placeholder {
-  color: var(
-    --ink-3
-  ); /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
-  font-size: var(--font-sm); /* ::placeholder pseudo-element */
+  /* ::placeholder pseudo-element — utility class can't target pseudo-elements */
+  color: var(--ink-3);
+  /* ::placeholder pseudo-element */
+  font-size: var(--font-sm);
+  /* ::placeholder pseudo-element — tracking would re-clip the shorter label */
   letter-spacing: normal;
 }
 
@@ -79,12 +97,9 @@
   min-height: 68px;
 }
 
-.review-card__rating-btn:hover:not(:disabled) {
-  /* 2026-10-25, S10: the md neutral shadow retired with the elevation family */
-}
-
 .review-card__rating-btn:focus-visible {
-  outline: 2px solid var(--focus-ring); /* pseudo-class selector — focus-ring-primary can't target pseudo-classes on specific elements */
-  /* bundled with outline */
+  /* :focus-visible pseudo-class — focus-ring-primary can't target pseudo-classes */
+  outline: 2px solid var(--focus-ring);
+  /* bundled with the ring above */
   outline-offset: 2px;
 }

@@ -18,6 +18,7 @@ import { AppLayout } from "../../shared/layouts/AppLayout";
 import { ReviewPage } from "./ReviewPage";
 import type { ReviewItem } from "../../features/review";
 import { withGuestAuth } from "../../../.storybook/decorators";
+import { mswHandlers } from "../../../.storybook/msw-handlers";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
@@ -110,7 +111,9 @@ const MOCK_RADICAL_ITEMS: ReviewItem[] = [
 const meta: Meta<typeof ReviewPage> = {
   title: "Pages/Practices/Review",
   component: ReviewPage,
-  tags: ["pages-detail"],
+  // The page's no-query surface is the picker (`overview` / Browse, §4); the
+  // session stories below flip chrome to `detail` / Focus via their query.
+  tags: ["pages-overview"],
   parameters: {
     layout: "fullscreen",
   },
@@ -250,13 +253,28 @@ export const SessionEmpty: Story = {
 };
 
 /**
- * Guest — unauthenticated user on /practices/review. The ProtectedRoute
- * wrapper redirects to /auth/login. Uses withGuestAuth to simulate a guest.
+ * Guest — an unauthenticated visitor on /practices/review. Guests are NOT
+ * redirected any more (§1 / BM-1): they get the same picker, run a session-local
+ * queue, and meet the single persistence ask at the end of it.
  */
 export const Guest: Story = {
   decorators: [withGuestAuth],
   parameters: {
     layoutType: "app",
     layoutPath: "/practices/review",
+  },
+};
+
+/**
+ * GuestSession — a guest mid-session: the queue is derived in memory (no
+ * /review/items request), so this story only needs the TTS handler.
+ */
+export const GuestSession: Story = {
+  name: "Guest — session (in-memory queue)",
+  decorators: [withGuestAuth, withAppLayoutAt("/practices/review?type=pinyin&filter=all")],
+  parameters: {
+    // The guest queue is derived from the public foundations data, so those
+    // handlers are what the session needs (never /review/items).
+    msw: { handlers: [...mswHandlers.foundations.default(), ttsHandler] },
   },
 };

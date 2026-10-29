@@ -33,16 +33,16 @@ describe("QuizPage", () => {
     expect(screen.getByTestId("quiz-session")).toHaveTextContent("session:ime-simulator");
   });
 
-  it("renders the fallback CTA when ?type= is not a registered strategy", () => {
+  it("renders the empty entry state when ?type= is not a registered strategy", () => {
     renderQuizPage("/practices/quiz?type=bogus");
-    expect(screen.getByRole("heading", { name: /Quiz/ })).toBeInTheDocument();
+    expect(screen.getByText("No quiz selected")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back to Practices" })).toBeInTheDocument();
     expect(screen.queryByTestId("quiz-session")).not.toBeInTheDocument();
   });
 
-  it("renders the fallback CTA when ?type= is absent", () => {
+  it("renders the empty entry state when ?type= is absent", () => {
     renderQuizPage("/practices/quiz");
-    expect(screen.getByRole("heading", { name: /Quiz/ })).toBeInTheDocument();
+    expect(screen.getByText("No quiz selected")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back to Practices" })).toBeInTheDocument();
     expect(screen.queryByTestId("quiz-session")).not.toBeInTheDocument();
   });

@@ -1,13 +1,12 @@
 /**
  * @file components/GrammarList.tsx
  * @description Grammar pattern card list with data-resilient states:
- * loading (skeleton), error (+ retry), empty, and populated (locked cards
- * derive from the phase gate's currentPhase). Pure presentational shell.
+ * loading (skeleton), error (+ retry), empty, and populated. Pure presentational
+ * shell — phase is sequencing metadata only (rework-proposal §9: no locks).
  * Story 22.3: Grammar UI
  */
 import { ErrorScreen } from "shared/components";
 import { GrammarCard } from "./GrammarCard";
-import { isPatternLocked } from "../utils";
 import type { GrammarPatternData } from "../types";
 import "./GrammarList.css";
 
@@ -15,8 +14,6 @@ export interface GrammarListProps {
   patterns: GrammarPatternData[];
   isLoading: boolean;
   error: string | null;
-  /** Learner's current phase from `usePhaseGate()` (guests = 1 — calibrated). */
-  currentPhase: number;
   onRetry: () => void;
   onPatternClick: (pattern: GrammarPatternData) => void;
   /** Resets the page filters (shown in the empty state so users can recover). */
@@ -27,7 +24,6 @@ export function GrammarList({
   patterns,
   isLoading,
   error,
-  currentPhase,
   onRetry,
   onPatternClick,
   onResetFilters,
@@ -97,11 +93,7 @@ export function GrammarList({
       >
         {patterns.map((pattern) => (
           <li key={pattern.id} className="grammar-list__item" role="listitem">
-            <GrammarCard
-              pattern={pattern}
-              isLocked={isPatternLocked(pattern.phase, currentPhase)}
-              onClick={() => onPatternClick(pattern)}
-            />
+            <GrammarCard pattern={pattern} onClick={() => onPatternClick(pattern)} />
           </li>
         ))}
       </ul>

@@ -43,7 +43,8 @@ export const Phase2: Story = {
 };
 
 /**
- * Guest practices page — shows ReviewPromptCard instead of ReviewLaunchCard.
+ * Guest practices page — Review is OPEN to guests (BM-1 / §1): the same
+ * ReviewLaunchCard renders; the persistence ask waits until the session ends.
  */
 export const GuestMode: Story = {
   decorators: [withGuestAuth],

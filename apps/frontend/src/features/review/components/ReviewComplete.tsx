@@ -2,10 +2,18 @@
  * ReviewComplete.tsx
  * Phase 1 Review — Completion summary screen (wireframe Section 7.7).
  * Shows session stats: pinyin accuracy, tone accuracy, rating breakdown, retention rate.
+ *
+ * Rework (§1): the guest's persistence ask appears ONCE, here, at completion
+ * (BM-1 §5: post-rating) — as the session's single primary CTA. A registered
+ * learner sees `Review Again` in that same slot, so the screen has one primary
+ * either way. Colour is never the sole indicator of a rating, so the rating rows
+ * are labelled in text (the 🔴🟡🟢 glyphs are gone — AI-slop list).
  */
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import type { ReviewSessionResult } from "../types";
 import { Box, Button } from "shared/components";
+import { practices_page, register_page } from "shared/constants";
 import "./ReviewComplete.css";
 
 type ReviewCompleteProps = {
@@ -13,6 +21,8 @@ type ReviewCompleteProps = {
   totalItems: number;
   onReviewAgain: () => void;
   onBack: () => void;
+  /** Guests can do the session but cannot keep it — the ask lands here. */
+  isGuest?: boolean;
 };
 
 function ReviewCompleteComponent({
@@ -20,7 +30,9 @@ function ReviewCompleteComponent({
   totalItems,
   onReviewAgain,
   onBack,
+  isGuest = false,
 }: ReviewCompleteProps) {
+  const navigate = useNavigate();
   const pinyinPct =
     result.pinyinTotal > 0 ? Math.round((result.pinyinCorrect / result.pinyinTotal) * 100) : 0;
   const tonePct =
@@ -76,7 +88,7 @@ function ReviewCompleteComponent({
         <h3 className="text-primary fw-600 font-md m-0">Self-Ratings</h3>
 
         <div className="flex-between">
-          <span className="text-secondary">{"\uD83D\uDFE2"} Easy:</span>
+          <span className="text-secondary">Easy:</span>
           <span className="text-success fw-600">
             {result.ratings.easy} (
             {totalRatings > 0 ? Math.round((result.ratings.easy / totalRatings) * 100) : 0}%)
@@ -84,7 +96,7 @@ function ReviewCompleteComponent({
         </div>
 
         <div className="flex-between">
-          <span className="text-secondary">{"\uD83D\uDFE1"} Good:</span>
+          <span className="text-secondary">Good:</span>
           <span className="text-warning fw-600">
             {result.ratings.good} (
             {totalRatings > 0 ? Math.round((result.ratings.good / totalRatings) * 100) : 0}%)
@@ -92,7 +104,7 @@ function ReviewCompleteComponent({
         </div>
 
         <div className="flex-between">
-          <span className="text-secondary">{"\uD83D\uDD34"} Again:</span>
+          <span className="text-secondary">Again:</span>
           <span className="text-error fw-600">
             {result.ratings.again} (
             {totalRatings > 0 ? Math.round((result.ratings.again / totalRatings) * 100) : 0}%)
@@ -109,13 +121,26 @@ function ReviewCompleteComponent({
         </div>
       </Box>
 
-      {/* Action buttons */}
+      {/* ONE primary: guests get the single persistence ask (BM-1 §5), everyone
+          else gets the next session. Back to Practices is the ghost. */}
       <div className="flex-center gap-md flex-wrap">
-        <Button variant="secondary" onClick={onBack}>
-          {"\uD83D\uDCCB"} Back to Practices
-        </Button>
-        <Button variant="primary" onClick={onReviewAgain}>
-          {"\uD83D\uDD04"} Review Again
+        {isGuest ? (
+          <Button variant="primary" onClick={() => navigate(register_page)}>
+            Create an account to keep this queue
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={onReviewAgain}>
+            Review Again
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          onClick={() => {
+            onBack();
+            navigate(practices_page);
+          }}
+        >
+          Back to Practices
         </Button>
       </div>
     </div>

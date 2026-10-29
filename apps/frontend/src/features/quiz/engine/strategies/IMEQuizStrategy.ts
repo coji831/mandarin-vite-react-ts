@@ -16,6 +16,9 @@ export const imeQuizStrategy: QuizStrategy = {
   label: "IME Simulator",
   icon: "\u{2328}\u{FE0F}",
   phase: 2,
+  // The learner TYPES the character from its meaning clue, so the glyph is the
+  // answer (the IME view shows the meaning clue only).
+  promptGlyph: "hide",
 
   async generateQuestions(count?: number): Promise<QuizQuestion[]> {
     return quizService.fetchQuestions("ime-simulator", count ?? 10);

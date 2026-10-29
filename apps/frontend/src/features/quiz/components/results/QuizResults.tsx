@@ -2,11 +2,9 @@
  * QuizResults.tsx
  * Phase 1 Gate Quiz — Score/pass/fail display
  *
- * Shows the final score, pass/fail status, timer, action button,
- * score visualization bar, and collapsible per-question answer review.
- * On pass: navigates to /learn (backend already updated the phase gate
- *           during completeQuizAttempt).
- * On fail: offers try-again via store.retry().
+ * Shows the final score, pass/fail status, timer, the ONE next action (rework-
+ * proposal §7: "Review what you missed" — a real review queue for the same
+ * material), score visualization bar, and collapsible per-question answer review.
  *
  * Wireframe Section 4.7 (simplified).
  */
@@ -19,7 +17,7 @@ import { getStrategy } from "../../engine/strategies";
 import { Box, Button } from "shared/components";
 import { ClassificationBadge } from "shared/components";
 import { useAuth } from "features/auth";
-import { register_page } from "shared/constants";
+import { practices_page, register_page, withSearchParams } from "shared/constants";
 
 /** Format seconds to M:SS */
 function formatTime(seconds: number): string {
@@ -27,6 +25,19 @@ function formatTime(seconds: number): string {
   const s = seconds % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
+
+/**
+ * Quiz strategy → the review content type that re-exercises the same material.
+ * "Review what you missed" is the results screen's single next step, so it has
+ * to land on a real review queue (rework-proposal §7).
+ */
+const REVIEW_TYPE_BY_STRATEGY: Record<string, string> = {
+  "audio-to-pinyin-tone": "pinyin",
+  "ime-simulator": "char-radical",
+  "radical-gate": "radicals",
+};
+
+const PRACTICES_REVIEW_PATH = "/practices/review";
 
 /** Quiz results screen */
 export function QuizResults() {
@@ -38,7 +49,6 @@ export function QuizResults() {
   const timer = useQuizSessionStore((s) => s.timer);
   const completionResult = useQuizSessionStore((s) => s.completionResult);
   const strategyType = useQuizSessionStore((s) => s.strategyType);
-  const retry = useQuizSessionStore((s) => s.retry);
 
   const isGuest = !isAuthenticated;
 
@@ -60,14 +70,29 @@ export function QuizResults() {
   const passed =
     completionResult?.passed ?? (passThreshold != null ? pct >= passThreshold * 100 : false);
 
-  const PHASE_ROUTES: Record<number, string> = { 2: "/learn/radicals" };
-  const handlePass = () => {
-    const targetRoute = PHASE_ROUTES[nextPhase] ?? "/learn";
-    navigate(targetRoute);
-  };
-
   const handleGuestRegister = () => {
     navigate(register_page);
+  };
+
+  // ── The ONE primary action (rework-proposal §7) ──────────────────────────
+  // "Review what you missed" is the next session — a real review queue for the
+  // same material. A perfect score has nothing to miss, so the primary becomes
+  // the way out instead of inventing a second action. Back to Practices is
+  // always the ghost, and the guest's persistence ask is a ghost too: on this
+  // screen the learner's next step outranks the pitch.
+  const missedCount = Math.max(0, totalQuestions - correct);
+  const reviewType = REVIEW_TYPE_BY_STRATEGY[strategyType] ?? "pinyin";
+  const reviewHref = withSearchParams(PRACTICES_REVIEW_PATH, {
+    type: reviewType,
+    filter: "recent",
+  });
+  const primaryLabel = missedCount > 0 ? "Review what you missed" : "Back to Practices";
+  const handlePrimary = () => {
+    if (missedCount > 0) {
+      navigate(reviewHref);
+    } else {
+      navigate(practices_page);
+    }
   };
 
   return (
@@ -133,25 +158,22 @@ export function QuizResults() {
         </Box>
       )}
 
-      {/* Action button */}
-      <div className="flex-center gap-md">
-        {isGuest && passed ? (
-          <Button variant="primary" size="lg" onClick={handleGuestRegister}>
-            📝 Register to save your progress
+      {/* Action buttons — exactly one primary */}
+      <div className="flex-center gap-md flex-wrap">
+        <Button variant="primary" size="lg" onClick={handlePrimary}>
+          {primaryLabel}
+        </Button>
+        {missedCount > 0 && (
+          <Button variant="ghost" size="lg" onClick={() => navigate(practices_page)}>
+            Back to Practices
           </Button>
-        ) : passed ? (
-          <Button variant="primary" size="lg" onClick={handlePass}>
-            Continue to Phase {nextPhase} \u2192
-          </Button>
-        ) : (
-          <Button variant="primary" size="lg" onClick={retry}>
-            Try Again
+        )}
+        {isGuest && (
+          <Button variant="ghost" size="lg" onClick={handleGuestRegister}>
+            Create an account to keep your progress
           </Button>
         )}
       </div>
-      {isGuest && !passed && (
-        <p className="font-sm text-secondary m-0">Register to track your scores across sessions.</p>
-      )}
 
       {/* Answer review section (collapsible) */}
       <Box as="details" variant="dark" padding="md" className="quiz-results__review w-full">

@@ -58,7 +58,7 @@ function stubReviewItems(items: ReviewItem[]) {
 }
 
 function submitPinyin(value: string) {
-  const input = screen.getByPlaceholderText("Type pinyin without tone...");
+  const input = screen.getByPlaceholderText("Type pinyin…");
   fireEvent.change(input, { target: { value } });
   fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 }
@@ -72,7 +72,7 @@ describe("ReviewView — auto-advance timing (integration)", () => {
     await waitFor(() => {
       expect(screen.getByText(/1 of 2/)).toBeInTheDocument();
     });
-    expect(screen.getByPlaceholderText("Type pinyin without tone...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Type pinyin…")).toBeInTheDocument();
 
     // Submit an answer → result/rating step.
     submitPinyin("ni3");

@@ -18,10 +18,10 @@ type ReviewCardResultProps = {
   onRate: (rating: Rating) => void;
 };
 
-const RATINGS: { value: Rating; emoji: string; label: string; desc: string }[] = [
-  { value: "again", emoji: "\uD83D\uDD34", label: "Again", desc: "Reset 1d" },
-  { value: "good", emoji: "\uD83D\uDFE1", label: "Good", desc: "\u00D72" },
-  { value: "easy", emoji: "\uD83D\uDFE2", label: "Easy", desc: "\u00D73" },
+const RATINGS: { value: Rating; label: string; desc: string }[] = [
+  { value: "again", label: "Again", desc: "Reset 1d" },
+  { value: "good", label: "Good", desc: "\u00D72" },
+  { value: "easy", label: "Easy", desc: "\u00D73" },
 ];
 
 function ReviewCardResultComponent({
@@ -39,20 +39,24 @@ function ReviewCardResultComponent({
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-md p-xl w-full">
         <div className="review-card__character-display flex-col-center gap-sm">
-          <button
-            type="button"
-            className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
-            onClick={() =>
-              openHub({
-                entityType: "character",
-                entityId: displayChar,
-                label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
-              })
-            }
-            aria-label={`View details for ${displayChar}`}
-          >
-            {displayChar}
-          </button>
+          {/* The glyph stays the session's <h1> through the rating step
+              (rework-proposal §4) — the answer and the rating are about it. */}
+          <h1 className="review-card__character-heading m-0">
+            <button
+              type="button"
+              className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
+              onClick={() =>
+                openHub({
+                  entityType: "character",
+                  entityId: displayChar,
+                  label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
+                })
+              }
+              aria-label={`View details for ${displayChar}`}
+            >
+              {displayChar}
+            </button>
+          </h1>
           {item.meaning && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})
@@ -95,12 +99,10 @@ function ReviewCardResultComponent({
                       : "rating-easy"
                 }
                 data-rating={r.value}
-                className="review-card__rating-btn flex-1"
+                className="review-card__rating-btn flex-col flex-1 gap-xs"
                 onClick={() => onRate(r.value)}
               >
-                <span className="font-lg">
-                  {r.emoji} {r.label}
-                </span>
+                <span className="font-lg">{r.label}</span>
                 <span className="font-sm fw-400 op-80">{r.desc}</span>
               </Button>
             ))}

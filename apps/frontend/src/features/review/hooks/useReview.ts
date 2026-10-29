@@ -3,14 +3,21 @@
  * Phase 1 Review — Strategy-powered review flow hook.
  * Uses ReviewStrategy to determine step flow and evaluate answers.
  * No Zustand, no session management. Uses local useState.
+ *
+ * Guests (rework-proposal §1 / BM-1): practice is NOT locked — only persistence
+ * is. When no one is signed in the queue is derived in memory from public
+ * content (`fetchGuestReviewItems`) and ratings are never posted, because the
+ * SRS endpoints are requireAuth and there is nothing to persist yet.
  */
 import { useState, useCallback } from "react";
 import type { ReviewItem, Rating, ReviewSource, ReviewStep, ReviewSessionResult } from "../types";
 import { reviewService } from "../services/reviewService";
+import { fetchGuestReviewItems } from "../services/guestReviewSource";
 import { getReviewStrategy } from "../engine/strategies";
 import { stripToneAndDigits, extractToneNumber } from "@mandarin/shared-utils";
 import { toNormalizedError } from "shared/api";
 import type { NormalizedError } from "@mandarin/shared-types";
+import { useAuth } from "features/auth";
 
 /**
  * Parse user pinyin input into { pinyin, tone } using the canonical shared parser.
@@ -23,6 +30,7 @@ export function parsePinyinInput(input: string): { pinyin: string; tone: number 
 }
 
 export function useReview() {
+  const { isAuthenticated } = useAuth();
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [step, setStep] = useState<ReviewStep>("pick");
@@ -82,7 +90,11 @@ export function useReview() {
         ratings: { easy: 0, good: 0, again: 0 },
       });
       try {
-        const data = await reviewService.fetchItems(src, type);
+        // Registered learners get the scheduled SRS queue; guests get the same
+        // cards derived from public content, in memory, for this session only.
+        const data = isAuthenticated
+          ? await reviewService.fetchItems(src, type)
+          : await fetchGuestReviewItems(type);
         setItems(data);
         if (data.length === 0) {
           setStep("complete");
@@ -97,7 +109,7 @@ export function useReview() {
         setLoading(false);
       }
     },
-    [resetPerItem],
+    [resetPerItem, isAuthenticated],
   );
 
   const startReview = useCallback(
@@ -196,7 +208,11 @@ export function useReview() {
       if (!item || step !== "result") return;
 
       try {
-        await reviewService.recordRating(item.itemType, item.itemId, rating);
+        // Guests have nowhere to persist a rating (BM-1 §5) — skip the call
+        // instead of firing a request that is guaranteed to 401.
+        if (isAuthenticated) {
+          await reviewService.recordRating(item.itemType, item.itemId, rating);
+        }
       } catch {
         // Rating save failed — non-critical, review continues
       }
@@ -215,7 +231,7 @@ export function useReview() {
         setStep(nextStrategy?.initialStep ?? "pinyin");
       }
     },
-    [items, currentIndex, step, resetPerItem, getStrategyForIndex],
+    [items, currentIndex, step, resetPerItem, getStrategyForIndex, isAuthenticated],
   );
 
   /* ── Computed values ────────────────────────────── */

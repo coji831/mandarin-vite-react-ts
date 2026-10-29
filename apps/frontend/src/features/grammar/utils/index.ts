@@ -6,4 +6,4 @@
  * Only re-exports — no inline definitions.
  */
 
-export { mapGrammarApiToData, isPatternLocked, segmentToEntityRef } from "./grammarData";
+export { mapGrammarApiToData, segmentToEntityRef } from "./grammarData";

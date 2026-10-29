@@ -21,7 +21,7 @@ export type { UseGrammarReturn, UseGrammarDetailReturn } from "./hooks";
 export { grammarService } from "./services";
 export type { GrammarServiceListParams } from "./services";
 
-export { mapGrammarApiToData, isPatternLocked, segmentToEntityRef } from "./utils";
+export { mapGrammarApiToData, segmentToEntityRef } from "./utils";
 
 export type {
   GrammarSegment,

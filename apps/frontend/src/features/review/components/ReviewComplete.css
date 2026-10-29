@@ -11,6 +11,7 @@
    .box-dark-accent.review-complete__stat-card so it beats the shared
    .box-dark-accent border regardless of stylesheet order. */
 .review-complete__stat-card.box-dark-accent {
+  /* shared .box-dark-accent paints a stronger border; the card stays a hairline */
   border-color: var(--hairline);
   border-left-color: var(--edge-control);
 }

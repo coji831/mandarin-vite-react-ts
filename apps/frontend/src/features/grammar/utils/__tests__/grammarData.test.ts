@@ -6,13 +6,12 @@
  * Covers:
  *  - `mapGrammarApiToData` — API summary → display model (happy path + missing
  *    optional fields, so cards never render `undefined`).
- *  - `isPatternLocked` — phase-lock boundaries (equal → unlocked; greater → locked).
  *  - `segmentToEntityRef` — linked token → hub EntityRef; character/word tokens
  *    translate content_id → glyph (书/桌子); grammar/radical keep content_id;
  *    plain/null-entity tokens → null (skip hub navigation).
  */
 import { describe, it, expect } from "vitest";
-import { mapGrammarApiToData, isPatternLocked, segmentToEntityRef } from "../grammarData";
+import { mapGrammarApiToData, segmentToEntityRef } from "../grammarData";
 import type { GrammarPatternSummary, GrammarSegment } from "../../types";
 
 describe("mapGrammarApiToData", () => {
@@ -58,22 +57,6 @@ describe("mapGrammarApiToData", () => {
     // Reserved fields are never populated by the summary mapping
     expect(data.examples).toBeUndefined();
     expect(data.relatedPatterns).toBeUndefined();
-  });
-});
-
-describe("isPatternLocked", () => {
-  it("returns false when the pattern phase equals the current phase", () => {
-    expect(isPatternLocked(2, 2)).toBe(false);
-  });
-
-  it("returns false when the pattern phase is below the current phase", () => {
-    expect(isPatternLocked(2, 4)).toBe(false);
-  });
-
-  it("returns true when the pattern phase is above the current phase", () => {
-    expect(isPatternLocked(3, 2)).toBe(true);
-    expect(isPatternLocked(4, 2)).toBe(true);
-    expect(isPatternLocked(4, 3)).toBe(true);
   });
 });
 

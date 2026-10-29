@@ -8,7 +8,6 @@ export {
   ReviewCard,
   ReviewComplete,
   ReviewLaunchCard,
-  ReviewPromptCard,
 } from "./components";
 export { useReview } from "./hooks";
 export { reviewService } from "./services";
