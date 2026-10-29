@@ -9,9 +9,10 @@
  * - Authed: avatar (first letter) + short name + chevron trigger
  *   (`aria-expanded`). Popover shows the account header, Profile, Settings,
  *   and Logout.
- * - Guest: Login (primary) + Register (secondary) buttons. Both carry
+ * - Guest: Login (secondary) + Register (ghost). Both carry
  *   `location.state.from` so LoginPage/RegisterPage can return the user to
- *   the page they were on.
+ *   the page they were on. Neither is `primary`: the top bar is chrome, and the
+ *   one amber primary in a viewport belongs to the page's own task CTA.
  *
  * Review N1: auth is threaded in via props (AppLayout → AppTopBar → UserMenu)
  * so this shared component stays auth-free — it never imports `features/auth`
@@ -108,16 +109,19 @@ export function UserMenu({ user, isAuthenticated, logout }: UserMenuProps) {
   }, [logout, navigate]);
 
   // ── Guest state: Login / Register CTAs ──────────────────────────────
+  // Chrome stays quiet: the amber budget is one primary per viewport and it
+  // belongs to the page's own task CTA, not to the top bar (a filled Login next
+  // to a filled "Start the Blueprint" is two primaries arguing).
   if (!isAuthenticated || !user) {
     return (
       <div
         className="user-menu user-menu--guest flex items-center gap-sm"
         data-testid="user-menu-guest"
       >
-        <Button variant="primary" size="sm" onClick={() => goToAuth(login_page)}>
+        <Button variant="secondary" size="sm" onClick={() => goToAuth(login_page)}>
           Login
         </Button>
-        <Button variant="secondary" size="sm" onClick={() => goToAuth(register_page)}>
+        <Button variant="ghost" size="sm" onClick={() => goToAuth(register_page)}>
           Register
         </Button>
       </div>

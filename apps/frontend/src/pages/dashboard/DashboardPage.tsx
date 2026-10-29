@@ -42,7 +42,7 @@ const PHASE_NEXT: Record<number, string> = {
   1: "the four tones",
   2: "your first radicals",
   3: "graded readers",
-  4: "whatever you like — everything is open",
+  4: "chengyu practice",
 };
 
 /** Fallback title for a phase number outside the 4-phase course. */

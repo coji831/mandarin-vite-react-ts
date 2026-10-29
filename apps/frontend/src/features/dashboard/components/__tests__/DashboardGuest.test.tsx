@@ -5,7 +5,7 @@
  * - welcome message
  * - the BM-2 wedge card leads (before the register ask)
  * - ONE primary CTA (start the Blueprint); registration is a ghost
- * - phase preview cards
+ * - NO grid of phase destinations (the rail carries every Learn surface)
  */
 
 import { describe, it, expect } from "vitest";
@@ -26,16 +26,19 @@ describe("DashboardGuest", () => {
     expect(screen.getByText(/Welcome to PinyinPal/i)).toBeInTheDocument();
   });
 
-  it("renders phase preview cards", () => {
+  it("does not render the phase-preview grid (§8: one next step, one proof)", () => {
     renderWithRouter();
-    expect(screen.getByText(/Phase 1: Foundations/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phase 2: Radicals & Characters/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phase 3: Reading & Grammar/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phase 4: Advanced/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Phase 1: Foundations/i)).toBeNull();
+    expect(screen.queryByText(/Phase 2: Radicals & Characters/i)).toBeNull();
+    expect(screen.queryByText(/Phase 3: Reading & Grammar/i)).toBeNull();
+    expect(screen.queryByText(/Phase 4: Advanced/i)).toBeNull();
+    expect(screen.queryByRole("list", { name: /Course phases/i })).toBeNull();
   });
 
   it("renders ONE primary CTA — start the Blueprint", () => {
     renderWithRouter();
+    const primaries = document.querySelectorAll(".btn-primary");
+    expect(primaries).toHaveLength(1);
     expect(screen.getByRole("button", { name: "Start the Blueprint" })).toBeInTheDocument();
   });
 
@@ -66,6 +69,5 @@ describe("DashboardGuest", () => {
     renderWithRouter();
     expect(screen.getByText(/Start learning Mandarin — no account needed/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Create an account/i })).toBeInTheDocument();
-    expect(screen.getByText(/Phase 4: Advanced/i)).toBeInTheDocument();
   });
 });

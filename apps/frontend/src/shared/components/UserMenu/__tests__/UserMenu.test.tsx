@@ -47,6 +47,16 @@ describe("UserMenu", () => {
       expect(screen.queryByLabelText(/Account menu for/)).not.toBeInTheDocument();
     });
 
+    it("keeps the guest CTAs off the primary tier (chrome holds no amber)", () => {
+      // The amber budget is ONE primary per viewport, and it belongs to the
+      // page's own task CTA — a filled Login beside a filled page CTA is two.
+      renderUserMenu(guestProps);
+      expect(screen.getByRole("button", { name: "Login" }).className).not.toContain("btn-primary");
+      expect(screen.getByRole("button", { name: "Register" }).className).not.toContain(
+        "btn-primary",
+      );
+    });
+
     it("navigates to /auth/login with the current location as `from`", async () => {
       renderUserMenu(guestProps, { route: "/learn/grammar" });
       fireEvent.click(screen.getByRole("button", { name: "Login" }));

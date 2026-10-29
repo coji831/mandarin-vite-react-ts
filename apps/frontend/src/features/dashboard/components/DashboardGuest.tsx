@@ -1,8 +1,8 @@
 /**
  * DashboardGuest
  *
- * Guest-facing dashboard. Owns the page's section rhythm via PageStack +
- * PageGrid (the page container owns the PageShell measure).
+ * Guest-facing dashboard. Owns the page's section rhythm via PageStack (the page
+ * container owns the PageShell measure).
  *
  * Rework (§8): the order is INVERTED. The guest used to be pitched registration
  * first, then handed the course. BM-2 §4 says the opposite: prove the delta in
@@ -12,41 +12,17 @@
  * CTA, and "Create account" is a ghost in the same row as the page's other
  * secondary actions.
  *
- * Phase previews stay as previews (D.2): they describe the course and never
- * claim a lock — BM-1 makes every Learn surface open to everyone.
+ * Rework (§8 close-out): the four phase preview cards are gone. They were the
+ * last grid of destinations on the home surface — the same shape §8 deleted
+ * from the registered dashboard — and they told a first-time visitor about
+ * Phases 2–4 before they had learned a single initial. The rail already carries
+ * every Learn surface; the home surface's job is one next step, one proof.
+ * They also never claimed a lock (BM-1 makes every Learn surface open).
  */
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Icon, PageGrid, PageHeader, PageStack } from "shared/components";
-import type { IconName } from "shared/components";
+import { Button, PageHeader, PageStack } from "shared/components";
 import { learn_foundations, register_page } from "shared/constants";
 import { ToneDemoCard } from "./ToneDemoCard";
-
-const PHASE_PREVIEWS: { phase: number; title: string; icon: IconName; description: string }[] = [
-  {
-    phase: 1,
-    title: "Foundations",
-    icon: "letters",
-    description: "Pinyin, tones, and basic strokes",
-  },
-  {
-    phase: 2,
-    title: "Radicals & Characters",
-    icon: "radicals",
-    description: "Learn radicals and character components",
-  },
-  {
-    phase: 3,
-    title: "Reading & Grammar",
-    icon: "book",
-    description: "Phonetic clusters and graded readers",
-  },
-  {
-    phase: 4,
-    title: "Advanced",
-    icon: "chengyu",
-    description: "Mastery and advanced content",
-  },
-];
 
 export function DashboardGuest() {
   const navigate = useNavigate();
@@ -71,21 +47,6 @@ export function DashboardGuest() {
           Create an account to keep your progress
         </Button>
       </div>
-
-      {/* All-phase preview cards (previews only — D.2) */}
-      <PageGrid columns={2} aria-label="Course phases">
-        {PHASE_PREVIEWS.map((phase) => (
-          <div key={phase.phase} role="listitem" className="flex min-w-0">
-            <Box variant="card-elevated" className="flex-col gap-sm flex-1">
-              <Icon name={phase.icon} size={24} aria-hidden />
-              <h2 className="font-lg fw-600 text-primary m-0">
-                Phase {phase.phase}: {phase.title}
-              </h2>
-              <p className="font-sm text-secondary m-0">{phase.description}</p>
-            </Box>
-          </div>
-        ))}
-      </PageGrid>
     </PageStack>
   );
 }
