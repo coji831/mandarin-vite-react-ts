@@ -5,6 +5,10 @@
  * Displays an animated badge indicating whether the user passed or failed.
  * Supports configurable phase number via unlockedPhase prop.
  * Guest-aware messaging when isGuest is true.
+ *
+ * Rework (§7 close-out): the message is text. The 🎉/🔒 glyphs are gone — a
+ * padlock on a failed quiz reads as a lock the learner must break, when the only
+ * lock BM-1 sanctions is persistence, and emoji is not an icon (ADR-010 / Q8).
  */
 
 import { Box } from "shared/components";
@@ -24,11 +28,11 @@ export function PhaseGateBadge({
   isGuest = false,
 }: PhaseGateBadgeProps) {
   const passMessage = isGuest
-    ? "🎉 Great score! Register to save your progress"
-    : `Phase ${unlockedPhase} unlocked! 🎉`;
+    ? "Great score! Register to save your progress"
+    : `Phase ${unlockedPhase} unlocked!`;
   const failMessage = isGuest
     ? "Keep practicing! Register to track your scores"
-    : "🔒 Keep Practicing";
+    : "Keep Practicing";
 
   return (
     <Box

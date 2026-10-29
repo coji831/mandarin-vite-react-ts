@@ -26,7 +26,7 @@ import {
   type FoundationSectionId,
 } from "@mandarin/shared-constants";
 import { PageHeader, PageShell, PageStack, Tabs } from "shared/components";
-import type { TabConfig } from "shared/components";
+import type { IconName, TabConfig } from "shared/components";
 import { SEARCH_PARAMS } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
 import { PictographGallery, FoundationsProgressBar } from "features/foundations";
@@ -35,17 +35,18 @@ import { TonesTab } from "./TonesTab";
 import { StrokeReferenceTab } from "./StrokeReferenceTab";
 import { StrokeAnimationTab } from "./StrokeAnimationTab";
 
-const SECTION_ICONS: Record<FoundationSectionId, string> = {
-  pinyin: "📗",
-  tones: "🎵",
-  strokes: "✏️",
-  animations: "🎬",
+/** Tab icons are sanctioned `Icon` names — emoji is not an icon (ADR-010 / Q8). */
+const SECTION_ICONS: Record<FoundationSectionId, IconName> = {
+  pinyin: "letters",
+  tones: "audio",
+  strokes: "edit",
+  animations: "play",
 };
 
 const PICTOGRAPH_TAB: TabConfig = {
   id: "pictographs",
   label: "Pictographs",
-  icon: "🖼️",
+  icon: "image",
 };
 
 const TABS_CONFIG: TabConfig[] = [

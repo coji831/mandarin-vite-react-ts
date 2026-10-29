@@ -94,7 +94,7 @@ export function CategoryBreakdown({ answers, categoryBreakdown, total }: Categor
 
   return (
     <Box variant="dark" padding="md" className="flex-col gap-md quiz-breakdown__card">
-      <h3 className="quiz-breakdown__heading font-lg text-primary m-0">📊 Category Breakdown</h3>
+      <h3 className="quiz-breakdown__heading font-lg text-primary m-0">Category Breakdown</h3>
 
       <CategoryBar
         label="Pinyin recognition"

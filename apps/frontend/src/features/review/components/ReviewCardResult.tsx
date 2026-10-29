@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 import { openHub } from "shared/store";
 import { getReviewStrategy } from "../engine/strategies";
 import type { Rating, ReviewItem } from "../types";
@@ -77,7 +77,15 @@ function ReviewCardResultComponent({
               <div className="flex-between">
                 <span className="text-secondary">{label}:</span>
                 <span className={isCorrect ? "text-success fw-600" : "text-error fw-600"}>
-                  {isCorrect ? "\u2705 Correct" : "\u274C Incorrect"}
+                  {isCorrect ? (
+                    <>
+                      <Icon name="check" size={16} aria-hidden /> Correct
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="cross" size={16} aria-hidden /> Incorrect
+                    </>
+                  )}
                 </span>
               </div>
             );

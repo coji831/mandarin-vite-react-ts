@@ -2,8 +2,9 @@
  * Timer.tsx
  * Phase 1 Gate Quiz — Countdown display
  *
- * Reads timer from store. Formats as M:SS.
- * Shows ⏱ prefix. Warning color at <30s, danger at <10s.
+ * Reads timer from store. Formats as M:SS. Warning color at <30s, danger at <10s.
+ * No glyph: the countdown is a number the colour already qualifies, and emoji is
+ * not an icon (ADR-010 / Q8).
  */
 
 import { Box } from "shared/components";
@@ -31,7 +32,6 @@ export function Timer() {
 
   return (
     <Box padding="sm" className={`flex-col-center quiz-timer gap-xs ${timerStateClass}`}>
-      <span>{isExpired ? "⏰" : "⏱"}</span>
       <span className="quiz-timer__value font-md">{isExpired ? "Time's up!" : formatted}</span>
     </Box>
   );

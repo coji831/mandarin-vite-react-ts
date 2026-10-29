@@ -202,7 +202,7 @@ export function DetailPanel({ initial, final, tones, charMap, onClose }: DetailP
           title={chineseChar ? undefined : "No character available for this syllable"}
           onClick={() => play(chineseChar)}
         >
-          🔊 <span>Play</span>
+          <Icon name="audio" size={16} aria-hidden /> <span>Play</span>
         </Button>
       </div>
     </Box>

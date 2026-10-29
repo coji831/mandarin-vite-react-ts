@@ -10,7 +10,7 @@
  */
 
 import { useEffect } from "react";
-import { Button, ProgressBar } from "shared/components";
+import { Button, Icon, ProgressBar } from "shared/components";
 import { usePictographMatchStore } from "../stores/pictographMatchStore";
 import "./PictographMatchGame.css";
 
@@ -58,7 +58,7 @@ export function PictographMatchGame({ onBackToGallery }: PictographMatchGameProp
               passed ? "pictograph-match__end-result--pass" : "pictograph-match__end-result--fail"
             }`}
           >
-            {passed ? "✅ Pictograph Master!" : "❌ Keep Practicing!"}
+            {passed ? "Pictograph Master!" : "Keep Practicing!"}
           </p>
           {passed && (
             <p className="text-tertiary font-sm m-0 mb-md">
@@ -71,7 +71,7 @@ export function PictographMatchGame({ onBackToGallery }: PictographMatchGameProp
             </p>
           )}
           <Button className="pictograph-match__retry-btn" onClick={() => reset()} variant="primary">
-            🔄 Play Again
+            Play Again
           </Button>
           {onBackToGallery && (
             <Button
@@ -112,7 +112,10 @@ export function PictographMatchGame({ onBackToGallery }: PictographMatchGameProp
   return (
     <div className="pictograph-match">
       <div className="pictograph-match__header">
-        <h2 className="pictograph-match__title">🎮 Pictograph Match</h2>
+        <h2 className="pictograph-match__title flex-align-center gap-xs">
+          <Icon name="image" size={24} aria-hidden />
+          Pictograph Match
+        </h2>
         <p className="text-tertiary font-sm m-0">
           Match the oracle bone description to the correct modern character
         </p>
@@ -163,10 +166,13 @@ export function PictographMatchGame({ onBackToGallery }: PictographMatchGameProp
       {showResult && (
         <div className="pictograph-match__result-area">
           {isCorrect ? (
-            <p className="pictograph-match__result-text text-success">✅ Correct!</p>
+            <p className="pictograph-match__result-text text-success flex-align-center gap-xs">
+              <Icon name="check" size={16} aria-hidden /> Correct!
+            </p>
           ) : (
-            <p className="pictograph-match__result-text text-error">
-              ❌ The correct answer was: <strong>{question.correctAnswer}</strong>
+            <p className="pictograph-match__result-text text-error flex-align-center gap-xs">
+              <Icon name="cross" size={16} aria-hidden /> The correct answer was:{" "}
+              <strong>{question.correctAnswer}</strong>
             </p>
           )}
           <p className="pictograph-match__etymology">

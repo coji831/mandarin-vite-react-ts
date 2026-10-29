@@ -15,7 +15,7 @@
 import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { ToneRule } from "../../types";
-import { Button, Box, Spinner } from "shared/components";
+import { Button, Box, Icon, Spinner } from "shared/components";
 import "./ToneChangeRules.css";
 
 export interface ToneChangeRulesProps {
@@ -89,8 +89,10 @@ function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRu
               variant="card"
               className="tone-rule-card flex-center gap-xs flex-wrap"
             >
-              {/* 📖 icon */}
-              <span className="tone-rule-icon font-xs shrink-0">📖</span>
+              {/* Rule marker */}
+              <span className="tone-rule-icon shrink-0 text-tertiary">
+                <Icon name="book" size={16} aria-hidden />
+              </span>
 
               {/* Character + pinyin from title (e.g., "一 (yī)") */}
               {charInfo ? (
@@ -129,7 +131,7 @@ function ToneChangeRulesComponent({ rules, onPlay, loadingPinyin }: ToneChangeRu
                 title={isLoading ? "Generating audio..." : `Play ${example.chinese}`}
                 aria-label={isLoading ? "Generating audio..." : `Play ${example.chinese}`}
               >
-                {isLoading ? <Spinner size="xs" /> : "▶"}
+                {isLoading ? <Spinner size="xs" /> : <Icon name="play" size={16} aria-hidden />}
               </Button>
             </Box>
           );

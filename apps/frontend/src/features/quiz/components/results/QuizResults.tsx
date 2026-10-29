@@ -14,7 +14,7 @@ import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { PhaseGateBadge } from "./PhaseGateBadge";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { getStrategy } from "../../engine/strategies";
-import { Box, Button } from "shared/components";
+import { Box, Button, Icon } from "shared/components";
 import { ClassificationBadge } from "shared/components";
 import { useAuth } from "features/auth";
 import { practices_page, register_page, withSearchParams } from "shared/constants";
@@ -97,7 +97,10 @@ export function QuizResults() {
 
   return (
     <div className="flex-col-center gap-lg">
-      <h2 className="quiz-results__heading text-primary font-2xl">📊 Quiz Complete</h2>
+      <h2 className="quiz-results__heading flex-align-center gap-xs text-primary font-2xl">
+        <Icon name="progress" size={24} aria-hidden />
+        Quiz Complete
+      </h2>
 
       <Box
         variant={passed ? "pass" : "fail"}
@@ -109,7 +112,13 @@ export function QuizResults() {
           <span className="quiz-results__score fw-800 text-primary font-3xl">
             {correct}/{totalQuestions} ({pct}%)
           </span>
-          <span className="font-2xl">{passed ? "✅" : "❌"}</span>
+          <span className={passed ? "text-success" : "text-error"}>
+            <Icon
+              name={passed ? "check" : "cross"}
+              size={24}
+              label={passed ? "Passed" : "Not passed"}
+            />
+          </span>
         </div>
 
         {/* Pass/fail message */}
@@ -117,7 +126,7 @@ export function QuizResults() {
 
         {/* Timer display */}
         <div className="quiz-results__timer text-muted font-md">
-          ⏱ Time: {formatTime(timer < 0 ? 0 : timer)}
+          Time: {formatTime(timer < 0 ? 0 : timer)}
         </div>
 
         {/* Score visualization bar */}
@@ -144,8 +153,9 @@ export function QuizResults() {
       {/* Score by Type (IME Simulator only — classification-based breakdown) */}
       {strategyType === "ime-simulator" && Object.keys(scoreByType).length > 0 && (
         <Box variant="dark" padding="md" className="flex-col gap-md w-full">
-          <h3 className="quiz-results__score-by-type-heading font-lg text-primary m-0">
-            📊 Score by Type
+          <h3 className="quiz-results__score-by-type-heading flex-align-center gap-xs font-lg text-primary m-0">
+            <Icon name="progress" size={16} aria-hidden />
+            Score by Type
           </h3>
           {Object.entries(scoreByType).map(([type, { correct, total }]) => (
             <div key={type} className="flex-align-center gap-md">
@@ -178,7 +188,7 @@ export function QuizResults() {
       {/* Answer review section (collapsible) */}
       <Box as="details" variant="dark" padding="md" className="quiz-results__review w-full">
         <summary className="fw-600 text-primary font-md cursor-pointer">
-          📋 Review Answers ({answers.length} questions)
+          Review Answers ({answers.length} questions)
         </summary>
         <div className="flex-col gap-xs mt-md">
           {questions.map((q, i) => {
@@ -197,7 +207,11 @@ export function QuizResults() {
                   {q.meaning && <span className="font-xs text-muted">{q.meaning}</span>}
                 </div>
                 <span className={`font-sm fw-600 ${isCorrect ? "text-success" : "text-error"}`}>
-                  {isCorrect ? "✅" : "❌"}
+                  <Icon
+                    name={isCorrect ? "check" : "cross"}
+                    size={16}
+                    label={isCorrect ? "Correct" : "Incorrect"}
+                  />
                 </span>
               </Box>
             );

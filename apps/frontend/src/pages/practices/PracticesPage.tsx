@@ -11,16 +11,14 @@
  * Rework (§1 / BM-1): Review is NOT a registered-only pathway. BM-1's only lock
  * is persistence, so the guest upsell card that used to occupy this slot is
  * gone — everyone gets ReviewLaunchCard, and a guest meets the one ask at the
- * END of a session ("Create an account to keep this queue").
+ * END of a session ("Create an account to keep this queue"). For the same
+ * reason the page no longer reads auth state at all: nothing on it is gated.
  */
 import { ReviewLaunchCard } from "features/review";
 import { QuizCard, useQuizCard } from "features/quiz";
-import { useAuth } from "features/auth";
 import { PageGrid, PageHeader, PageShell, PageStack } from "shared/components";
 
 export default function PracticesPage() {
-  const { isAuthenticated } = useAuth();
-  const isGuest = !isAuthenticated;
   const { currentPhase, label, quizzes, takeQuiz, timeline } = useQuizCard();
 
   return (
@@ -34,7 +32,6 @@ export default function PracticesPage() {
           </div>
           <div role="listitem" className="grid min-w-0">
             <QuizCard
-              isGuest={isGuest}
               currentPhase={currentPhase}
               label={label}
               quizzes={quizzes}
