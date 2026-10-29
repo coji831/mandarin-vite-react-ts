@@ -80,18 +80,79 @@ const ROUTE_ARCHETYPES: RouteArchetypeEntry[] = [
   { path: "/", exact: true, archetype: "overview" }, // DashboardPage
   { path: "/dashboard", exact: true, archetype: "overview" }, // dashboard alias
   { path: "/practices", exact: true, archetype: "overview" }, // PracticesPage
-  { path: "/practices/review", archetype: "detail" }, // ReviewPage (Focus exemplar)
-  { path: "/practices/quiz", archetype: "detail" }, // QuizPage (Focus exemplar)
+  // Review + Quiz are ONE route with two surfaces (rework-proposal §4/§7): the
+  // picker/empty entry is Browse, and the SESSION (every session param present)
+  // is Focus — see SESSION_QUERY_ROUTES below. The archetype here is therefore
+  // the no-query one; the ledger records the same value.
+  { path: "/practices/review", exact: true, archetype: "overview" }, // ReviewPage (picker)
+  { path: "/practices/quiz", exact: true, archetype: "empty" }, // QuizPage (no ?type=)
   { path: "/library", archetype: "list" }, // LibraryPage
-  { path: "/learn", archetype: "overview" }, // Learn subtree (foundations/radicals/… — all Browse)
+  { path: "/learn", archetype: "overview" }, // Learn subtree (radicals/grammar/… — all Browse)
+  { path: "/learn/foundations", exact: true, archetype: "wizard" }, // FoundationsPage (Blueprint)
+  { path: "/learn/foundations/reference", exact: true, archetype: "reports" }, // reference index
+  { path: "/learn/readers/", archetype: "detail" }, // ReaderPage (a reading session is Focus)
   { path: "/progress", archetype: "settings" }, // ProgressPage
   { path: "/profile", archetype: "profile" }, // ProfilePage
   { path: "/settings", archetype: "settings" }, // SettingsPage
   { path: "/auth", archetype: "auth" }, // Login/Register (no rail)
 ];
 
-/** Resolve a route pathname to its declared archetype (browse by default). */
-export function resolveArchetype(pathname: string): string {
+/**
+ * Routes whose mode depends on the QUERY, because one route hosts two surfaces
+ * (rework-proposal §4 + §7): a picker/empty entry surface (Browse) and a live
+ * session (Focus). A session is `detail`/Focus by the dual-mode chrome law, and
+ * the learner has not started one until every required param is present.
+ * `requiredParams.length === 0` would make every visit a session — never do it.
+ */
+type SessionQueryEntry = {
+  path: string;
+  /** Archetype while no session param is present (the entry surface). */
+  entryArchetype: string;
+  /** Archetype once EVERY `requiredParams` key is present (the session). */
+  sessionArchetype: string;
+  requiredParams: string[];
+};
+
+const SESSION_QUERY_ROUTES: SessionQueryEntry[] = [
+  {
+    path: "/practices/review",
+    entryArchetype: "overview",
+    sessionArchetype: "detail",
+    // ReviewPage only auto-starts when BOTH are present.
+    requiredParams: ["type", "filter"],
+  },
+  {
+    path: "/practices/quiz",
+    entryArchetype: "empty",
+    sessionArchetype: "detail",
+    requiredParams: ["type"],
+  },
+];
+
+/** True when `search` carries every param in `requiredParams` (non-empty values). */
+function hasSessionParams(search: string, requiredParams: string[]): boolean {
+  if (requiredParams.length === 0) return false;
+  const params = new URLSearchParams(search);
+  return requiredParams.every((key) => {
+    const value = params.get(key);
+    return value !== null && value !== "";
+  });
+}
+
+/** Resolve a route pathname (+ optional query) to its declared archetype. */
+export function resolveArchetype(pathname: string, search = ""): string {
+  // Query-dependent override FIRST for the two routes that host two surfaces:
+  // the no-query reading is the table's declared archetype (the ledger records
+  // that), and a complete session query promotes the route to its session
+  // archetype. Evaluated before the table lookup so an EXACT table entry cannot
+  // short-circuit it.
+  const sessionRoute = SESSION_QUERY_ROUTES.find((r) => r.path === pathname);
+  if (sessionRoute) {
+    return hasSessionParams(search, sessionRoute.requiredParams)
+      ? sessionRoute.sessionArchetype
+      : sessionRoute.entryArchetype;
+  }
+
   const exact = ROUTE_ARCHETYPES.find((r) => r.exact && pathname === r.path);
   if (exact) return exact.archetype;
 
@@ -101,7 +162,11 @@ export function resolveArchetype(pathname: string): string {
   return prefix?.archetype ?? "overview";
 }
 
-/** Resolve a route pathname to its mode (browse | focus | auth). */
-export function resolvePageMode(pathname: string): PageMode {
-  return modeForArchetype(resolveArchetype(pathname));
+/**
+ * Resolve a route pathname to its mode (browse | focus | auth).
+ * `search` is required for the two routes that host a session on a query
+ * (`/practices/review`, `/practices/quiz`) — AppLayout passes `location.search`.
+ */
+export function resolvePageMode(pathname: string, search = ""): PageMode {
+  return modeForArchetype(resolveArchetype(pathname, search));
 }

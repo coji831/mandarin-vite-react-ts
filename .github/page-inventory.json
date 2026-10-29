@@ -95,20 +95,22 @@
         "topbar": "standard"
       },
       "story": "apps/frontend/src/pages/LibraryPageFull.stories.tsx",
-      "states": ["default"],
+      "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
       "composition": {
+        "header": "PageHeader",
         "content": "ContentBrowser",
         "search": "SearchInput",
-        "filters": "FilterControls"
+        "filters": "FilterControls",
+        "loading": "Skeleton"
       },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
-        "header": null
+        "header": "PageHeader"
       },
-      "note": "ContentBrowser renders inside PageShell(list) since S5; the list max-width was removed from ContentBrowser.css so PageShell is the single measure source. Still the list-archetype exemplar (registry-clean composition)."
+      "note": "Real content API since the §5 rework: the source composes radicals + grammar + chengyu list endpoints, every card opens the lexical hub peek, and the open item carries a non-colour 'current' cue. The mock content source is deleted."
     },
     {
       "route": "/learn/readers",
@@ -123,7 +125,9 @@
       "states": ["loading", "default", "empty", "error", "edge"],
       "status": "conforms",
       "composition": {
-        "header": "PageHeader"
+        "header": "PageHeader",
+        "empty": "EmptyState",
+        "loading": "Skeleton"
       },
       "anatomy": {
         "shell": "PageShell",
@@ -131,7 +135,7 @@
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Dual-mode kept (library/reading) under the list measure; the page-level surface wrapper is gone (PageShell + PageStack + PageHeader). Splitting reading into a detail archetype (the retired focus-media case) remains a product decision, not a layout gap."
+      "note": "The LIBRARY (`list` / Browse). Reading one passage is its own address — `/learn/readers/:passageId`, declared `detail` / Focus in pageChrome and painted with PageShell surface=\"paper\" (§2). Cards show word count, never a known-word ratio (the API's ratio is a generation-time column and cannot vary per learner)."
     },
     {
       "route": "/learn/radicals",
@@ -219,51 +223,54 @@
     {
       "route": "/practices/review",
       "component": "ReviewPage",
-      "archetype": "detail",
-      "mode": "focus",
+      "archetype": "overview",
+      "mode": "browse",
       "chrome": {
-        "rail": "collapsed",
-        "topbar": "recessed"
+        "rail": "expanded",
+        "topbar": "standard"
       },
       "story": "apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx",
       "states": ["loading", "default", "empty", "error"],
       "status": "conforms",
       "composition": {
-        "progress": "ProgressBar",
+        "header": "PageHeader",
+        "filters": "RadioGroup",
         "rating": "Button",
         "card": "Card",
-        "shell": "Box"
+        "shell": "Box",
+        "loading": "Skeleton"
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "detail",
+        "measure": "overview",
         "gutter": "default",
-        "header": null
+        "header": "PageHeader"
       },
-      "note": "Golden Template candidate (detail). ReviewPicker and ReviewView both render inside PageShell(detail) since S5; the detail max-width was removed from ReviewView.css."
+      "note": "The PICKER is the entry surface (`overview` / Browse) since the §4 rework; the SESSION (`?type=&filter=`) is `detail` / Focus on the same route, resolved by pageChrome's session-query rule. Guests can run a session (BM-1 locks persistence only)."
     },
     {
       "route": "/practices/quiz",
       "component": "QuizPage",
-      "archetype": "detail",
-      "mode": "focus",
+      "archetype": "empty",
+      "mode": "browse",
       "chrome": {
-        "rail": "collapsed",
-        "topbar": "recessed"
+        "rail": "expanded",
+        "topbar": "standard"
       },
       "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
-      "states": ["loading", "default", "edge"],
+      "states": ["loading", "default", "empty", "edge"],
       "status": "conforms",
       "composition": {
-        "header": "PageHeader"
+        "header": "PageHeader",
+        "empty": "EmptyState"
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "detail",
+        "measure": "empty",
         "gutter": "default",
-        "header": "PageHeader"
+        "header": null
       },
-      "note": "Detail: PageHeader (title + timer), then QuizRouter + progress. Without ?type= the same skeleton renders a Back to Practices CTA."
+      "note": "Without `?type=` this route is the `empty` / Browse entry surface with one way out (§7); the SESSION (`?type=`) is `detail` / Focus via pageChrome's session-query rule."
     },
     {
       "route": "/progress",
@@ -275,12 +282,14 @@
         "topbar": "standard"
       },
       "story": "apps/frontend/src/pages/ProgressPageFull.stories.tsx",
-      "states": ["default"],
+      "states": ["loading", "default", "empty"],
       "status": "conforms",
       "composition": {
         "header": "PageHeader",
         "section": "Box",
-        "grid": "PageGrid"
+        "progress": "ProgressBar",
+        "empty": "EmptyState",
+        "loading": "Skeleton"
       },
       "anatomy": {
         "shell": "PageShell",
@@ -288,7 +297,7 @@
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Settings shell: PageShell + PageStack + PageHeader + PageGrid card home."
+      "note": "Settings shell: PageShell + PageStack + PageHeader + ONE populated card (real numbers) or ONE honest empty state, each with the page's single primary `Start a review` CTA. The dev receipt and the three stub cards are gone (§6)."
     },
     {
       "route": "/auth/login",
@@ -385,16 +394,44 @@
     {
       "route": "/learn/foundations",
       "component": "FoundationsPage",
-      "archetype": "overview",
-      "mode": "browse",
+      "archetype": "wizard",
+      "mode": "focus",
       "chrome": {
-        "rail": "expanded",
-        "topbar": "standard"
+        "rail": "collapsed",
+        "topbar": "recessed"
       },
       "story": "apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx",
       "states": ["loading", "default", "error", "edge"],
       "status": "conforms",
       "composition": {
+        "header": "PageHeader",
+        "progress": "ProgressBar",
+        "section": "Box",
+        "items": "Card",
+        "loading": "Skeleton"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "wizard",
+        "gutter": "default",
+        "header": "PageHeader"
+      },
+      "note": "The BLUEPRINT — week 1 as one sequential task (`wizard` / Focus, §3): one step per screen, one primary Continue, a stepper in the step header. The 409-cell reference moved to `/learn/foundations/reference`."
+    },
+    {
+      "route": "/learn/foundations/reference",
+      "component": "FoundationsReferencePage",
+      "archetype": "reports",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
+      "story": "apps/frontend/src/pages/learn/foundations/FoundationsReferencePageFull.stories.tsx",
+      "states": ["loading", "default", "error", "edge"],
+      "status": "conforms",
+      "composition": {
+        "header": "PageHeader",
         "tabs": "Tabs",
         "focal-point": "Box",
         "progress": "ProgressBar",
@@ -404,11 +441,11 @@
       },
       "anatomy": {
         "shell": "PageShell",
-        "measure": "overview",
+        "measure": "reports",
         "gutter": "default",
-        "header": null
+        "header": "PageHeader"
       },
-      "note": "De-facto Learn home; overview with tabbed focal point + progress. Edge = tones deep-link. Rendered bare (no PageShell) until S5, which wrapped it in PageShell(overview) to match this row."
+      "note": "The dense reference index (`reports` / Browse) — pinyin / tones / strokes / animations / pictographs as sibling tabs, URL-driven via `?tab=`. NO tab is locked (§1): the old 'Complete Phase 2 to unlock' gate on Pictographs is deleted."
     },
     {
       "route": "/learn/phonetic-clusters",
@@ -446,6 +483,29 @@
       "states": [],
       "status": "diverges",
       "note": "Legacy redirect → /learn/foundations (no page container). Retire the alias when nothing references it; there is nothing to conform."
+    },
+    {
+      "route": "*",
+      "component": "NotFoundPage",
+      "archetype": "not-found",
+      "mode": "browse",
+      "chrome": {
+        "rail": "expanded",
+        "topbar": "standard"
+      },
+      "story": "apps/frontend/src/pages/NotFoundPageFull.stories.tsx",
+      "states": ["default"],
+      "status": "conforms",
+      "composition": {
+        "header": "PageHeader"
+      },
+      "anatomy": {
+        "shell": "PageShell",
+        "measure": "not-found",
+        "gutter": "default",
+        "header": "PageHeader"
+      },
+      "note": "The app's ONE catch-all (§10), rendered INSIDE AppLayout so the chrome stays and the visitor is never trapped. The message is the h1 and `Back to dashboard` is the first tab stop in the content region."
     }
   ]
 }

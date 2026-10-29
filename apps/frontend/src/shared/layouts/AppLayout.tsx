@@ -79,7 +79,7 @@ function AppLayout({ initialCollapsed }: { initialCollapsed?: boolean } = {}) {
   // comes from the page's archetype, not per-page hacks. Focus = rail collapsed
   // + recessed top bar; Browse = rail expanded + standard top bar; auth = no rail
   // (the UserMenu top bar remains so auth pages are never a dead-end).
-  const mode = resolvePageMode(location.pathname);
+  const mode = resolvePageMode(location.pathname, location.search);
   const chrome = chromeForMode(mode);
   const isFocusMode = mode === "focus";
 

@@ -147,7 +147,9 @@ describe("AppLayout composition (Story 22.4)", () => {
 
 describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
   it("renders a Focus route with a forced-collapsed rail and a recessed top bar", () => {
-    const { container } = renderAppLayout("/practices/review");
+    // A session is a Focus surface. Since §4/§7 the practice sessions live on a
+    // query, and the Blueprint (`/learn/foundations`, wizard) is Focus outright.
+    const { container } = renderAppLayout("/learn/foundations");
     // The rail is mounted (non-auth) but forced to the icon rail — Learn
     // children are unmounted and the manual collapse toggle is hidden (Focus
     // chrome is fixed, not user-toggled).
@@ -156,6 +158,14 @@ describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
     expect(screen.queryByRole("button", { name: /sidebar/i })).not.toBeInTheDocument();
     // The top bar recedes (Focus chrome).
     expect(container.querySelector(".app-top-bar--recessed")).toBeInTheDocument();
+  });
+
+  it("keeps the review picker in Browse until a session starts", () => {
+    // §4: choosing a deck is not a change of intent — the rail stays expanded
+    // and the top bar stays standard with no session params in the URL.
+    const { container } = renderAppLayout("/practices/review");
+    expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
   });
 
   it("renders a Browse route with the expanded rail and a standard top bar", () => {
