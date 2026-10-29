@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-10-27 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-10-29 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 
@@ -12,7 +12,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | Area | Documented | Partial | Undocumented | Active | Total |
 | --- | --- | --- | --- | --- | --- |
 | A1 Frontend Features | 2 | 6 | 5 | 13 | 13 |
-| A2 Frontend Pages | 17 | 0 | 0 | 17 | 19 |
+| A2 Frontend Pages | 16 | 0 | 0 | 16 | 18 |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | 11 |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | 15 |
 | A5 Backend Shared / Infra | 0 | 8 | 0 | 8 | 8 |
@@ -45,7 +45,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a2"></a>
 
-## A2 — Frontend Pages (19)  ·  score 17/17 documented · 0 partial · 0 undocumented
+## A2 — Frontend Pages (18)  ·  score 16/16 documented · 0 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
@@ -57,7 +57,6 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | /learn/radicals | ✅ | apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx | documented | — | page-inventory |
 | /learn/grammar | ✅ | apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx | documented | — | page-inventory |
 | /learn/chengyu | ✅ | apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/hub/:entityType/:entityId | ✅ | apps/frontend/src/pages/learn/hub/LexicalEntityPageFull.stories.tsx | documented | — | page-inventory |
 | /practices/review | ✅ | apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx | documented | — | page-inventory |
 | /practices/quiz | ✅ | apps/frontend/src/pages/practices/QuizPageFull.stories.tsx | documented | — | page-inventory |
 | /progress | ✅ | apps/frontend/src/pages/ProgressPageFull.stories.tsx | documented | — | page-inventory |

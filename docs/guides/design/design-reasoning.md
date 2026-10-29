@@ -196,15 +196,15 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 ### 4.2 Character Hub
 
-| Rule                  | Specification                                                             |
-| --------------------- | ------------------------------------------------------------------------- |
-| **Container**         | Fixed dimensions (data-resilient shell), inner scroll if needed           |
-| **Character display** | Largest element — `--font-5xl` (40px) minimum, centered, `--text-primary` |
-| **Readings list**     | Ghost buttons for audio play, `--text-secondary` for pinyin text          |
-| **Radical section**   | `--space-md` (16px) padding, subtle border separation                     |
-| **Common words**      | Chip-style buttons with `--surface-light-10` background                   |
-| **Etymology**         | `--text-tertiary` for descriptive text, smaller font (`--font-sm`)        |
-| **Hub modal**         | `--surface-dark-alt` background, `--overlay-dark` backdrop                |
+| Rule                  | Specification                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Container**         | Fixed dimensions (data-resilient shell), inner scroll if needed                                                     |
+| **Character display** | Largest element — `--font-5xl` (40px) minimum, centered, `--text-primary`                                           |
+| **Readings list**     | Ghost buttons for audio play, `--text-secondary` for pinyin text                                                    |
+| **Radical section**   | `--space-md` (16px) padding, subtle border separation                                                               |
+| **Common words**      | Chip-style buttons with `--surface-light-10` background                                                             |
+| **Etymology**         | `--text-tertiary` for descriptive text, smaller font (`--font-sm`)                                                  |
+| **Hub sheet**         | `--card` instrument plane + `--hairline` edge, right-edge sheet at `--z-modal`, never a scrim above 767px (ADR-014) |
 
 **Anti-patterns:**
 

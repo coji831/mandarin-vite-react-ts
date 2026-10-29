@@ -2,14 +2,14 @@
 purpose: "Per-epic design revalidation guide — each UI epic revalidates the surfaces in its scope against the ratified contract, and reworks from scratch when revalidation fails."
 status: active
 date: 2026-10-26
-last-verified: 2026-10-26
+last-verified: 2026-10-29
 type: guide
 audience: agents
 ---
 
 # Design Revalidation Guide — per epic
 
-**Last Updated:** 2026-10-26
+**Last Updated:** 2026-10-29
 **Audience:** AI Coding Agents + Code Reviewer
 **Purpose:** The rule each UI-carrying epic follows at design-spec time: revalidate the quality of the
 surfaces in its scope against the ratified design contract, and **rework from scratch** when revalidation
@@ -38,17 +38,20 @@ A surface in an epic's scope passes revalidation only if ALL of the following ho
 3. **Correct chrome** — Focus = rail collapsed + recessed top bar + one task + exactly one
    position-locked primary CTA. Browse = rail expanded + standard top bar. (Delivered by the
    mode-aware chrome shell; see "shared shell" below.)
-4. **No third mode** — **session = route, not modal.** Any surface that is a learning session
-   (character detail, reader, quiz, review, exam, speaking drill, conversation) is a routed
-   `detail`/Focus surface. Modals are only for transient actions (confirm, quota-exhausted prompt,
-   quick reveal that is not itself a session). A modal hosting a session is a revalidation failure.
+4. **No third mode** — **classify the surface first: session or navigator.** A surface with (a) a
+   bounded start and end, (b) a completion action and (c) progress state is a **session**, and every
+   session (reader, quiz, review, exam, speaking drill, conversation) is a routed `detail`/Focus
+   surface. A surface with none of the three is a **navigator**, and a navigator may be a transient
+   overlay. Modals remain reserved for transient actions (confirm, quota-exhausted prompt, a quick
+   reveal that is not itself a session). A modal hosting a session is a revalidation failure.
    **Enforced, not merely stated:** `design-audit:foundation` runs a `session-modal` check (a
    `<Modal>` wrapping a session surface — an entity hub from `entityHubRegistry.tsx`, the hub
-   dispatcher, or any `*Hub` / `*DetailContent` / `*Session` body) and a `session-route` check (the
-   dispatcher must not be mounted by the app shell; the hub route must be registered, declared
-   `detail` in `pageChrome.ts`, and rendered by a `PageShell archetype="detail"` page). Reference
-   implementation: `pages/learn/hub/LexicalEntityPage.tsx` at `/learn/hub/:entityType/:entityId` —
-   the lexical hub that used to be a 720px overlay.
+   dispatcher, or any `*Hub` / `*DetailContent` / `*Session` body) and a `session-route` check, which
+   now keys off the classifier rather than "any `*Hub`": the app shell mounts the hub **peek**
+   (`HubSheet`, portalled to `<body>`, so it is not page content), the sheet renders the dispatcher,
+   and **no** `/learn/hub` route may be registered or declared in `pageChrome.ts` — a lookup is not a
+   location. Reference implementation: `features/lexical-hub/components/HubSheet/HubSheet.tsx`
+   (ADR-014) — the lexical hub is a navigator worth a cross-page peek, not a 620px page.
 5. **One task, one CTA** — the surface does not spread one task across sibling tabs/pages or stack
    multiple primary actions (cognitive-load fundamental #6; immutable rule #4).
 6. **Anatomy law** — `PageShell(measure) → PageStack(rhythm) → PageGrid(gutter)`; no page-scoped

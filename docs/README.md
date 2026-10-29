@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-10-27 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-10-29 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -63,7 +63,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 - [Layer 1 · Product / Business — review · 5 leaves](#layer-1)
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
-- [Layer 3 · Architecture / Decisions — planned · 7 leaves](#layer-3)
+- [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 11 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
 - [Layer 6 · Agentic System — review · 40 leaves](#layer-6)
@@ -115,7 +115,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-3"><summary>Layer 3 · Architecture / Decisions — planned · 7 leaves</summary>
+<details id="layer-3"><summary>Layer 3 · Architecture / Decisions — planned · 8 leaves</summary>
 
 | Purpose | Status | Link |
 | --- | --- | --- |
@@ -125,6 +125,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | ADR-013 — composition and portals/focus: extract a shared useFocusTrap hook instead of adopting Radix at epic 31, and the rule for when a portal is allowed | ratified | [docs/guides/adr/composition-portals-focus.md](guides/adr/composition-portals-focus.md) |
 | 4 data tiers — storage, cache, and module dependency rules for content vs user data | **review** | [docs/guides/adr/data-tiering-architecture.md](guides/adr/data-tiering-architecture.md) |
 | ADR-011 — the ratified North Star visual direction for PinyinPal: 'Night Bench' (dark instrument register + a light paper surface for long-form reading only), and the status of the light 'Reading Room' alternative. | ratified | [docs/guides/adr/design-direction-night-bench.md](guides/adr/design-direction-night-bench.md) |
+| ADR-014 — the lexical hub is a navigator, not a session: it becomes a standalone cross-page peek sheet in the popover layer (no route, one history entry per open), and --size-hub-sheet lands through ADR-005's token route. | ratified | [docs/guides/adr/lexical-hub-sheet.md](guides/adr/lexical-hub-sheet.md) |
 | ADR-012 — lands ADR-011 consequence 3's paper surface token family through ADR-005's route: the nine names, their values, why they are PinyinPal domain names rather than spine generics, and how the reading page selects the register. | ratified | [docs/guides/adr/paper-surface-tokens.md](guides/adr/paper-surface-tokens.md) |
 
 </details>
@@ -150,7 +151,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Shared-component registry — the machine-checked catalog | green | [.github/component-registry.json](../.github/component-registry.json) |
-| Page route→archetype→story consistency ledger — 17/17 conform · 0/17 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
+| Page route→archetype→story consistency ledger — 16/16 conform · 0/16 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
 
 </details>
 
@@ -449,7 +450,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | Area | Documented | Partial | Undocumented | Active | Deep-link |
 | --- | --- | --- | --- | --- | --- |
 | A1 Frontend Features | 2 | 6 | 5 | 13 | [coverage.md](coverage.md#a1) |
-| A2 Frontend Pages | 17 | 0 | 0 | 17 | [coverage.md](coverage.md#a2) |
+| A2 Frontend Pages | 16 | 0 | 0 | 16 | [coverage.md](coverage.md#a2) |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | [coverage.md](coverage.md#a3) |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | [coverage.md](coverage.md#a4) |
 | A5 Backend Shared / Infra | 0 | 8 | 0 | 8 | [coverage.md](coverage.md#a5) |
