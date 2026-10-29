@@ -3,8 +3,8 @@ purpose: "ADR-011 — the ratified North Star visual direction for PinyinPal: 'N
 status: ratified
 date: 2026-09-12
 relates-to: "ADR-001 (Dark Mode Only) · ADR-005 (Token Freeze) · ADR-007 (North-Star Visual Identity) · ADR-009 (Fluid Display Type Scale) · ADR-010 (Vibrancy Amplification) · ADR-012 (Paper surface tokens — the landing)"
-evidence: "archived hub evidence: design-style-catalogue Parts 7-9 · demo dashboard-options.html"
-last-verified: 2026-10-26
+evidence: "archived hub evidence: design-style-catalogue Parts 7-9 · demo dashboard-options.html · paper-register rationale re-grounded 2026-10-29 on the polarity/cognitive-load study (Sethi & Ziat, Ergonomics 2022)"
+last-verified: 2026-10-29
 ---
 
 # ADR-011 — North Star Visual Direction: "Night Bench"
@@ -43,8 +43,13 @@ The evidence came from measuring 21 real learning platforms live in a browser (s
 1. The **dark canvas stays** as the data, wayfinding and task register (T1: dark is the rarest position
    available in this category, and it is already built).
 2. A **light warm-paper surface is added for long-form reading only** (the reader / `focus-media`
-   archetype). This is T7, and it is measured rather than cultural: every read-first Mandarin product
-   surveyed is light, and edX ships the same pairing.
+   archetype). The reason is a **mechanism, not a category observation**: negative polarity (light text on
+   dark) raises cognitive load — longer visual search and larger pupil diameter, with positive polarity
+   chosen by readers to avoid fatigue (Sethi & Ziat, _Ergonomics_, 2022,
+   doi:10.1080/00140139.2022.2160879). A light plane under dark instrument chrome is therefore the
+   polarity the evidence favours for sustained text. T7 records a _sighting_ of the same pairing, not a
+   measurement of it, and "reading surfaces are light across the category" is not evidence — neither is
+   cited as the justification any more.
 3. **Amber stays as the single accent** (T6: 1 of 21, and it measures best on dark).
 4. The register is therefore **per-archetype, not global**: dark for data/task, paper for reading. It is
    deliberately _not_ one style applied everywhere.
@@ -73,6 +78,15 @@ The evidence came from measuring 21 real learning platforms live in a browser (s
    Outstanding owner decision.
 6. **The paper surface is the light-surface token set**, so a future light mode reuses it rather than
    starting over. That is precisely why retaining A stays cheap.
+7. **The paper reading plane needs a user-facing dim/inverse option — the one carve-out from "no light
+   mode".** A paper plane with no way out is a light mode nobody can turn off, which is the position
+   ADR-001 said it would not take. The reading page must offer a dim/inverse variant (honour
+   `prefers-color-scheme`, or a per-passage control). **Do not justify the carve-out as comfort**: NN/g's
+   review of the primary studies (2020) found light mode better for visual acuity and proofreading, but
+   **no significant difference in fatigue** between polarities, and some low-vision readers
+   (cataract-related disorders) perform better in dark mode. The default's reason is legibility; the
+   toggle exists for the readers the default excludes. The control's shape is an open decision (Open
+   items 4).
 
 ## Verification of the demo this decision was made from
 
@@ -97,6 +111,8 @@ padding; and 13 em dashes in body copy.
 2. Land the paper token family through ADR-005. **LANDED 2026-10-26 — see ADR-012 and § Landing record below.**
 3. Record A's status as retained, and re-open ADR-001 explicitly if light mode is ever attempted. Recorded: Option A is retained,
    not adopted (decision 5); any light-mode work must supersede ADR-001 explicitly (consequence 2).
+4. Decide the shape of the paper dim/inverse control (consequence 7) and reconcile it with ADR-001's "no
+   user preference" line — the carve-out is required, how it is exposed is not yet decided.
 
 ## Landing record — the paper token family (2026-10-26, ADR-012)
 
