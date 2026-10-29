@@ -70,6 +70,40 @@ describe("ReadingView", () => {
     expect(screen.getByText("HSK 2")).toBeInTheDocument();
   });
 
+  it("states the passage's real size when the payload carries it", () => {
+    render(
+      <ReadingView
+        passage={{ ...SAMPLE_PASSAGE, wordCount: 15 }}
+        onBack={onBack}
+        isLoading={false}
+        hasError={false}
+        onRetry={onRetry}
+      >
+        <div>content</div>
+      </ReadingView>,
+    );
+    // The header may quote the number the library card prints — never a
+    // known-word percentage (that stored ratio is not a measurement).
+    expect(screen.getByText("HSK 2 · 15 words")).toBeInTheDocument();
+    expect(screen.queryByText(/%/)).toBeNull();
+  });
+
+  it("omits the size when the payload does not carry it", () => {
+    render(
+      <ReadingView
+        passage={SAMPLE_PASSAGE}
+        onBack={onBack}
+        isLoading={false}
+        hasError={false}
+        onRetry={onRetry}
+      >
+        <div>content</div>
+      </ReadingView>,
+    );
+    expect(screen.getByText("HSK 2")).toBeInTheDocument();
+    expect(screen.queryByText(/words/)).toBeNull();
+  });
+
   it("renders children content", () => {
     render(
       <ReadingView

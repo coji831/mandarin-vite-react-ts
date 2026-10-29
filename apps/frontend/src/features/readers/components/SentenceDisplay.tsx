@@ -3,18 +3,25 @@
  * @description Renders one sentence with Chinese text and pinyin below.
  * Each word is tappable — unknown words are highlighted to indicate clickability.
  * Phase 2: Audio cursor read from audioStore directly — no audio props.
- * Phase D1: Reads the SHARED presentational audio store; the per-sentence 🔊
+ * Phase D1: Reads the SHARED presentational audio store; the per-sentence audio
  *   button calls the parent's `onPlay(index)` which routes `play(index, "single")`
  *   through the shared AudioManager (no auto-advance). The old
  *   `pendingSingleIndex` store signal is gone.
  * VisFix: Per-sentence audio button replaces container tap-to-play — word taps
  *   only open the popover and never trigger audio.
  *
+ * Rework (§2 close-out): the per-sentence transport reads the shared `Icon`
+ * (play / pause), not an emoji. The word affordance is labelled for what it
+ * does — "tap for word details" — instead of claiming the word is unknown:
+ * `isKnown` is real API data, but it stays false for every token until the
+ * backend resolves word ids, so "(unknown)" was a claim about the learner that
+ * nothing measured.
+ *
  * Only popover position flows through onPopoverOpen prop.
  * The "Open in Word Hub" button inside WordPopover handles hub navigation.
  */
 import { memo, useCallback } from "react";
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import { useAudioStore } from "shared/store";
 import "./SentenceDisplay.css";
 
@@ -133,7 +140,7 @@ function SentenceWord({
         // Open popover at tap position
         onPopoverOpen(word.glyph, rect);
       }}
-      aria-label={`${word.glyph} (unknown — tap for details)`}
+      aria-label={`${word.glyph} — tap for word details`}
       title="Tap for word details"
     >
       {word.glyph}
@@ -158,7 +165,6 @@ export const SentenceDisplay = memo(function SentenceDisplay({
   const sentenceNumber = sentence.index + 1;
   const isLoadingThis = isActive && status === "loading";
   const isPlayingThis = isActive && status === "playing";
-  const playIcon = isLoadingThis ? "⏳" : isPlayingThis ? "⏸" : "🔊";
 
   const containerClass = [
     "sentence-display",
@@ -228,7 +234,11 @@ export const SentenceDisplay = memo(function SentenceDisplay({
           }
           className="sentence-display__play-btn shrink-0"
         >
-          {playIcon}
+          {isLoadingThis ? (
+            "…"
+          ) : (
+            <Icon name={isPlayingThis ? "pause" : "play"} size={16} aria-hidden />
+          )}
         </Button>
       </div>
     </div>

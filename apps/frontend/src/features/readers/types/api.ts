@@ -27,5 +27,7 @@ export type PassageDetailApiResponse = {
   id: string;
   title: string;
   hskLevel: number;
+  /** Real stored word count (the number the library card prints). */
+  wordCount?: number;
   sentences: SentenceApiResponse[];
 };

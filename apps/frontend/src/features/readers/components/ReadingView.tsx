@@ -18,6 +18,18 @@
  * is not the accomplishment), and only after finishing do `Next passage` and
  * `Back to library` appear.
  *
+ * Rework (§2 close-out): reading POSITION is observed against the viewport. The
+ * sentence list is not a scroll container here — the page is — so a container
+ * root reported every sentence visible on mount, which declared the passage
+ * finished before the learner had read a line and pulled the page to the last
+ * sentence. Watching the viewport makes `currentSentence` real progress, so the
+ * completion CTA can only appear once the last sentence is actually reached.
+ *
+ * Per-passage signal: the header states the passage's real size (`wordCount`,
+ * the same number the library card prints). It does NOT print a known-word
+ * percentage — `knownWordRatio` is written once at generation and never
+ * updated, so it is a stored constant, not a measurement (see PassageCard).
+ *
  * Covers: default, loading (skeleton), error (retry), completion.
  */
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +45,8 @@ export interface PassageDetail {
   id: string;
   title: string;
   hskLevel: number;
+  /** Real word count from the API (the same number the library card prints). */
+  wordCount?: number;
   sentences: SentenceData[];
 }
 
@@ -104,28 +118,36 @@ export function ReadingView({
   const isComplete =
     passage.sentences.length > 0 && currentSentence >= passage.sentences.length - 1;
 
+  /**
+   * The one per-passage signal this header may state: how big the passage is.
+   * Both parts are real payload data (level + word count). No known-word
+   * percentage: the API's `knownWordRatio` is a stored constant written at
+   * generation, and the per-word `isKnown` flags stay false until the backend
+   * resolves word ids — so a ratio here would be a number nobody measured.
+   */
+  const metaLabel = passage.wordCount
+    ? `HSK ${passage.hskLevel} · ${passage.wordCount} words`
+    : `HSK ${passage.hskLevel}`;
+
   // Auto-save hook (Story 21.7)
   useAutoSaveProgress();
 
-  // Restore session and scroll to saved position on mount
+  // Restore the saved reading position — once per passage. Progress afterwards
+  // is the learner's own scrolling; yanking the page on every position change
+  // would fight the hand that is reading.
   useEffect(() => {
     if (lastRestoredRef.current === passage.id) return;
     lastRestoredRef.current = passage.id;
     setHasFinished(false);
-    restoreSession(passage.id);
+
+    const root = sentencesRef.current;
+    void restoreSession(passage.id).then(() => {
+      const savedIndex = useReadingStore.getState().currentSentence;
+      if (savedIndex <= 0 || !root) return;
+      const sentenceEl = root.querySelector(`[data-sentence-index="${savedIndex}"]`);
+      sentenceEl?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   }, [passage.id, restoreSession]);
-
-  // Scroll to saved sentence position after restore
-  useEffect(() => {
-    if (currentSentence <= 0 || !sentencesRef.current) return;
-
-    const sentenceEl = sentencesRef.current.querySelector(
-      `[data-sentence-index="${currentSentence}"]`,
-    );
-    if (sentenceEl) {
-      sentenceEl.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [currentSentence]);
 
   // On final sentence — mark as completed
   useEffect(() => {
@@ -135,10 +157,11 @@ export function ReadingView({
   }, [currentSentence, passage.sentences.length, onComplete]);
 
   /**
-   * Reading position: the highest sentence on screen is the reader's place in
-   * the passage. Without this nothing advances `currentSentence`, so the
-   * passage could never end (and `Finish reading` could never appear) for a
-   * learner who reads by scrolling rather than by playing audio.
+   * Reading position: the highest sentence at least half on screen is the
+   * reader's place in the passage. The ROOT is the viewport, not the sentence
+   * list: the list is not a scroll box (the page is), so a container root marks
+   * every sentence visible the moment the view mounts — which both fakes the
+   * completion state and auto-scrolls the reader to the end.
    */
   const onSentenceVisibleRef = useRef(onSentenceVisible);
   useEffect(() => {
@@ -154,14 +177,14 @@ export function ReadingView({
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
-          .filter((entry) => entry.isIntersecting)
+          .filter((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.5)
           .map((entry) => Number((entry.target as HTMLElement).dataset.sentenceIndex))
           .filter((index) => Number.isFinite(index));
         if (visible.length > 0) {
           onSentenceVisibleRef.current?.(Math.max(...visible));
         }
       },
-      { root, threshold: 0.6 },
+      { root: null, threshold: [0.5] },
     );
 
     targets.forEach((target) => observer.observe(target));
@@ -232,12 +255,10 @@ export function ReadingView({
         {/* On paper the shared Badge's dark-register surface would fail contrast,
             so the level is plain meta ink inside the sheet. */}
         {isPaper ? (
-          <span className="reading-view__level font-xs fw-600 shrink-0">
-            HSK {passage.hskLevel}
-          </span>
+          <span className="reading-view__level font-xs fw-600 shrink-0">{metaLabel}</span>
         ) : (
           <Badge variant="surface" className="shrink-0">
-            HSK {passage.hskLevel}
+            {metaLabel}
           </Badge>
         )}
       </div>
@@ -273,7 +294,10 @@ export function ReadingView({
                     Next passage{nextPassageTitle ? `: ${nextPassageTitle}` : ""}
                   </Button>
                 )}
-                <Button variant="ghost" size="md" onClick={onBack}>
+                {/* The way on is primary. On the last passage in the list there
+                    is no next one, so the exit IS the way on — otherwise a
+                    finished reader would be left with no primary at all. */}
+                <Button variant={onNextPassage ? "ghost" : "primary"} size="md" onClick={onBack}>
                   Back to library
                 </Button>
               </div>

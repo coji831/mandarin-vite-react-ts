@@ -209,7 +209,7 @@ export function ReadersPage() {
     [setRate],
   );
 
-  /** Per-sentence 🔊 → single-sentence play through the manager (no auto-advance). */
+  /** Per-sentence audio → single-sentence play through the manager (no auto-advance). */
   const handleSentencePlay = useCallback(
     (index: number) => {
       play(index, "single");
