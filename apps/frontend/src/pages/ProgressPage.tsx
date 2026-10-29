@@ -1,71 +1,81 @@
 /**
  * Progress page
  *
- * Shows gamification stats: streaks, badges, XP, achievements. The real data
- * wiring belongs to the epic that owns this surface (gamification); this page
- * is the settings-archetype shell those surfaces will fill.
+ * Says what is true, or says nothing (rework-proposal §6). The page this
+ * replaces rendered three stub cards whose copy promised future surfaces, one of
+ * which carried a dev receipt ("Backend integration: Story 15.3 (Completed)")
+ * inside an alert — that receipt is gone, and so are the promises.
+ *
+ * What remains is the shape the proposal names: ONE populated card built from
+ * numbers the API can actually return (foundation sections completed, radicals
+ * memorized) plus ONE honest empty state for badges, whose single primary CTA is
+ * the action that makes those numbers move. A visitor with no data gets the empty
+ * state alone — an empty grid reads as broken, an empty state reads as early.
  *
  * Anatomy (page-anatomy law): PageShell(settings measure) → PageStack →
- * PageHeader → PageGrid card home. No page-scoped layout CSS.
+ * PageHeader → card / empty state. No page-scoped layout CSS.
  */
-import { Box, Icon, PageGrid, PageHeader, PageShell, PageStack } from "shared/components";
-import type { IconName } from "shared/components";
-import "./ProgressPage.css";
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  EmptyState,
+  PageHeader,
+  PageShell,
+  PageStack,
+  Skeleton,
+} from "shared/components";
+import { practices_review } from "shared/constants";
+import { ProgressSummaryCard, useProgressSummary } from "features/progress";
 
 export { ProgressPage };
 
-type ProgressSection = {
-  icon: IconName;
-  title: string;
-  description: string;
-  /** Dev/status note — removed when the owning epic lands the real surface. */
-  note?: string;
-};
-
-const SECTIONS: ProgressSection[] = [
-  {
-    icon: "flame",
-    title: "Streak",
-    description: "Your current learning streak and freeze currency will be displayed here.",
-    note: "Backend integration: Story 15.3 (Completed)",
-  },
-  {
-    icon: "star",
-    title: "Badges",
-    description: "Milestone badges, mystery box rewards, and achievements.",
-  },
-  {
-    icon: "zap",
-    title: "Experience Points",
-    description: "XP earned from quizzes, streaks, and achievements.",
-  },
-];
-
 function ProgressPage() {
+  const navigate = useNavigate();
+  const summary = useProgressSummary();
+
   return (
     <PageShell archetype="settings">
       <PageStack size="default">
-        <PageHeader
-          title="Your Progress"
-          description="Track your learning journey with streaks, badges, and achievements."
-        />
+        <PageHeader title="Your Progress" description="The numbers PinyinPal can measure today." />
 
-        <PageGrid columns={3} aria-label="Progress sections">
-          {SECTIONS.map((section) => (
-            <div key={section.title} role="listitem" className="flex min-w-0">
-              <Box variant="card-elevated" className="flex-col gap-sm flex-1">
-                <Icon name={section.icon} size={24} aria-hidden />
-                <h2 className="font-lg fw-600 text-primary m-0">{section.title}</h2>
-                <p className="font-sm text-tertiary m-0">{section.description}</p>
-                {section.note && (
-                  <div className="alert-warning p-md">
-                    <p className="progress-page__xp-badge m-0">{section.note}</p>
-                  </div>
-                )}
-              </Box>
-            </div>
-          ))}
-        </PageGrid>
+        {summary.isLoading ? (
+          <div className="flex-col gap-md" role="status" aria-label="Loading progress">
+            <Skeleton variant="card" height="160px" />
+            <Skeleton variant="card" height="120px" />
+          </div>
+        ) : summary.hasData ? (
+          <>
+            <ProgressSummaryCard summary={summary} />
+            <Box variant="dashed" radius="lg" padding="2xl">
+              <EmptyState
+                icon="star"
+                iconTone="accent"
+                title="Badges appear after your first review"
+                description="Milestone badges are not built yet. Reviewed items and masteries are what they will be counted from."
+                action={
+                  <Button variant="primary" onClick={() => navigate(practices_review)}>
+                    Start a review
+                  </Button>
+                }
+              />
+            </Box>
+          </>
+        ) : (
+          <Box variant="dashed" radius="lg" padding="2xl">
+            <EmptyState
+              icon="progress"
+              iconTone="accent"
+              title="Nothing to show yet"
+              description="Finish a review or a foundation section and your numbers appear here."
+              action={
+                <Button variant="primary" onClick={() => navigate(practices_review)}>
+                  Start a review
+                </Button>
+              }
+            />
+          </Box>
+        )}
       </PageStack>
     </PageShell>
   );

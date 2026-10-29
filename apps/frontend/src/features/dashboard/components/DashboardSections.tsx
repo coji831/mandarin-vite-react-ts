@@ -1,116 +1,50 @@
 /**
  * DashboardSections
  *
- * Phase 2+ dashboard body (overview archetype). Owns the page's section
- * rhythm via PageStack; the page container owns the PageShell measure.
+ * Phase 2+ dashboard body (overview archetype). Owns the page's section rhythm
+ * via PageStack; the page container owns the PageShell measure.
  *
- * Order: PageHeader (eyebrow = phase, title, CTA top-right) → Current Phase
- * focal card → Quick Access tiles → Recent Activity. Preview/reward split
- * (D.2): cards preview only; detail lives in the Focus surface.
+ * Rework (§8): the page had ONE primary CTA plus four QuickTiles (Review / Quiz
+ * / Radicals / Progress) — every one of which the rail already carries — and a
+ * Current Phase card that duplicated the rail's phase grouping. All five are
+ * gone. What is left is the shape the proposal names: h1 + ONE primary next
+ * step, then the BM-2 WEDGE card ("Hear your tone"), then a single
+ * "Pick up where you left off" row.
  */
-import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  EmptyState,
-  Icon,
-  PageGrid,
-  PageHeader,
-  PageStack,
-  ProgressBar,
-} from "shared/components";
+import { Box, Button, Icon, PageHeader, PageStack } from "shared/components";
 import type { IconName } from "shared/components";
-import {
-  practices_review,
-  practices_quiz,
-  learn_radicals,
-  progress_page,
-  withSearchParams,
-} from "shared/constants";
-import "./DashboardSections.css";
+import { ToneDemoCard } from "./ToneDemoCard";
 
 export type ActivityItem = {
   icon: IconName;
   text: string;
 };
 
-/** Course length — the focal card's "Phase n of 4" meta. */
-const PHASE_COUNT = 4;
-
-/** Section head — h2 + optional meta on a baseline row (blueprint .section-head). */
-function SectionHead({ id, title, meta }: { id: string; title: string; meta?: string }) {
-  return (
-    <div className="dashboard-section-head flex justify-between gap-md">
-      <h2 id={id} className="font-lg fw-600 text-primary m-0">
-        {title}
-      </h2>
-      {meta && <span className="font-sm text-muted">{meta}</span>}
-    </div>
-  );
-}
-
-type QuickTile = {
-  icon: IconName;
-  label: string;
-  /** Static descriptor — never a metric (data wiring is a later epic). */
-  sub: string;
-  onSelect: () => void;
-};
-
 export interface DashboardSectionsProps {
-  /** 1-based phase number — drives the eyebrow and the "Phase n of 4" meta. */
-  phaseNumber: number;
   /** Phase title without its number, e.g. "The Core 300". */
   phaseTitle: string;
-  phasePct: number;
+  /** The one next step, verbatim (e.g. "Pinyin §3 — the four tones"). */
   nextStep: string;
   streakDays: number;
-  activities: ActivityItem[];
+  /** Most recent thing the learner did; absent = nothing to resume. */
+  lastActivity?: ActivityItem | null;
   onContinueLearning?: () => void;
+  /** Opens the tone drill that stands in for the (not yet live) grading demo. */
+  onTryToneDemo: () => void;
 }
 
 export function DashboardSections({
-  phaseNumber,
   phaseTitle,
-  phasePct,
   nextStep,
   streakDays,
-  activities,
+  lastActivity,
   onContinueLearning,
+  onTryToneDemo,
 }: DashboardSectionsProps) {
-  const navigate = useNavigate();
-
-  const quickTiles: QuickTile[] = [
-    {
-      icon: "review",
-      label: "Review Characters",
-      sub: "Spaced repetition review",
-      onSelect: () => navigate(withSearchParams(practices_review, { type: "character" })),
-    },
-    {
-      icon: "quiz",
-      label: "Take Phase Quiz",
-      sub: "Audio to pinyin + tone",
-      onSelect: () => navigate(withSearchParams(practices_quiz, { type: "audio-to-pinyin-tone" })),
-    },
-    {
-      icon: "radicals",
-      label: "Study Radicals",
-      sub: "Radicals and components",
-      onSelect: () => navigate(learn_radicals),
-    },
-    {
-      icon: "progress",
-      label: "View Progress",
-      sub: "Accuracy, streak, and mastery",
-      onSelect: () => navigate(progress_page),
-    },
-  ];
-
   return (
     <PageStack size="default">
       <PageHeader
-        eyebrow={`Phase ${phaseNumber}: ${phaseTitle}`}
+        eyebrow={phaseTitle}
         title="Welcome back"
         description={
           <span className="flex-center gap-xs">
@@ -120,77 +54,29 @@ export function DashboardSections({
         }
       >
         <Button variant="primary" onClick={onContinueLearning}>
-          Continue Learning ▸
+          Continue: {nextStep}
         </Button>
       </PageHeader>
 
-      {/* Current Phase — preview only; the % is section meta, not card chrome */}
-      <section aria-labelledby="dashboard-phase-title" className="flex flex-col gap-sm">
-        <SectionHead
-          id="dashboard-phase-title"
-          title="Current Phase"
-          meta={`${phasePct}% complete`}
-        />
-        <Box variant="card-elevated" className="dashboard-card flex-col gap-md">
-          <div className="flex-between items-center gap-sm">
-            <span className="font-sm text-muted">
-              Phase {phaseNumber} of {PHASE_COUNT}
+      {/* BM-2 wedge — the home surface's proof, not another destination tile. */}
+      <ToneDemoCard onTry={onTryToneDemo} />
+
+      {/* ONE resume row — not a grid of destinations. */}
+      <section aria-labelledby="dashboard-resume-title" className="flex flex-col gap-sm">
+        <h2 id="dashboard-resume-title" className="font-lg fw-600 text-primary m-0">
+          Pick up where you left off
+        </h2>
+        {lastActivity ? (
+          <Box variant="card-elevated" className="flex-center gap-sm font-sm text-secondary">
+            <span aria-hidden="true">
+              <Icon name={lastActivity.icon} size={16} />
             </span>
-            <span className="font-sm text-muted">{phaseTitle}</span>
-          </div>
-          <ProgressBar value={phasePct} aria-label="Current phase progress" />
-          <p className="font-sm text-secondary m-0">Next: {nextStep}</p>
-        </Box>
-      </section>
-
-      {/* Quick Access — PageGrid is the only card home (page-anatomy law) */}
-      <section aria-labelledby="dashboard-quick-title" className="flex flex-col gap-sm">
-        <SectionHead id="dashboard-quick-title" title="Quick Access" />
-        <PageGrid columns={4} aria-label="Quick access">
-          {quickTiles.map((tile) => (
-            <div key={tile.label} role="listitem" className="flex min-w-0">
-              <Button
-                variant="tag"
-                className="dashboard-tile hover-lift flex-col flex-1 gap-sm text-left"
-                onClick={tile.onSelect}
-              >
-                <span
-                  className="dashboard-tile__icon flex-center radius-md bg-primary-bg text-primary-light"
-                  aria-hidden="true"
-                >
-                  <Icon name={tile.icon} size={20} />
-                </span>
-                <span className="font-sm fw-600 text-primary">{tile.label}</span>
-                <span className="font-xs text-muted">{tile.sub}</span>
-              </Button>
-            </div>
-          ))}
-        </PageGrid>
-      </section>
-
-      {/* Recent Activity — empty branch (D.8: real data wiring is a later epic) */}
-      <section aria-labelledby="dashboard-activity-title" className="flex flex-col gap-sm">
-        <SectionHead id="dashboard-activity-title" title="Recent Activity" />
-        {activities.length > 0 ? (
-          <Box variant="card-elevated" className="flex-col gap-sm">
-            {activities.map((item, i) => (
-              <div key={i} className="flex-center gap-sm font-sm text-secondary">
-                <span aria-hidden="true">
-                  <Icon name={item.icon} size={16} />
-                </span>
-                <span>{item.text}</span>
-              </div>
-            ))}
+            <span>{lastActivity.text}</span>
           </Box>
         ) : (
-          <Box variant="dashed" radius="lg" padding="2xl">
-            <EmptyState
-              icon="activity"
-              iconTone="accent"
-              title="No recent activity yet"
-              description="Start learning to see your progress here!"
-            />
-          </Box>
+          <p className="font-sm text-tertiary m-0">
+            Nothing to resume yet — your first step is the Blueprint.
+          </p>
         )}
       </section>
     </PageStack>

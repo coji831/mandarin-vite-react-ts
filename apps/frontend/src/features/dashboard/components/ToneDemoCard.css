@@ -1,0 +1,8 @@
+/**
+ * ToneDemoCard.css — the wedge card's only local shape: it leads the page, so it
+ * carries a left rule that the utility layer cannot express (a single-sided
+ * accent border, not a full border colour change).
+ */
+.tone-demo-card {
+  border-left: 3px solid var(--accent-fill);
+}

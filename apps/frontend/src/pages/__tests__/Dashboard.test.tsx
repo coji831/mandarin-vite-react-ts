@@ -2,11 +2,10 @@
  * Integration Tests for Dashboard Page
  * Wireframe Sections 8.3/8.5
  *
- * Tests Dashboard phase-aware display:
- * - Phase 1 empty state: welcome prompt with "Start with Pinyin Basics" CTA
- * - Phase 2+: phase progress, quick access buttons, recent activity
- * - Loading state via the Skeleton shell (D.8 — no CLS)
- * - Navigation via quick access buttons
+ * Rework (§8): the dashboard is ONE primary CTA + the BM-2 wedge card + one
+ * resume row. The four QuickTiles and the Current Phase card are gone (the rail
+ * already carries every one of those destinations), so these tests pin the new
+ * shape instead: one primary, the wedge, and no tile grid.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -68,7 +67,7 @@ describe("Dashboard Page", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Dashboard" })).toBeInTheDocument();
   });
 
-  it("should show Phase 1 empty state by default", async () => {
+  it("should show Phase 1 welcome with the Blueprint CTA", async () => {
     (usePhaseGate as ReturnType<typeof vi.fn>).mockReturnValue({
       phaseGate: { currentPhase: 1, updatedAt: "2026-01-01" },
       isLoading: false,
@@ -79,11 +78,11 @@ describe("Dashboard Page", () => {
     await waitFor(() => {
       expect(screen.getByText(/Welcome to PinyinPal/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Let's start learning/i)).toBeInTheDocument();
-    expect(screen.getByText(/Start with Pinyin Basics/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start with Pinyin Basics" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Hear your tone" })).toBeInTheDocument();
   });
 
-  it("should show Phase 2+ dashboard with phase card", async () => {
+  it("should show Phase 2+ with ONE primary CTA and no tile grid", async () => {
     (usePhaseGate as ReturnType<typeof vi.fn>).mockReturnValue({
       phaseGate: { currentPhase: 2, updatedAt: "2026-01-01" },
       isLoading: false,
@@ -94,10 +93,14 @@ describe("Dashboard Page", () => {
     await waitFor(() => {
       expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Phase 2: The Core 300/i)).toBeInTheDocument();
+    // The phase title is an eyebrow, not a card.
+    expect(screen.getByText("The Core 300")).toBeInTheDocument();
+    // Exactly one primary action on the page.
+    const primaries = document.querySelectorAll(".btn-primary");
+    expect(primaries).toHaveLength(1);
   });
 
-  it("should show quick access buttons for Phase 2+", async () => {
+  it("should not render the removed QuickTile destinations", async () => {
     (usePhaseGate as ReturnType<typeof vi.fn>).mockReturnValue({
       phaseGate: { currentPhase: 2, updatedAt: "2026-01-01" },
       isLoading: false,
@@ -106,23 +109,25 @@ describe("Dashboard Page", () => {
     renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Review Characters/i)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Take Phase Quiz/i)).toBeInTheDocument();
-    expect(screen.getByText(/Study Radicals/i)).toBeInTheDocument();
-    expect(screen.getByText(/View Progress/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Review Characters/i)).toBeNull();
+    expect(screen.queryByText(/Take Phase Quiz/i)).toBeNull();
+    expect(screen.queryByText(/Study Radicals/i)).toBeNull();
+    expect(screen.queryByText(/View Progress/i)).toBeNull();
   });
 
-  it("should show Continue Learning button", async () => {
+  it("should lead with the BM-2 wedge card", async () => {
     (usePhaseGate as ReturnType<typeof vi.fn>).mockReturnValue({
-      phaseGate: { currentPhase: 2, updatedAt: "2026-01-01" },
+      phaseGate: { currentPhase: 3, updatedAt: "2026-01-01" },
       isLoading: false,
     });
 
     renderWithProviders(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Continue Learning/i)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Hear your tone" })).toBeInTheDocument();
     });
+    expect(screen.getByRole("button", { name: /Continue:/ })).toBeInTheDocument();
   });
 });
