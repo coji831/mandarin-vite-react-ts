@@ -25,13 +25,13 @@ export type {
   PassageSummary,
   SentenceDisplayProps,
   ReadingViewProps,
+  ReadingSurface,
   PassageDetail,
   AudioControlBarProps,
 } from "./components";
 
 // Page component — imported directly, not through components barrel
 export { ReadersPage } from "../../pages/learn/readers/ReadersPage";
-export type { ReadersPageProps, ReadersPageMode } from "../../pages/learn/readers/ReadersPage";
 
 // Hooks
 export { usePassages, usePassageDetail, useGeneratePassage, useAutoSaveProgress } from "./hooks";

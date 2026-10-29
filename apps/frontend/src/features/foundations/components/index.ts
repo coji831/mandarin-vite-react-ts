@@ -29,3 +29,10 @@ export { AnimationPanel } from "./animations/AnimationPanel";
 export { SuggestionPanel } from "./animations/SuggestionPanel";
 export { PictographGallery } from "./PictographGallery";
 export { PictographMatchGame } from "./PictographMatchGame";
+export {
+  BLUEPRINT_STEPS,
+  blueprintStepIndex,
+  BlueprintStepper,
+  BlueprintStepBody,
+} from "./blueprint";
+export type { BlueprintStep, BlueprintStepId, BlueprintStepperProps } from "./blueprint";

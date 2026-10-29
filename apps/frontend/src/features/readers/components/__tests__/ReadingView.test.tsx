@@ -99,7 +99,7 @@ describe("ReadingView", () => {
       </ReadingView>,
     );
 
-    await userEvent.click(screen.getByLabelText("Back to library"));
+    await userEvent.click(screen.getByLabelText("Leave this passage"));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 
@@ -133,7 +133,11 @@ describe("ReadingView", () => {
       </ReadingView>,
     );
 
-    expect(screen.getByText("Unable to load passage")).toBeInTheDocument();
+    // The reading route owns the page's single <h1>; the error frame repeats the
+    // title visually, so query the heading and the message separately.
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Unable to load passage" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Failed to load this passage/)).toBeInTheDocument();
   });
 
@@ -192,11 +196,38 @@ describe("ReadingView", () => {
 
     const completionBlock = screen.getByLabelText("Passage complete");
     expect(completionBlock).toBeInTheDocument();
-    expect(screen.getByText("Passage complete!")).toBeInTheDocument();
     expect(screen.getByText(/You finished reading/)).toBeInTheDocument();
     expect(completionBlock).toHaveTextContent(SAMPLE_PASSAGE.title);
-    expect(screen.getByText("Back to Library")).toBeInTheDocument();
-    expect(screen.getByText("Completed ✓")).toBeInTheDocument();
+    // §2: the completion CTA is the accomplishment — not the exit.
+    expect(screen.getByRole("button", { name: "Finish reading" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Back to library/i })).toBeNull();
+  });
+
+  it("offers Next passage and Back to library only AFTER finishing", async () => {
+    const onFinish = vi.fn();
+    const onNextPassage = vi.fn();
+    useReadingStore.setState({ currentSentence: LAST_SENTENCE_INDEX });
+
+    render(
+      <ReadingView
+        passage={SAMPLE_PASSAGE}
+        onBack={onBack}
+        isLoading={false}
+        hasError={false}
+        onRetry={onRetry}
+        onFinish={onFinish}
+        onNextPassage={onNextPassage}
+        nextPassageTitle="我的朋友"
+      >
+        <div>content</div>
+      </ReadingView>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Finish reading" }));
+    expect(onFinish).toHaveBeenCalledTimes(1);
+
+    expect(screen.getByRole("button", { name: /Next passage/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back to library" })).toBeInTheDocument();
   });
 
   it("fires onComplete when the final sentence is reached", () => {
@@ -235,8 +266,8 @@ describe("ReadingView", () => {
       </ReadingView>,
     );
 
-    // Exact match — the header's back button has aria-label "Back to library".
-    await userEvent.click(screen.getByRole("button", { name: "Back to Library" }));
+    // The header's back control is the exit at any point in the passage.
+    await userEvent.click(screen.getByRole("button", { name: "Leave this passage" }));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 });

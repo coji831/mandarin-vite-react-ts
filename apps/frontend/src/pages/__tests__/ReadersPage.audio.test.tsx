@@ -19,6 +19,7 @@
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import { Route, Routes } from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { server } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
@@ -150,9 +151,17 @@ afterAll(() => server.close());
 async function renderReadingPage(isAuthenticated: boolean) {
   setReadingStore(isAuthenticated);
   server.use(passagesHandler(), passageDetailHandler());
-  renderWithProviders(<ReadersPage mode="reading" />, {
-    auth: isAuthenticated ? { isAuthenticated: true } : { isAuthenticated: false, user: null },
-  });
+  // A reading session is a ROUTE now (rework-proposal §2), so the page must be
+  // rendered at its address with the param matched.
+  renderWithProviders(
+    <Routes>
+      <Route path="/learn/readers/:passageId" element={<ReadersPage />} />
+    </Routes>,
+    {
+      route: `/learn/readers/${PASSAGE_ID}`,
+      auth: isAuthenticated ? { isAuthenticated: true } : { isAuthenticated: false, user: null },
+    },
+  );
   // Wait for the passage to render (title visible → AudioControlBar enabled).
   await screen.findByText("我的学校");
 }
@@ -318,9 +327,15 @@ describe("ReadersPage audio (shared AudioManager)", () => {
 async function renderReadingPageAsReturned(isAuthenticated: boolean) {
   setReadingStore(isAuthenticated);
   server.use(passagesHandler(), passageDetailHandler());
-  const result = renderWithProviders(<ReadersPage mode="reading" />, {
-    auth: isAuthenticated ? { isAuthenticated: true } : { isAuthenticated: false, user: null },
-  });
+  const result = renderWithProviders(
+    <Routes>
+      <Route path="/learn/readers/:passageId" element={<ReadersPage />} />
+    </Routes>,
+    {
+      route: `/learn/readers/${PASSAGE_ID}`,
+      auth: isAuthenticated ? { isAuthenticated: true } : { isAuthenticated: false, user: null },
+    },
+  );
   await screen.findByText("我的学校");
   return result;
 }

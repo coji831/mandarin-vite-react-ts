@@ -3,7 +3,6 @@ export {
   clearPhaseGateCache,
   purgeLegacyPhaseGateResidue,
 } from "./phaseGateService";
-export { createMockContentSource } from "./mockContentSource";
 
 // Audio service (shared/services/audio sub-barrel) — so the eslint
 // "import from the shared/services barrel" rule resolves for audio consumers.

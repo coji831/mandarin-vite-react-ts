@@ -33,7 +33,11 @@ export {
   SuggestionPanel,
   PictographGallery,
   PictographMatchGame,
+  BLUEPRINT_STEPS,
+  BlueprintStepper,
+  BlueprintStepBody,
 } from "./components";
+export type { BlueprintStep, BlueprintStepId } from "./components";
 export { useDragToPan } from "./hooks/useDragToPan";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
 export { isValidHanzi } from "./hooks/useCharacterSearch";

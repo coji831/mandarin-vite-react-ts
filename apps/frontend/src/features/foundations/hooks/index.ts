@@ -6,6 +6,7 @@
  */
 
 export { useFoundationsProgress } from "./useFoundationsProgress";
+export { useBlueprintContent } from "./useBlueprintContent";
 export { useHanziWriter } from "shared/components";
 export { useStrokeReferenceData } from "./useStrokeReferenceData";
 export { isValidHanzi } from "./useCharacterSearch";

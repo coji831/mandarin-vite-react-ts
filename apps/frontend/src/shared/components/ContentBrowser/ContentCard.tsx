@@ -35,9 +35,16 @@ const TYPE_ICONS: Record<ContentType, IconName> = {
 function ContentCard({
   item,
   onClick,
+  isActive = false,
 }: {
   item: ContentItem;
   onClick?: (item: ContentItem) => void;
+  /**
+   * The item currently open in the hub. The "current" state is carried by a
+   * check glyph AND a weight change, not by colour alone (rework-proposal §5):
+   * a border that differs only in hue is still a colour-only cue (SC 1.4.1).
+   */
+  isActive?: boolean;
 }) {
   const { contentType, title, subtitle, translation, hskLevel, isLocked } = item;
   const typeIcon = TYPE_ICONS[contentType];
@@ -65,7 +72,8 @@ function ContentCard({
     <Button
       variant="control"
       className={`content-card flex-col ${isLocked ? "content-card--locked op-60" : "content-card--unlocked"}`}
-      aria-label={`${title}${subtitle ? ` - ${subtitle}` : ""}${isLocked ? " (locked)" : ""}`}
+      aria-label={`${title}${subtitle ? ` - ${subtitle}` : ""}${isLocked ? " (locked)" : ""}${isActive ? " (open)" : ""}`}
+      aria-current={isActive ? "true" : undefined}
       disabled={isLocked}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
@@ -84,6 +92,12 @@ function ContentCard({
             <Icon name={typeIcon} size={16} />
           </span>
           <span className="content-card__title font-lg">{title}</span>
+          {/* Second, non-colour cue for the open item: a check glyph. */}
+          {isActive && (
+            <span className="text-success fw-700" aria-hidden="true">
+              ✓
+            </span>
+          )}
         </div>
         {(subtitle || translation) && (
           <p className="content-card__subtitle-row">

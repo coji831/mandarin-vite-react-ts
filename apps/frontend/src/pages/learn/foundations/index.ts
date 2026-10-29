@@ -1,4 +1,5 @@
 export { FoundationsPage } from "./FoundationsPage";
+export { FoundationsReferencePage } from "./FoundationsReferencePage";
 export { ContentPlaceholderPage } from "../ContentPlaceholderPage";
 export { PinyinTab } from "./PinyinTab";
 export { TonesTab } from "./TonesTab";

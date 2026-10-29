@@ -2,10 +2,15 @@
  * @file components/PassageCard/__tests__/PassageCard.test.tsx
  * @description Tests for PassageCard component
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ *
+ * Rework (§2): the card no longer prints a "known words" percentage — the API's
+ * ratio is a generation-time 0–1 column that cannot vary per learner, so every
+ * card read the same "1%". The tests below assert the replacement contract: the
+ * real word count, the explicit read affordance, and no percentage at all.
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PassageCard } from "../PassageCard";
 
@@ -13,7 +18,7 @@ describe("PassageCard", () => {
   const defaultProps = {
     title: "My First Passage",
     hskLevel: 2,
-    knownWordRatio: 75,
+    wordCount: 42,
     onClick: vi.fn(),
   };
 
@@ -27,9 +32,19 @@ describe("PassageCard", () => {
     expect(screen.getByText("HSK 2")).toBeInTheDocument();
   });
 
-  it("renders known word ratio", () => {
+  it("renders the real word count", () => {
     render(<PassageCard {...defaultProps} />);
-    expect(screen.getByText("75%")).toBeInTheDocument();
+    expect(screen.getByText("42 words")).toBeInTheDocument();
+  });
+
+  it("never renders a known-word percentage", () => {
+    render(<PassageCard {...defaultProps} />);
+    expect(screen.queryByText(/%/)).not.toBeInTheDocument();
+  });
+
+  it("renders an explicit read affordance", () => {
+    render(<PassageCard {...defaultProps} />);
+    expect(screen.getByText("Read →")).toBeInTheDocument();
   });
 
   it("calls onClick when clicked", async () => {
@@ -44,22 +59,12 @@ describe("PassageCard", () => {
     const onClick = vi.fn();
     render(<PassageCard {...defaultProps} onClick={onClick} />);
 
-    // The card body is now a real <button> — Enter is handled natively, so
+    // The card body is a real <button> — Enter is handled natively, so
     // simulate the full keyboard interaction instead of a raw keydown.
     const card = screen.getByRole("button");
     card.focus();
     await userEvent.keyboard("{Enter}");
     expect(onClick).toHaveBeenCalledTimes(1);
-  });
-
-  it("clamps knownWordRatio to [0, 100]", () => {
-    render(<PassageCard {...defaultProps} knownWordRatio={150} />);
-    expect(screen.getByText("100%")).toBeInTheDocument();
-  });
-
-  it("clamps negative knownWordRatio to 0", () => {
-    render(<PassageCard {...defaultProps} knownWordRatio={-10} />);
-    expect(screen.getByText("0%")).toBeInTheDocument();
   });
 
   it("shows bookmark when isBookmarked is true", () => {
@@ -115,13 +120,13 @@ describe("PassageCard", () => {
   it("includes completion status in aria-label", () => {
     render(<PassageCard {...defaultProps} isCompleted={true} />);
     const card = screen.getByRole("button");
-    expect(card.getAttribute("aria-label")).toContain("completed");
+    expect(card.getAttribute("aria-label")).toContain("finished");
   });
 
   it("includes bookmark status in aria-label", () => {
     render(<PassageCard {...defaultProps} isBookmarked={true} />);
     const cards = screen.getAllByRole("button");
-    const card = cards.find((el) => el.getAttribute("aria-label")?.startsWith("Passage:"));
+    const card = cards.find((el) => el.getAttribute("aria-label")?.startsWith("Read passage:"));
     expect(card?.getAttribute("aria-label")).toContain("bookmarked");
   });
 });

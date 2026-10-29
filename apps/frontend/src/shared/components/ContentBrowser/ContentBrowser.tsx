@@ -35,10 +35,16 @@ function ContentBrowser({
   contentSource,
   defaultTab = "all",
   userPhase = 1,
+  onItemClick,
+  activeItemId,
 }: {
   contentSource: ContentSource;
   defaultTab?: string;
   userPhase?: number;
+  /** Called when a card is activated — the Library opens the lexical hub here. */
+  onItemClick?: (item: ContentItem) => void;
+  /** Id of the item currently open in the hub (non-colour "current" cue). */
+  activeItemId?: string | null;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -310,7 +316,8 @@ function ContentBrowser({
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
-        onItemClick={() => {}}
+        onItemClick={onItemClick}
+        activeItemId={activeItemId}
         isLoading={isLoading}
         onClearFilters={handleClearAllFilters}
         onTabSuggestion={handleTabSuggestion}

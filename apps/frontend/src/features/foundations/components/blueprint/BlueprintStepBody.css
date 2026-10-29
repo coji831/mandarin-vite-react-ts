@@ -1,0 +1,18 @@
+/**
+ * BlueprintStepBody.css — the step bodies that need a shape the utility layer
+ * cannot express (a tile that fills its grid cell, and a square character tile).
+ */
+.blueprint-step__radical {
+  /* the tile must fill its grid cell in both axes — no utility does this */
+  flex: 1 1 auto;
+}
+
+.blueprint-step__character {
+  /* character tiles are square so glyphs line up across the grid */
+  aspect-ratio: 1 / 1;
+}
+
+.blueprint-step__tones {
+  /* the contour cards read as a compact block, not a full-width list */
+  max-width: var(--page-measure-detail);
+}

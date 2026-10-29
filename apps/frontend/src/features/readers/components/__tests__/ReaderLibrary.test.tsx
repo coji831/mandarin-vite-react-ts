@@ -171,7 +171,7 @@ describe("ReaderLibrary", () => {
     // PassageCards have role="button" and aria-label containing "Passage:"
     const passageCards = screen
       .getAllByRole("button")
-      .filter((btn) => btn.getAttribute("aria-label")?.startsWith("Passage:"));
+      .filter((btn) => btn.getAttribute("aria-label")?.startsWith("Read passage:"));
     expect(passageCards.length).toBe(3);
 
     await userEvent.click(passageCards[0]);

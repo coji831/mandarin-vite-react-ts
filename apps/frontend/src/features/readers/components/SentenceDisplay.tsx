@@ -172,7 +172,11 @@ export const SentenceDisplay = memo(function SentenceDisplay({
     .join(" ");
 
   return (
-    <div className={containerClass} aria-current={isActive ? "step" : undefined}>
+    <div
+      className={containerClass}
+      data-sentence-index={sentence.index}
+      aria-current={isActive ? "step" : undefined}
+    >
       <div className="sentence-display__row flex-align-center gap-sm">
         {/* Chinese text with tappable words + pinyin */}
         <div className="sentence-display__body flex-col gap-xs flex-1">
@@ -200,13 +204,18 @@ export const SentenceDisplay = memo(function SentenceDisplay({
             })}
           </div>
 
-          {/* Pinyin */}
-          <div
-            className="sentence-display__pinyin font-sm text-secondary lh-1-4"
-            aria-label="Pinyin"
-          >
-            {sentence.pinyin}
-          </div>
+          {/* Pinyin — rendered only when the payload actually carries pinyin.
+              Some passage rows return the glyphs in this field; printing them
+              under the identical sentence reads as a duplicate line, so the
+              display guard is "does it contain latin letters". */}
+          {/[a-z]/i.test(sentence.pinyin ?? "") && (
+            <div
+              className="sentence-display__pinyin font-sm text-secondary lh-1-4"
+              aria-label="Pinyin"
+            >
+              {sentence.pinyin}
+            </div>
+          )}
         </div>
 
         {/* Per-sentence audio button */}
