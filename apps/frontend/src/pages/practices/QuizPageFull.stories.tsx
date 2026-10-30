@@ -212,6 +212,28 @@ const QUIZ_ATTEMPT_HANDLER = http.post(`${API_BASE}/quiz/attempts`, () =>
   HttpResponse.json({ id: "storybook-attempt" }, { status: 200 }),
 );
 
+/**
+ * The completion the server returns for a GUEST attempt (§26.4.5): the
+ * OptionalAuthGuard answers with a mock and writes no row, so every field is a
+ * zero/false stub. A story that seeds this is showing the DEFECT state — the
+ * local session values must still be what renders.
+ */
+const GUEST_STUB_COMPLETION = {
+  totalScore: 0,
+  maxScore: 0,
+  passed: false,
+  accuracy: 0,
+  categoryBreakdown: { pinyin: 0, tones: 0, pairs: 0, rules: 0 },
+};
+
+const STRATEGY_CONFIG = {
+  type: "audio-to-pinyin-tone",
+  questionCount: 5,
+  passThreshold: 0.6,
+  timeLimitMinutes: 2.5,
+  tierRules: null,
+};
+
 // ── Meta ───────────────────────────────────────────────────────────
 
 const meta: Meta<typeof QuizSessionPage> = {
@@ -488,6 +510,120 @@ export const GuestResultsFailed: Story = {
         timeLimitMinutes: 2.5,
         tierRules: null,
       },
+    }),
+    withGuestAuth,
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Completion slot + guest lane (Epic 26 §26.2 / §26.4.5)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * ResultsWithSlot — registered learner, 2 misses. The results column is
+ * value → slot → review, and the slot's ONE primary is "Review what you missed"
+ * with "Back to Practices" as the ghost passed into the slot (§26.2.3).
+ */
+export const ResultsWithSlot: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: [
+        makeCorrectAnswer(MOCK_QUESTIONS[0]),
+        makeCorrectAnswer(MOCK_QUESTIONS[1]),
+        makeWrongAnswer(MOCK_QUESTIONS[2]),
+        makeCorrectAnswer(MOCK_QUESTIONS[3]),
+        makeWrongAnswer(MOCK_QUESTIONS[4]),
+      ],
+      score: 3,
+      timer: 90,
+      announcement: "Quiz complete. 3 of 5, 60 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * ResultsZeroMisses — registered learner, perfect score. There is nothing to
+ * review, so the slot holds a single primary ("Back to Practices") and no ghost:
+ * the one-CTA law forbids inventing a second action.
+ */
+export const ResultsZeroMisses: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: MOCK_QUESTIONS.map(makeCorrectAnswer),
+      score: 5,
+      timer: 90,
+      announcement: "Quiz complete. 5 of 5, 100 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * GuestResultsPassedCompleted — the guest DEFECT state, after a real
+ * `completeAttempt`: the server stub is `{totalScore: 0, maxScore: 0,
+ * passed: false}` while the local session scored 5/5. The score card must read
+ * 5/5 (100%) and Passed, and the slot's primary is the persistence ask.
+ */
+export const GuestResultsPassedCompleted: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: MOCK_QUESTIONS.map(makeCorrectAnswer),
+      score: 5,
+      timer: 90,
+      attemptId: "guest-mock-attempt",
+      completionResult: GUEST_STUB_COMPLETION,
+      announcement: "Quiz complete. 5 of 5, 100 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withGuestAuth,
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * GuestResultsFailedCompleted — the same stub with a 2/5 local score. Not passed
+ * is the learner's real result, not the stub's; the slot still owns the primary.
+ */
+export const GuestResultsFailedCompleted: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: [
+        makeCorrectAnswer(MOCK_QUESTIONS[0]),
+        makeWrongAnswer(MOCK_QUESTIONS[1]),
+        makeWrongAnswer(MOCK_QUESTIONS[2]),
+        makeCorrectAnswer(MOCK_QUESTIONS[3]),
+        makeWrongAnswer(MOCK_QUESTIONS[4]),
+      ],
+      score: 2,
+      timer: 90,
+      attemptId: "guest-mock-attempt",
+      completionResult: GUEST_STUB_COMPLETION,
+      announcement: "Quiz complete. 2 of 5, 40 percent. Not passed.",
+      strategyConfig: STRATEGY_CONFIG,
     }),
     withGuestAuth,
     withAppLayoutAt("/practices/quiz"),

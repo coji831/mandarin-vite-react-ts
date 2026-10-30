@@ -27,11 +27,13 @@ export function PhaseGateBadge({
   unlockedPhase = 2,
   isGuest = false,
 }: PhaseGateBadgeProps) {
+  // The completion slot owns the persistence ask (§26.2.3), so a guest's badge
+  // states the fact and does not repeat the pitch: no row was written for them.
   const passMessage = isGuest
-    ? "Great score! Register to save your progress"
+    ? "Great score. This result is not saved yet."
     : `Phase ${unlockedPhase} unlocked!`;
   const failMessage = isGuest
-    ? "Keep practicing! Register to track your scores"
+    ? "Keep practicing. This result is not saved yet."
     : "Keep Practicing";
 
   return (
