@@ -4,8 +4,8 @@
  * The Blueprint is a `wizard` / Focus surface: seven steps, one per screen, one
  * primary Continue. The states are the ones the step bodies can actually reach:
  * loading (the pinyin/tones pool is in flight), default (step 1 on real data),
- * error (a failed pool fetch offers a retry), and edge (a later step, reached by
- * pressing Continue — the stepper's own jump only moves backwards).
+ * error (a failed pool fetch offers a retry), and edge (a step reached without
+ * walking the ones before it — `?step=` and the stepper both skip).
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { userEvent, within } from "storybook/test";

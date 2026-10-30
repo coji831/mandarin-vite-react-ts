@@ -12,6 +12,7 @@ export {
   dashboard_route,
   learn_page,
   learn_foundations,
+  learn_foundations_reference,
   learn_radicals,
   learn_grammar,
   learn_phonetic_clusters,

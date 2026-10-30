@@ -4,16 +4,29 @@
  * path is ONE sequential task — a seven-step wizard with a stepper, one primary
  * Continue at the bottom of each step, and no tab bar of sibling references.
  *
+ * Plus the entry model that keeps the walk from becoming a treadmill:
+ *  - a returning learner resumes at the stored step instead of step 1;
+ *  - `?step=` deep-links any step directly;
+ *  - the stepper jumps forward (skip), it does not gate anything;
+ *  - "Finish the Blueprint" records completion, which changes copy only;
+ *  - the reference is one link away from every step.
+ *
  * NOTE: vitest config uses `mockReset: true`, so mock implementations must be
  * set in beforeEach (after the per-test reset), not in the vi.mock factory.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { FoundationsPage } from "../FoundationsPage";
-import { BLUEPRINT_STEPS, foundationsService } from "features/foundations";
+import {
+  BLUEPRINT_STEPS,
+  clearBlueprintPosition,
+  foundationsService,
+  readBlueprintPosition,
+  writeBlueprintPosition,
+} from "features/foundations";
 
 // The Blueprint resolves pinyin→Hanzi for its audio; stub the shared map so the
 // test stays hermetic (no MSW here).
@@ -69,16 +82,25 @@ const POOL = {
   toneRules: [],
 };
 
+/** Renders the current URL so a navigation can be asserted. */
+function LocationProbe() {
+  const location = useLocation();
+  return <div data-testid="location">{location.pathname + location.search}</div>;
+}
+
 function renderBlueprint(initialEntry = "/learn/foundations") {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <FoundationsPage />
+      <LocationProbe />
     </MemoryRouter>,
   );
 }
 
 describe("FoundationsPage (the Blueprint)", () => {
   beforeEach(async () => {
+    // localStorage survives between tests in jsdom — the position must not.
+    clearBlueprintPosition();
     vi.mocked(foundationsService.getFoundationProgress).mockResolvedValue([]);
     vi.mocked(foundationsService.getPinyinTonesPool).mockResolvedValue(POOL as never);
     vi.mocked(foundationsService.getPinyinCharacterMap).mockResolvedValue({});
@@ -102,10 +124,14 @@ describe("FoundationsPage (the Blueprint)", () => {
     );
   });
 
-  it("has no tab bar — the reference is a separate route", () => {
+  it("has no tab bar — the reference is a separate route, one link from every step", async () => {
     renderBlueprint();
+    await screen.findByRole("heading", { level: 1, name: BLUEPRINT_STEPS[0].title });
+
     expect(screen.queryByRole("tab")).toBeNull();
-    expect(screen.getByRole("button", { name: /See every initial, final, tone and stroke/i }));
+
+    await userEvent.click(screen.getByRole("button", { name: "Reference" }));
+    expect(screen.getByTestId("location")).toHaveTextContent("/learn/foundations/reference");
   });
 
   it("advances one step per Continue press", async () => {
@@ -144,5 +170,89 @@ describe("FoundationsPage (the Blueprint)", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Finish the Blueprint" })).toBeInTheDocument();
+  });
+
+  /** ENTRY MODEL — the walk must never trap a learner on step 1 again. */
+  describe("entry model (a first-run guide, not a treadmill)", () => {
+    it("lets the stepper skip ahead — no step is disabled", async () => {
+      renderBlueprint();
+      await screen.findByRole("heading", { level: 1, name: BLUEPRINT_STEPS[0].title });
+
+      const stepper = screen.getByRole("navigation", { name: "Blueprint steps" });
+      for (const button of within(stepper).getAllByRole("button")) {
+        expect(button).toBeEnabled();
+      }
+
+      await userEvent.click(within(stepper).getByRole("button", { name: "Radicals" }));
+
+      const radicalsStep = BLUEPRINT_STEPS.find((step) => step.id === "radicals");
+      expect(
+        screen.getByRole("heading", { level: 1, name: radicalsStep?.title }),
+      ).toBeInTheDocument();
+    });
+
+    it("deep-links any step directly via ?step=", async () => {
+      renderBlueprint("/learn/foundations?step=tones");
+
+      const tonesStep = BLUEPRINT_STEPS.find((step) => step.id === "tones");
+      expect(
+        await screen.findByRole("heading", { level: 1, name: tonesStep?.title }),
+      ).toBeInTheDocument();
+    });
+
+    it("resumes at the stored step instead of restarting at step 1", async () => {
+      writeBlueprintPosition({ lastStepId: "stroke-order", completedAt: null });
+
+      renderBlueprint();
+
+      const strokeStep = BLUEPRINT_STEPS.find((step) => step.id === "stroke-order");
+      expect(
+        await screen.findByRole("heading", { level: 1, name: strokeStep?.title }),
+      ).toBeInTheDocument();
+    });
+
+    it("records the step it moved to, so a remount resumes there", async () => {
+      const first = renderBlueprint();
+      await screen.findByRole("heading", { level: 1, name: BLUEPRINT_STEPS[0].title });
+      await userEvent.click(screen.getByRole("button", { name: "Continue" }));
+      first.unmount();
+
+      renderBlueprint();
+
+      expect(
+        await screen.findByRole("heading", { level: 1, name: BLUEPRINT_STEPS[1].title }),
+      ).toBeInTheDocument();
+    });
+
+    it("marks completion once, then offers the reference as the CTA", async () => {
+      renderBlueprint("/learn/foundations?step=characters");
+      await screen.findByRole("heading", {
+        level: 1,
+        name: BLUEPRINT_STEPS[BLUEPRINT_STEPS.length - 1].title,
+      });
+
+      await userEvent.click(screen.getByRole("button", { name: "Finish the Blueprint" }));
+
+      expect(screen.getByTestId("location")).toHaveTextContent("/learn/foundations/reference");
+      expect(readBlueprintPosition().completedAt).not.toBeNull();
+    });
+
+    it("shows the completed state on a later visit and never gates a step", async () => {
+      writeBlueprintPosition({
+        lastStepId: "characters",
+        completedAt: new Date("2026-01-01T00:00:00.000Z").toISOString(),
+      });
+
+      renderBlueprint();
+
+      expect(await screen.findByText(new RegExp("Blueprint complete"))).toBeInTheDocument();
+      // Completion changes copy and the last-step CTA — it disables nothing.
+      expect(screen.getByRole("button", { name: "Open the reference" })).toBeEnabled();
+      for (const button of within(
+        screen.getByRole("navigation", { name: "Blueprint steps" }),
+      ).getAllByRole("button")) {
+        expect(button).toBeEnabled();
+      }
+    });
   });
 });

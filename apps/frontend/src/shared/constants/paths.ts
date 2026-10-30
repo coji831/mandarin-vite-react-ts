@@ -24,6 +24,10 @@ const register_page = auth_page + "/register";
 
 // Phase-gated Learn tab routes (wireframe Section 1.3)
 const learn_foundations = learn_page + "/foundations";
+// The dense reference index — a sibling surface of the Blueprint wizard, never
+// a sub-route of it (rework-proposal §3): one is the guided task, the other is
+// the lookup. Both are first-class; neither is a dead end.
+const learn_foundations_reference = learn_foundations + "/reference";
 const learn_radicals = learn_page + "/radicals";
 const learn_grammar = learn_page + "/grammar";
 const learn_phonetic_clusters = learn_page + "/phonetic-clusters";
@@ -46,6 +50,7 @@ export {
   dashboard_route,
   learn_page,
   learn_foundations,
+  learn_foundations_reference,
   learn_radicals,
   learn_grammar,
   learn_phonetic_clusters,

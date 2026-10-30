@@ -7,6 +7,14 @@
 
 export { useFoundationsProgress } from "./useFoundationsProgress";
 export { useBlueprintContent } from "./useBlueprintContent";
+export {
+  useBlueprintPosition,
+  readBlueprintPosition,
+  writeBlueprintPosition,
+  clearBlueprintPosition,
+  isBlueprintStepId,
+} from "./useBlueprintPosition";
+export type { BlueprintPosition } from "./useBlueprintPosition";
 export { useHanziWriter } from "shared/components";
 export { useStrokeReferenceData } from "./useStrokeReferenceData";
 export { isValidHanzi } from "./useCharacterSearch";

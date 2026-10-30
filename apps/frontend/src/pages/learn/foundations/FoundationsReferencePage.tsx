@@ -6,8 +6,10 @@
  * This is the surface the old `/learn/foundations` tab bar was: five sibling
  * references (Pinyin, Tones, Strokes, Animations, Pictographs). It survives
  * intact and stays searchable/scan-able — but it is no longer the first-run
- * task. The Blueprint (`/learn/foundations`, wizard/Focus) is, and it links here
- * per step.
+ * task. The Blueprint (`/learn/foundations`, wizard/Focus) is, and the two link
+ * to each other: the Blueprint's header offers "Reference" on every step, and
+ * this page's header offers "Blueprint" back. A one-way link made the reference
+ * feel like an escape hatch rather than the destination it is.
  *
  * Rework §1: the Pictographs tab is NOT locked. `lockedTabs` / `getLockPhase` /
  * "Complete Phase 2 to unlock" are gone — BM-1 L6 makes the roadmap signals,
@@ -25,9 +27,10 @@ import {
   FOUNDATION_SECTION_LABELS,
   type FoundationSectionId,
 } from "@mandarin/shared-constants";
-import { PageHeader, PageShell, PageStack, Tabs } from "shared/components";
+import { useNavigate } from "react-router-dom";
+import { Button, PageHeader, PageShell, PageStack, Tabs } from "shared/components";
 import type { IconName, TabConfig } from "shared/components";
-import { SEARCH_PARAMS } from "shared/constants";
+import { learn_foundations, SEARCH_PARAMS } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
 import { PictographGallery, FoundationsProgressBar } from "features/foundations";
 import { PinyinTab } from "./PinyinTab";
@@ -66,6 +69,7 @@ export function FoundationsReferencePage({
 }: {
   initialTab?: FoundationSectionId | "pictographs";
 }) {
+  const navigate = useNavigate();
   // URL wins in prod (`?tab=tones`); `initialTab` is the story/default fallback.
   const [activeTab, setActiveTab] = useSearchParamState<string>(SEARCH_PARAMS.tab, {
     defaultValue: initialTab,
@@ -79,7 +83,14 @@ export function FoundationsReferencePage({
         <PageHeader
           title="Foundations Reference"
           description="Every initial, final, tone pair and stroke in one place. The guided path is the Blueprint."
-        />
+        >
+          {/* The pair is mutual: the Blueprint links here from every step, and
+              this page links back — the reference is a destination, not a dead
+              end reached by accident. */}
+          <Button variant="ghost" size="sm" onClick={() => navigate(learn_foundations)}>
+            Blueprint
+          </Button>
+        </PageHeader>
         <div className="flex-col">
           <Tabs tabs={TABS_CONFIG} activeTab={activeTab} onTabChange={setActiveTab} align="center">
             {activeTab === "pinyin" && <PinyinTab />}

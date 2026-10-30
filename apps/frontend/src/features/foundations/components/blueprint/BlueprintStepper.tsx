@@ -1,12 +1,16 @@
 /**
  * @file components/blueprint/BlueprintStepper.tsx
- * @description The Blueprint's position indicator — replaces the five sibling
- * tabs on the first-run path (rework-proposal §3).
+ * @description The Blueprint's position indicator AND its jump menu
+ * (rework-proposal §3; corrected for the "forced walk" regression).
  *
- * Presentational only: it shows WHERE the learner is in the sequence and lets
- * them jump back to a step already passed. It is intentionally not a tab bar —
- * a tab bar implies five parallel references, which is the thing this page
- * stopped being.
+ * It shows WHERE the learner is in the seven-step sequence. Every step is
+ * operable: the order is a suggestion, not a gate (BM-1 L2/L6 — gates are
+ * recommendations, never walls), so a returning learner can go straight to
+ * "tones" or "radicals" instead of pressing Continue five times. The guided
+ * reading is preserved by the primary CTA staying `Continue` at the bottom of
+ * each step — this stays a stepper, not a tab bar: the items are numbered
+ * positions in ONE path and the current one is announced with
+ * `aria-current="step"`, while a tab bar would imply parallel references.
  */
 import "./BlueprintStepper.css";
 import type { BlueprintStepId } from "./blueprintSteps";
@@ -15,7 +19,7 @@ import { BLUEPRINT_STEPS } from "./blueprintSteps";
 export type BlueprintStepperProps = {
   /** id of the step currently on screen. */
   currentId: BlueprintStepId;
-  /** Jump to a step at or before the current one. */
+  /** Jump to any step — forward (skip) or back. Never gated. */
   onJump: (id: BlueprintStepId) => void;
 };
 
@@ -26,19 +30,25 @@ export function BlueprintStepper({ currentId, onJump }: BlueprintStepperProps) {
     <nav aria-label="Blueprint steps">
       <ol className="blueprint-stepper flex items-center flex-wrap gap-xs m-0 p-0">
         {BLUEPRINT_STEPS.map((step, index) => {
-          const state = index < currentIndex ? "done" : index === currentIndex ? "current" : "todo";
-          const isReachable = index < currentIndex;
+          const isCurrent = index === currentIndex;
+          const isDone = index < currentIndex;
+          // Past and current steps read as the path walked; steps ahead read
+          // quieter — skip targets, never disabled, never faded to illegible.
+          const tone = isCurrent
+            ? "text-primary fw-600"
+            : isDone
+              ? "text-secondary"
+              : "text-tertiary";
           return (
             <li key={step.id} className="flex items-center gap-xs min-w-0">
               <button
                 type="button"
-                className={`blueprint-stepper__step inline-flex items-center gap-xs font-xs radius-pill ${state === "current" ? "text-primary fw-600" : "text-tertiary"}`}
-                aria-current={state === "current" ? "step" : undefined}
-                disabled={!isReachable}
+                className={`blueprint-stepper__step inline-flex items-center gap-xs font-xs radius-pill ${tone}`}
+                aria-current={isCurrent ? "step" : undefined}
                 onClick={() => onJump(step.id)}
               >
                 <span className="blueprint-stepper__count text-center" aria-hidden="true">
-                  {state === "done" ? "✓" : index + 1}
+                  {isDone ? "✓" : index + 1}
                 </span>
                 <span>{step.label}</span>
               </button>
