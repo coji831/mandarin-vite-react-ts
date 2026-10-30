@@ -17,6 +17,7 @@
  * Wireframe Section 4.6 bottom portion.
  */
 
+import { useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { AudioPlayer } from "./AudioPlayer";
 import { Box, Button, Icon } from "shared/components";
@@ -35,6 +36,15 @@ const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
 
 /** Shared card wrapper with correct/incorrect badge */
 function FeedbackCard({ correct, children }: { correct: boolean; children: React.ReactNode }) {
+  const verdictRef = useRef<HTMLHeadingElement>(null);
+
+  // FEEDBACK replaces the question surface, so focus must land on the new
+  // content rather than falling to <body> (WCAG 2.4.3). The heading — not the
+  // "Next Question" button — takes it: an action is never autofocused.
+  useEffect(() => {
+    verdictRef.current?.focus();
+  }, []);
+
   return (
     <Box
       variant={correct ? "pass" : "fail"}
@@ -45,7 +55,9 @@ function FeedbackCard({ correct, children }: { correct: boolean; children: React
         className={`quiz-feedback__badge fw-700 flex-center gap-xs font-md p-xs radius-pill text-white self-start ${correct ? "bg-success-bg" : "bg-error-bg"}`}
       >
         <Icon name={correct ? "check" : "cross"} size={16} aria-hidden />
-        <span>{correct ? "Correct" : "Incorrect"}</span>
+        <h2 ref={verdictRef} tabIndex={-1} className="font-md m-0">
+          {correct ? "Correct" : "Incorrect"}
+        </h2>
       </Box>
       {children}
     </Box>

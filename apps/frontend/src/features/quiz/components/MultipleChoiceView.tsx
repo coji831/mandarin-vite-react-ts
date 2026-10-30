@@ -9,7 +9,7 @@
  * Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS
  */
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { Box, RadioGroup } from "shared/components";
 import type { RadioOption } from "shared/components";
@@ -19,7 +19,15 @@ export function MultipleChoiceView() {
   const currentIndex = useQuizSessionStore((s) => s.currentIndex);
   const questions = useQuizSessionStore((s) => s.questions);
   const submitAnswer = useQuizSessionStore((s) => s.submitAnswer);
+  const promptRef = useRef<HTMLHeadingElement>(null);
   const question = questions[currentIndex];
+
+  // The prompt takes focus when the question changes, so the per-question swap
+  // never drops focus to <body> (WCAG 2.4.3) and the first Tab lands on the
+  // first option — never on an action.
+  useEffect(() => {
+    promptRef.current?.focus();
+  }, [currentIndex]);
 
   const handleSelect = useCallback(
     (optionId: string) => {
@@ -61,9 +69,9 @@ export function MultipleChoiceView() {
       </div>
 
       {/* Custom prompt or default */}
-      <p className="text-secondary text-center font-md">
+      <h2 ref={promptRef} tabIndex={-1} className="text-secondary text-center font-md m-0">
         {question.prompt ?? "Which radical gives this character its meaning?"}
-      </p>
+      </h2>
 
       {/* Multiple choice options */}
       <div className="quiz-mc-options w-full">

@@ -107,7 +107,42 @@
         "children": { "type": "reactNode" },
         "className": { "type": "string" },
         "type": { "type": "enum", "values": ["button", "submit", "reset"], "default": "button" },
-        "aria-label": { "type": "string" }
+        "aria-label": { "type": "string" },
+        "aria-disabled": {
+          "type": "boolean",
+          "description": "Unavailable-but-operable state: the button stays in the tab order and keeps focus (WCAG 4.1.2 / 2.4.3) and the consumer guards its own handler. Never pair with `disabled` on a control that holds focus."
+        }
+      }
+    },
+    "CompletionSlot": {
+      "description": "The detail archetype's position-locked next-action region: exactly one primary at the task's completion point, at most two ghost/icon secondaries, and an optional note that explains why this is the next step.",
+      "importPath": "shared/components",
+      "variants": [],
+      "tokens": ["--space-md", "--size-touch"],
+      "storybook": {
+        "storyFile": "apps/frontend/src/shared/components/completion-slot/CompletionSlot.stories.tsx",
+        "states": ["default", "with-action", "edge"]
+      },
+      "props": {
+        "primary": {
+          "type": "reactNode",
+          "required": true,
+          "description": "Exactly one Button variant=\"primary\". A single ReactNode prop, so a second primary has no slot to fill."
+        },
+        "secondary": {
+          "type": "reactNode",
+          "description": "At most two Button variant=\"ghost\" | \"icon\" nodes. Never a second primary."
+        },
+        "label": {
+          "type": "string",
+          "default": "Next step",
+          "description": "Accessible name of the role=\"group\" region"
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional supporting line explaining why this is the next step"
+        },
+        "className": { "type": "string" }
       }
     },
     "Chip": {

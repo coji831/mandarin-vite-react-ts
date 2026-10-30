@@ -10,6 +10,8 @@ export { MnemonicCard } from "./MnemonicCard";
 export type { ClassificationBadgeProps, ClassificationType } from "./ClassificationBadge";
 export type { ButtonVariant } from "./Button/Button";
 export { Card } from "./Card";
+export { CompletionSlot } from "./completion-slot/CompletionSlot";
+export type { CompletionSlotProps } from "./completion-slot/CompletionSlot";
 export { ContentBrowser } from "./ContentBrowser";
 export type { ContentItem, ContentSource, ContentType } from "./ContentBrowser/types";
 export { Dropdown } from "./Dropdown";

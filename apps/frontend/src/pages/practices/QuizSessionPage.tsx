@@ -34,6 +34,7 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   const score = useQuizSessionStore((s) => s.score);
   const totalQuestions = useQuizSessionStore((s) => s.questions.length);
   const currentIndex = useQuizSessionStore((s) => s.currentIndex);
+  const announcement = useQuizSessionStore((s) => s.announcement);
 
   // Loading state
   if (phase === "LOADING") {
@@ -45,6 +46,16 @@ export function QuizSessionPage({ strategyType }: QuizSessionPageProps) {
   return (
     <PageShell archetype="detail">
       <PageStack size="default">
+        {/*
+          The session's ONE live region (§26.2.4). Mounted empty for the whole
+          session — a region that mounts with its text is not reliably
+          announced — and filled by the store on submit / advance / timer
+          threshold / completion. The timer's per-second value never enters it.
+        */}
+        <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+          {announcement}
+        </p>
+
         <PageHeader
           title={strategy ? `Quiz: ${strategy.label}` : "Quiz"}
           description={

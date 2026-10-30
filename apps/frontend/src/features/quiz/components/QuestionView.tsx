@@ -13,6 +13,7 @@
  * Wireframe Section 4.6 top portion.
  */
 
+import { useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { getStrategy } from "../engine/strategies";
 import { Box } from "shared/components";
@@ -24,7 +25,14 @@ export function QuestionView() {
   const currentIndex = useQuizSessionStore((s) => s.currentIndex);
   const questions = useQuizSessionStore((s) => s.questions);
   const strategyType = useQuizSessionStore((s) => s.strategyType);
+  const promptRef = useRef<HTMLHeadingElement>(null);
   const question = questions[currentIndex];
+
+  // Entering a question moves focus to its prompt, so the QUESTION → FEEDBACK
+  // swap never drops focus to <body> (WCAG 2.4.3).
+  useEffect(() => {
+    promptRef.current?.focus();
+  }, [currentIndex]);
 
   if (!question) {
     return (
@@ -58,7 +66,9 @@ export function QuestionView() {
       ) : null}
 
       {/* Listen prompt */}
-      <p className="text-tertiary text-center font-sm">Listen to the audio, then:</p>
+      <h2 ref={promptRef} tabIndex={-1} className="text-tertiary text-center font-sm m-0">
+        Listen to the audio, then:
+      </h2>
 
       {/* Answer input */}
       <AnswerInput />

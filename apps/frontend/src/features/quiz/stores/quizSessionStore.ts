@@ -21,6 +21,24 @@ import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
 import { getPhoneticHint, getCharacterDetail } from "../services/hintService";
 
+/**
+ * The completion summary, composed ONCE at the RESULTS transition (§26.2.4) from
+ * local state. It is deliberately not derived in `QuizResults`: the backend
+ * result lands later and would announce the same fact a second time.
+ */
+function completionAnnouncement(correct: number, total: number, passThreshold?: number): string {
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const outcome = passThreshold != null && pct >= passThreshold * 100 ? "Passed." : "Not passed.";
+  return `Quiz complete. ${correct} of ${total}, ${pct} percent. ${outcome}`;
+}
+
+/** The per-question verdict, announced before the FEEDBACK surface takes focus. */
+function verdictAnnouncement(correct: boolean, answer: string, correctTone: number): string {
+  return correct
+    ? `Correct. Tone ${correctTone}.`
+    : `Incorrect. The answer is ${answer}, tone ${correctTone}.`;
+}
+
 type QuizSessionStore = QuizSession & {
   /** Initialize a new session with the given strategy */
   initialize: (strategyType: StrategyType) => Promise<void>;
@@ -113,6 +131,10 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         showRadicalHint: false,
         maxScorePenalty: 0,
         scoreByType: {},
+        announcement:
+          questions.length > 0
+            ? `Session started. Question 1 of ${questions.length}.`
+            : "No questions available.",
       });
     } catch (err) {
       set({
@@ -123,7 +145,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   submitAnswer: async (pinyin: string, tone: number) => {
-    const { questions, currentIndex, strategyType, attemptId } = get();
+    const { questions, currentIndex, strategyType, attemptId, score } = get();
     const question = questions[currentIndex];
     if (!question) return;
 
@@ -209,20 +231,29 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     }
 
     const isLastQuestion = currentIndex + 1 >= questions.length;
+    const nextScore = score + (backendVerdict.correct ? 1 : 0);
 
     if (isLastQuestion) {
-      // Skip FEEDBACK for last question — go directly to RESULTS
+      // Skip FEEDBACK for last question — go directly to RESULTS, so the
+      // completion summary is the ONE announcement for this transition.
+      const passThreshold = get().strategyConfig?.passThreshold;
       get().completeAttempt();
       set((s) => ({
         answers: [...s.answers, backendVerdict],
-        score: s.score + (backendVerdict.correct ? 1 : 0),
+        score: nextScore,
         phase: "RESULTS" as QuizPhase,
+        announcement: completionAnnouncement(nextScore, questions.length, passThreshold),
       }));
     } else {
       set((s) => ({
         answers: [...s.answers, backendVerdict],
-        score: s.score + (backendVerdict.correct ? 1 : 0),
+        score: nextScore,
         phase: "FEEDBACK" as QuizPhase,
+        announcement: verdictAnnouncement(
+          backendVerdict.correct,
+          question.displayPinyin || question.correctPinyin,
+          backendVerdict.correctTone,
+        ),
       }));
     }
   },
@@ -242,15 +273,26 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   nextQuestion: () => {
-    const { currentIndex, questions } = get();
+    const { currentIndex, questions, score, strategyConfig } = get();
     // Clear per-question hint state
     set({ currentPhoneticHint: null, showRadicalHint: false });
     if (currentIndex + 1 < questions.length) {
-      set({ currentIndex: currentIndex + 1, phase: "QUESTION" });
+      set({
+        currentIndex: currentIndex + 1,
+        phase: "QUESTION",
+        announcement: `Question ${currentIndex + 2} of ${questions.length}.`,
+      });
     } else {
       // Finalize the backend attempt before showing results
       get().completeAttempt();
-      set({ phase: "RESULTS" });
+      set({
+        phase: "RESULTS",
+        announcement: completionAnnouncement(
+          score,
+          questions.length,
+          strategyConfig?.passThreshold,
+        ),
+      });
     }
   },
 
@@ -261,9 +303,21 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       if (newTimer === 0) {
         // Time's up — auto-submit current answer if pending, then show results
         get().completeAttempt();
-        set({ timer: 0, phase: "RESULTS" });
+        set({
+          timer: 0,
+          phase: "RESULTS",
+          announcement: "Time is up. Showing your results.",
+        });
       } else {
-        set({ timer: newTimer });
+        // Thresholds, not a per-second counter: the live region must not carry
+        // the ticking value (the visible Timer states it instead).
+        const announcement =
+          timer > 10 && newTimer <= 10
+            ? "10 seconds left"
+            : timer > 30 && newTimer <= 30
+              ? "30 seconds left"
+              : null;
+        set({ timer: newTimer, ...(announcement ? { announcement } : {}) });
       }
     }
   },

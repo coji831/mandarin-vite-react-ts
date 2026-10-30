@@ -1,0 +1,13 @@
+/**
+ * CompletionSlot.css - the one rule a utility cannot express.
+ *
+ * Direction, wrapping, alignment and gaps are utilities on the slot's own
+ * elements. The breakpoint is not: the primary is a stacked column below 768px
+ * and a single row above it, and there is no `flex-row` utility.
+ */
+
+@media (min-width: 768px) {
+  .completion-slot__primary {
+    flex-direction: row;
+  }
+}

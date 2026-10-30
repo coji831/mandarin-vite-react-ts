@@ -2,19 +2,33 @@
  * QuizResults.tsx
  * Phase 1 Gate Quiz — Score/pass/fail display
  *
- * Shows the final score, pass/fail status, timer, the ONE next action (rework-
- * proposal §7: "Review what you missed" — a real review queue for the same
- * material), score visualization bar, and collapsible per-question answer review.
+ * The results column is value → slot → review (§26.2.2):
+ *   1. the value — score card, pass message, timer, bar, then the breakdown;
+ *   2. `CompletionSlot` — the ONE position-locked primary for this identity
+ *      (§26.2.3), with ghost secondaries passed INTO the slot, never as siblings;
+ *   3. the collapsible answer review — content, not an action.
  *
- * Wireframe Section 4.7 (simplified).
+ * Identity decides the primary: a registered learner reviews what they missed
+ * (or leaves on a perfect score); a guest's only honest next step is persistence,
+ * because nothing was written server-side for their attempt (§26.4.5).
+ *
+ * Guest scores are session-local. The mock completion the server returns for a
+ * guest attempt is `{totalScore: 0, maxScore: 0, passed: false}`, so a guest who
+ * scored 9/10 must still read 9/10 (90%) — never "0/0", and never a failure
+ * badge a server stub invented.
+ *
+ * Focus: the `<h2>` takes focus on mount (`tabIndex={-1}`) so the QUESTION →
+ * FEEDBACK → RESULTS swap never drops focus to `<body>`; the first Tab from it
+ * reaches the slot's primary (WCAG 2.4.3).
  */
 
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { PhaseGateBadge } from "./PhaseGateBadge";
 import { CategoryBreakdown } from "./CategoryBreakdown";
 import { getStrategy } from "../../engine/strategies";
-import { Box, Button, Icon } from "shared/components";
+import { Box, Button, CompletionSlot, Icon } from "shared/components";
 import { ClassificationBadge } from "shared/components";
 import { useAuth } from "features/auth";
 import { practices_page, register_page, withSearchParams } from "shared/constants";
@@ -39,9 +53,17 @@ const REVIEW_TYPE_BY_STRATEGY: Record<string, string> = {
 
 const PRACTICES_REVIEW_PATH = "/practices/review";
 
+/**
+ * The guest note states the fact and nothing more: a guest attempt wrote no row,
+ * so no sentence here may say the score was saved.
+ */
+const GUEST_NOTE =
+  "This score is local to this tab and is not saved anywhere. An account saves your progress from the next session.";
+
 /** Quiz results screen */
 export function QuizResults() {
   const navigate = useNavigate();
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const { isAuthenticated } = useAuth();
   const answers = useQuizSessionStore((s) => s.answers);
   const questions = useQuizSessionStore((s) => s.questions);
@@ -63,41 +85,57 @@ export function QuizResults() {
   const isGateQuiz = strategyPhase != null && strategyPhase > 0;
   const nextPhase = isGateQuiz ? strategyPhase + 1 : 2;
 
-  // Use backend completion result if available, otherwise fall back to local store's score
-  const totalQuestions = completionResult?.maxScore ?? questions.length;
-  const correct = completionResult?.totalScore ?? score;
+  // The value (§26.4.5). A guest — or any attempt whose backend completion
+  // reports maxScore <= 0 — reads the local session, so the mock stub the
+  // server returns for a guest attempt can never turn 9/10 into "0/0 — Not passed".
+  const attemptMaxScore = completionResult?.maxScore ?? 0;
+  const usesLocalScore = isGuest || attemptMaxScore <= 0;
+  const totalQuestions = usesLocalScore ? questions.length : attemptMaxScore;
+  const correct = isGuest ? score : (completionResult?.totalScore ?? score);
   const pct = totalQuestions > 0 ? Math.round((correct / totalQuestions) * 100) : 0;
-  const passed =
-    completionResult?.passed ?? (passThreshold != null ? pct >= passThreshold * 100 : false);
+  const localPassed = passThreshold != null && pct >= passThreshold * 100;
+  const passed = isGuest ? localPassed : (completionResult?.passed ?? localPassed);
 
-  const handleGuestRegister = () => {
-    navigate(register_page);
-  };
-
-  // ── The ONE primary action (rework-proposal §7) ──────────────────────────
-  // "Review what you missed" is the next session — a real review queue for the
-  // same material. A perfect score has nothing to miss, so the primary becomes
-  // the way out instead of inventing a second action. Back to Practices is
-  // always the ghost, and the guest's persistence ask is a ghost too: on this
-  // screen the learner's next step outranks the pitch.
+  // ── Identities (§26.2.3) — the slot's contents, never sibling buttons ────
   const missedCount = Math.max(0, totalQuestions - correct);
   const reviewType = REVIEW_TYPE_BY_STRATEGY[strategyType] ?? "pinyin";
   const reviewHref = withSearchParams(PRACTICES_REVIEW_PATH, {
     type: reviewType,
     filter: "recent",
   });
-  const primaryLabel = missedCount > 0 ? "Review what you missed" : "Back to Practices";
-  const handlePrimary = () => {
-    if (missedCount > 0) {
-      navigate(reviewHref);
-    } else {
-      navigate(practices_page);
-    }
-  };
+
+  const goToPractices = () => navigate(practices_page);
+
+  const primary = isGuest
+    ? {
+        label: "Create an account to save your progress",
+        onClick: () => navigate(register_page),
+      }
+    : missedCount > 0
+      ? { label: "Review what you missed", onClick: () => navigate(reviewHref) }
+      : { label: "Back to Practices", onClick: goToPractices };
+
+  // A guest keeps the way out as the single ghost; a registered perfect score has
+  // nothing left to offer, and inventing a second action breaks the one-CTA law.
+  const secondaryLabel = isGuest || missedCount > 0 ? "Back to Practices" : null;
+
+  const note = isGuest
+    ? GUEST_NOTE
+    : missedCount > 0
+      ? `${missedCount} of ${totalQuestions} answers were wrong. The review queue holds exactly those.`
+      : "Perfect score. Nothing to review.";
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
 
   return (
     <div className="flex-col-center gap-lg">
-      <h2 className="quiz-results__heading flex-align-center gap-xs text-primary font-2xl">
+      <h2
+        ref={headingRef}
+        tabIndex={-1}
+        className="quiz-results__heading flex-align-center gap-xs text-primary font-2xl"
+      >
         <Icon name="progress" size={24} aria-hidden />
         Quiz Complete
       </h2>
@@ -145,7 +183,9 @@ export function QuizResults() {
       {strategyType !== "ime-simulator" && (
         <CategoryBreakdown
           answers={answers}
-          categoryBreakdown={completionResult?.categoryBreakdown}
+          // The stub breakdown is as unusable as the stub score: a local-scored
+          // attempt falls back to computing the bars from its own answers.
+          categoryBreakdown={usesLocalScore ? undefined : completionResult?.categoryBreakdown}
           total={totalQuestions}
         />
       )}
@@ -168,22 +208,23 @@ export function QuizResults() {
         </Box>
       )}
 
-      {/* Action buttons — exactly one primary */}
-      <div className="flex-center gap-md flex-wrap">
-        <Button variant="primary" size="lg" onClick={handlePrimary}>
-          {primaryLabel}
-        </Button>
-        {missedCount > 0 && (
-          <Button variant="ghost" size="lg" onClick={() => navigate(practices_page)}>
-            Back to Practices
+      {/* The slot — the ONE position-locked primary, after the value (§26.2.2) */}
+      <CompletionSlot
+        label="Next step"
+        note={note}
+        primary={
+          <Button variant="primary" size="lg" onClick={primary.onClick}>
+            {primary.label}
           </Button>
-        )}
-        {isGuest && (
-          <Button variant="ghost" size="lg" onClick={handleGuestRegister}>
-            Create an account to keep your progress
-          </Button>
-        )}
-      </div>
+        }
+        secondary={
+          secondaryLabel ? (
+            <Button variant="ghost" size="lg" onClick={goToPractices}>
+              {secondaryLabel}
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* Answer review section (collapsible) */}
       <Box as="details" variant="dark" padding="md" className="quiz-results__review w-full">

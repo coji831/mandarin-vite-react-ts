@@ -52,6 +52,13 @@ export type ButtonProps = {
   "aria-label"?: string;
   "aria-selected"?: boolean;
   "aria-expanded"?: boolean;
+  /**
+   * Unavailable-but-operable state (WCAG 4.1.2 / 2.4.3): the button stays in the
+   * tab order and keeps focus, so a keyboard user is never dropped to <body> by
+   * an in-flight lock. The consumer guards its own handler — this prop never
+   * blocks activation the way the `disabled` attribute does.
+   */
+  "aria-disabled"?: boolean;
   role?: string;
   id?: string;
   "aria-controls"?: string;
@@ -76,6 +83,7 @@ export function Button({
   "aria-label": ariaLabel,
   "aria-selected": ariaSelected,
   "aria-expanded": ariaExpanded,
+  "aria-disabled": ariaDisabled,
   role,
   id,
   "aria-controls": ariaControls,
@@ -130,6 +138,7 @@ export function Button({
       aria-label={ariaLabel}
       aria-selected={ariaSelected}
       aria-expanded={ariaExpanded}
+      aria-disabled={ariaDisabled || undefined}
       aria-controls={ariaControls}
       data-rating={dataRating}
       title={title}
