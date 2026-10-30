@@ -177,3 +177,67 @@ describe("quizSessionStore — guest completion path (§26.4.5)", () => {
     expect(attemptIds.every((id) => id === "guest-mock-attempt")).toBe(true);
   });
 });
+
+describe("quizSessionStore — practice-format announcements (§26.3)", () => {
+  beforeEach(() => {
+    useQuizSessionStore.setState(createInitialSession("cloze"));
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("announces the cloze verdict the strategy authored, not a tone", async () => {
+    useQuizSessionStore.setState({
+      phase: "INPUT",
+      questions: [
+        {
+          id: "cloze-1",
+          audioKey: "",
+          correctPinyin: "\u628a",
+          correctTone: 0,
+          category: "cloze",
+          chinese: "\u6211\u628a\u4eba\u6253\u4e86\u3002",
+        },
+        { id: "cloze-2", audioKey: "", correctPinyin: "\u628a", correctTone: 0, category: "cloze" },
+      ],
+      currentIndex: 0,
+      attemptId: null,
+    });
+
+    await useQuizSessionStore.getState().submitAnswer("\u88ab", 0);
+
+    expect(useQuizSessionStore.getState().announcement).toBe("Incorrect. The answer is \u628a.");
+  });
+
+  it("announces the tone-judgment verdict in words", async () => {
+    useQuizSessionStore.setState({
+      strategyType: "tone-judgment",
+      phase: "INPUT",
+      questions: [
+        {
+          id: "tsj-1",
+          audioKey: "",
+          correctPinyin: "n\u01d0",
+          correctTone: 2,
+          category: "tone-judgment",
+          targetSyllable: "n\u01d0",
+          baseTone: 3,
+        },
+        {
+          id: "tsj-2",
+          audioKey: "",
+          correctPinyin: "n\u01d0",
+          correctTone: 2,
+          category: "tone-judgment",
+        },
+      ],
+      currentIndex: 0,
+      attemptId: null,
+    });
+
+    await useQuizSessionStore.getState().submitAnswer("n\u01d0", 2);
+
+    expect(useQuizSessionStore.getState().announcement).toBe("Correct. A rising tone.");
+  });
+});

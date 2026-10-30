@@ -15,10 +15,13 @@ import type {
   QuizSession,
   GateQuizResult,
   QuizStrategyConfig,
+  AnswerResult,
+  QuizQuestion,
 } from "../types";
 import { createInitialSession } from "../types/session";
 import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
+import { AUTHORED_ANNOUNCEMENT_STRATEGIES } from "../engine/constants";
 import { getPhoneticHint, getCharacterDetail } from "../services/hintService";
 
 /**
@@ -37,6 +40,28 @@ function verdictAnnouncement(correct: boolean, answer: string, correctTone: numb
   return correct
     ? `Correct. Tone ${correctTone}.`
     : `Incorrect. The answer is ${answer}, tone ${correctTone}.`;
+}
+
+/**
+ * The announcement for a submitted answer (§26.3).
+ *
+ * The tone/option formats read a verdict from a tone number. An Epic 26 practice
+ * answer is a token, an ordered sentence or a typed transcription, so those
+ * strategies author the whole sentence in `AnswerResult.feedback` — the store
+ * announces it unsplit rather than inventing "Tone 0." for an answer that has no
+ * tone.
+ */
+function submittedAnnouncement(
+  strategyType: StrategyType,
+  verdict: AnswerResult,
+  question: QuizQuestion,
+): string {
+  if (AUTHORED_ANNOUNCEMENT_STRATEGIES.has(strategyType)) return verdict.feedback;
+  return verdictAnnouncement(
+    verdict.correct,
+    question.displayPinyin || question.correctPinyin,
+    verdict.correctTone,
+  );
 }
 
 type QuizSessionStore = QuizSession & {
@@ -60,6 +85,13 @@ type QuizSessionStore = QuizSession & {
 
   /** Decrement timer by 1 second */
   tick: () => void;
+
+  /**
+   * Set the session announcement directly. The practice-format surfaces own
+   * steps the store cannot see ("Added 我, position 1 of 4."), and the session
+   * still has exactly ONE region for them.
+   */
+  announce: (text: string) => void;
 
   // ─── Hint system actions (Story 21.18) ────────────────────────────
 
@@ -249,11 +281,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         answers: [...s.answers, backendVerdict],
         score: nextScore,
         phase: "FEEDBACK" as QuizPhase,
-        announcement: verdictAnnouncement(
-          backendVerdict.correct,
-          question.displayPinyin || question.correctPinyin,
-          backendVerdict.correctTone,
-        ),
+        announcement: submittedAnnouncement(strategyType, backendVerdict, question),
       }));
     }
   },
@@ -325,6 +353,10 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   reset: () => {
     const { strategyType } = get();
     set(createInitialSession(strategyType));
+  },
+
+  announce: (text: string) => {
+    set({ announcement: text });
   },
 
   retry: async () => {
