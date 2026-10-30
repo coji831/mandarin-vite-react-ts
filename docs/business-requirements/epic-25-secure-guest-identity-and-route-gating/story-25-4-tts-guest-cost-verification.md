@@ -52,5 +52,5 @@ miss, and what that path costs today.
 
 - **Status**: Completed
 - **PR**: #61
-- **Merge Date**: pending merge (PR #61 open)
+- **Merge Date**: 2026-10-30 (merged via PR #61, commit 6e84c12e)
 - **Key Commit**: `0656e243` (test(story-25-4): pin the guest TTS cost surface and hand quotas to epic-29)

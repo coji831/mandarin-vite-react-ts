@@ -1,7 +1,7 @@
 ---
 purpose: Secure guest identity — P0-1 SRS isolation, guest-identity lockstep, A25 Learn un-gating, guest TTS cost surface
 status: completed
-last-verified: 2026-10-27
+last-verified: 2026-10-30
 type: epic
 ---
 
@@ -21,9 +21,9 @@ type: epic
 
 **Status:** Completed
 
-**PR:** #61 (single epic PR) · **Branch:** `epic-25-guest-identity`
+**PR:** #61 (single epic PR, merged 2026-10-30, commit `6e84c12e`) · **Branch:** `epic-25-guest-identity`
 
-**Last Update:** October 27, 2026
+**Last Update:** October 30, 2026
 
 > **Scope authority — A25 amendment (binding, overrides the older epic body).**
 > `docs/planning/epics-25-40.md` §2026 Audit Amendments **A25** re-bounds this epic. Where an earlier

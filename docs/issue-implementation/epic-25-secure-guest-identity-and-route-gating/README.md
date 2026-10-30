@@ -1,7 +1,7 @@
 ---
 purpose: Epic 25 implementation — P0-1 guest isolation pinned, one guest gate source, A25 Learn un-gating, TTS guest cost surface
 status: completed
-last-verified: 2026-10-27
+last-verified: 2026-10-30
 type: epic
 ---
 
@@ -23,9 +23,9 @@ type: epic
 - **A25 is subtractive.** `LearnRoutes` lost its `PhaseGate` helper and all three wrappers; `SideNav` lost the lock affordance **and** its `phaseGate`/`requiredPhase` props; `requiredPhase` became `phase` and `LEARN_REQUIRED_PHASE` was **deleted**; `AppLayout` reads no gate for navigation. The deleted lock style was also a WCAG 1.4.3 failure (2.62:1 on `--card`).
 - **Guest cost is bounded downstream.** Both `optionalAuth` TTS surfaces are proven free on a cache hit (including the bad-token case) and the **generated** path is documented as epic-29's counter-gated path. No quota machinery ships here; the exposure is recorded, not accepted silently.
 
-**Status:** Completed — all four stories shipped on `epic-25-guest-identity`; merge PR pending.
+**Status:** Completed — all four stories shipped and **merged** via PR #61 (`6e84c12e`, 2026-10-30).
 
-**Last Update:** October 27, 2026
+**Last Update:** October 30, 2026
 
 ## Technical Overview
 
@@ -165,7 +165,7 @@ the counts re-measured on 2026-10-27. Re-triaging them from scratch is prohibite
 - [x] Feature/module/component names verified against `apps/backend/src/modules/` (15 modules: `audio`, `auth`, `characters`, `chengyu`, `foundations`, `grammar`, `health`, `mnemonics`, `phonetic-clusters`, `progression`, `quiz`, `radicals`, `readers`, `review`, `words`) and `apps/frontend/src/features/` (13 features: `auth`, `character-hub`, `chengyu`, `dashboard`, `foundations`, `grammar`, `lexical-hub`, `phonetic-clusters`, `quiz`, `radicals`, `readers`, `review`, `word-hub`). Counts were re-derived by listing both directories on 2026-10-27, not copied from an older doc; `progression` is the only backend module whose production code changed.
 - [x] Data source (static JSON vs Postgres/API) matches the backing service/repository code — the progression and review guests answer from the shared constant / repository (`createGuestPhaseGate()`, `prisma.srsCardState` behind `ReviewRepository`), readers passages come from Postgres via `ReadersRepository`, and the audio surfaces read GCS object existence (`AudioSynthesizer.ts:51` `gcs.fileExists`) plus a soft Redis path cache — no database read on the audio path except the passage lookup.
 - [x] All relative markdown links resolve — `npm run check:doc-links` reports 135 unresolved links across 52 files repo-wide (KF-005), **none of them in an Epic 25 document**; re-run after this document was created.
-- [x] Last Updated / Last Update date is current (same commit as the edit) — frontmatter `last-verified: 2026-10-27`, body `**Last Update:** October 27, 2026`.
+- [x] Last Updated / Last Update date is current (same commit as the edit) — frontmatter `last-verified: 2026-10-30`, body `**Last Update:** October 30, 2026`.
 
 ## Technical Implementation
 

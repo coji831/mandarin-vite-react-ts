@@ -61,5 +61,5 @@ dashboard, which is where a guest actually lands and where the register CTA (epi
 
 - **Status**: Completed
 - **PR**: #61
-- **Merge Date**: pending merge (PR #61 open)
+- **Merge Date**: 2026-10-30 (merged via PR #61, commit 6e84c12e)
 - **Key Commit**: `8f507c66` (feat(story-25-3): un-gate the Learn routes and move guest state out of the shell)

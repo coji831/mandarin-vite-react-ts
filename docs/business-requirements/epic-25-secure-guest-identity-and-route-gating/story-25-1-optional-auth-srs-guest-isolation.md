@@ -51,5 +51,5 @@ study history is worse than no funnel.
 
 - **Status**: Completed
 - **PR**: #61
-- **Merge Date**: pending merge (PR #61 open)
+- **Merge Date**: 2026-10-30 (merged via PR #61, commit 6e84c12e)
 - **Key Commit**: `17fdbcdb` (test(story-25-1): pin P0-1 guest isolation with an executable inventory)

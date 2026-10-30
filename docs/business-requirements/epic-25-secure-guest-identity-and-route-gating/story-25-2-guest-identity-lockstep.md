@@ -52,5 +52,5 @@ keyed by identity, evicted on auth change, removes both.
 
 - **Status**: Completed
 - **PR**: #61
-- **Merge Date**: pending merge (PR #61 open)
+- **Merge Date**: 2026-10-30 (merged via PR #61, commit 6e84c12e)
 - **Key Commit**: `1ace7681` (fix(story-25-2): one guest gate source, and a gate cache that cannot cross identities)
