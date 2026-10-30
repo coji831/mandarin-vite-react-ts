@@ -338,6 +338,36 @@ const OPTIONAL_USER_ID_SIGNATURES: OptionalUserIdRow[] = [
     evidence: "const content = passage.content as PassageContent;",
   },
   {
+    // Epic 26 practice formats (AC4). Each generator reads SHARED corpus content
+    // only — `_userId` is accepted to satisfy `QuizStrategy.generateQuestions`
+    // and is never read, never threaded into a where-clause. Story 26-7 added the
+    // curated-bank queries below; both read `metadata`, never a user scope.
+    declaresAt: "src/modules/quiz/strategies/ClozeStrategy.ts:171",
+    declares: "_userId?: string",
+    disposition: "guest-safe-no-user-scope:src/modules/quiz/strategies/ClozeStrategy.ts:173",
+    evidence: "prisma.grammarPattern.findMany({",
+  },
+  {
+    declaresAt: "src/modules/quiz/strategies/SentenceBuildingStrategy.ts:55",
+    declares: "_userId?: string",
+    disposition:
+      "guest-safe-no-user-scope:src/modules/quiz/strategies/SentenceBuildingStrategy.ts:57",
+    evidence: "prisma.grammarPattern.findMany({",
+  },
+  {
+    declaresAt: "src/modules/quiz/strategies/ListeningDictationStrategy.ts:70",
+    declares: "_userId?: string",
+    disposition:
+      "guest-safe-no-user-scope:src/modules/quiz/strategies/ListeningDictationStrategy.ts:95",
+    evidence: "const bankRows = await prisma.character.findMany({",
+  },
+  {
+    declaresAt: "src/modules/quiz/strategies/ToneJudgmentStrategy.ts:156",
+    declares: "_userId?: string",
+    disposition: "guest-safe-no-user-scope:src/modules/quiz/strategies/ToneJudgmentStrategy.ts:158",
+    evidence: "prisma.tonePair.findMany({",
+  },
+  {
     // Contract mirror of every `generateQuestions` strategy — cited at the one
     // dispatch site, which passes NO identity (`generateQuestions(/*userId*/)`).
     declaresAt: "src/modules/quiz/types/quiz.ts:15",

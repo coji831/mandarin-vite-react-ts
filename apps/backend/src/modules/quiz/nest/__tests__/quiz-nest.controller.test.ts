@@ -10,8 +10,12 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { HTTP_CODE_METADATA } from "@nestjs/common/constants";
 import type { Request } from "express";
 import { QuizNestController } from "../quiz-nest.controller.js";
+
+/** The four Epic 26 practice-format ids (§26.4.1). */
+const PRACTICE_FORMAT_IDS = ["cloze", "sentence-building", "listening-dictation", "tone-judgment"];
 
 vi.mock("../../../../shared/utils/logger.js", () => ({
   createLogger: vi.fn(() => ({
@@ -327,6 +331,99 @@ describe("QuizNestController (Story 24-13)", () => {
         { timeout: 5000 },
       );
       expect(result).toEqual({ explanation: "mock explanation", errorType: "ai_feedback" });
+    });
+  });
+
+  describe("Epic 26 practice formats — AC4 (create / answer / complete)", () => {
+    it.each(PRACTICE_FORMAT_IDS)(
+      "POST /v1/quiz/attempts accepts %s and persists via the service (201 route)",
+      async (quizType) => {
+        const body = { quizType, phase: 3, metadata: { format: quizType, bankVersion: "v1" } };
+        const req = makeReq({ body });
+        mockQuizService.createQuizAttempt.mockResolvedValue({
+          id: `attempt-${quizType}`,
+          quizType,
+        });
+
+        const result = await controller.createQuizAttempt(body, req);
+
+        expect(mockQuizService.createQuizAttempt).toHaveBeenCalledWith(
+          "user123",
+          quizType,
+          3,
+          body.metadata,
+          undefined,
+        );
+        expect(result).toEqual({ id: `attempt-${quizType}`, quizType });
+      },
+    );
+
+    it.each(PRACTICE_FORMAT_IDS)(
+      "POST /v1/quiz/attempts/:id/answers persists the %s answer (200 route)",
+      async (quizType) => {
+        const body = {
+          questionIndex: 0,
+          pinyinInput: "人",
+          selectedTone: 0,
+          correctPinyin: "人",
+          correctTone: 0,
+          category: quizType,
+        };
+        const req = makeReq({ params: { id: "attempt-1" }, body });
+        mockQuizService.submitAnswer.mockResolvedValue({ id: "answer-1", category: quizType });
+
+        const result = await controller.submitAnswer("attempt-1", body, req);
+
+        expect(mockQuizService.submitAnswer).toHaveBeenCalledWith("attempt-1", body);
+        expect(result).toEqual({ id: "answer-1", category: quizType });
+      },
+    );
+
+    it.each(PRACTICE_FORMAT_IDS)(
+      "PUT /v1/quiz/attempts/:id/complete evaluates a %s attempt (200 route)",
+      async (quizType) => {
+        const req = makeReq({ params: { id: "attempt-1" } });
+        mockQuizService.completeQuizAttempt.mockResolvedValue({
+          passed: true,
+          totalScore: 5,
+          maxScore: 5,
+          accuracy: 1,
+          categoryBreakdown: { pinyin: 0, tones: 0, pairs: 0, rules: 0 },
+        });
+
+        const result = await controller.completeQuizAttempt("attempt-1", req);
+
+        expect(mockQuizService.completeQuizAttempt).toHaveBeenCalledWith("attempt-1");
+        expect(result).toMatchObject({ passed: true, maxScore: 5 });
+        expect(quizType).toBeTruthy();
+      },
+    );
+
+    it.each(PRACTICE_FORMAT_IDS)(
+      "guest %s attempt → mock with zero persistence, no service call",
+      async (quizType) => {
+        const body = { quizType, phase: 3 };
+        const req = makeReq({ userId: undefined, body });
+
+        const result = (await controller.createQuizAttempt(body, req)) as Record<string, unknown>;
+
+        expect(mockQuizService.createQuizAttempt).not.toHaveBeenCalled();
+        expect(result.quizType).toBe(quizType);
+        expect(result.userId).toBeNull();
+        expect(result.passed).toBe(false);
+      },
+    );
+
+    it("keeps the route status codes the FE depends on (201 / 200 / 200)", () => {
+      expect(
+        Reflect.getMetadata(HTTP_CODE_METADATA, QuizNestController.prototype.createQuizAttempt),
+      ).toBe(201);
+      expect(
+        Reflect.getMetadata(HTTP_CODE_METADATA, QuizNestController.prototype.submitAnswer),
+      ).toBe(200);
+      expect(
+        Reflect.getMetadata(HTTP_CODE_METADATA, QuizNestController.prototype.completeQuizAttempt),
+      ).toBeUndefined(); // PUT defaults to 200
     });
   });
 });
