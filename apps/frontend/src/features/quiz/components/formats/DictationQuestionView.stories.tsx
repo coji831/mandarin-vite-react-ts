@@ -13,7 +13,7 @@ import { DictationQuestionView } from "./DictationQuestionView";
 import type { DictationQuestionViewProps } from "./DictationQuestionView";
 
 const BASE: DictationQuestionViewProps = {
-  instruction: "Type the pinyin you hear. Tone numbers are fine: ni3 hao3.",
+  instruction: "Type the pinyin you hear. Tone numbers are fine: ma3.",
   fieldLabel: "Your transcription",
   answer: "",
   replayCount: 0,

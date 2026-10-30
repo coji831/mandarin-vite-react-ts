@@ -74,6 +74,10 @@ describe("ToneJudgmentQuestion", () => {
     render(<ToneJudgmentQuestion />);
 
     await user.click(screen.getByRole("radio", { name: "Second tone (2)" }));
+    // Selecting must NOT grade: a keyboard learner arrowing through the group
+    // cannot be thrown into feedback before choosing (WCAG 3.2.2).
+    expect(submitSpy).not.toHaveBeenCalled();
+
     await user.click(screen.getByRole("button", { name: "Check" }));
 
     expect(submitSpy).toHaveBeenCalledWith("nǐ", 2);

@@ -18,10 +18,38 @@ import userEvent from "@testing-library/user-event";
 import { QuizCard } from "../QuizCard";
 
 const TIMELINE = [
-  { phase: 1, isPassed: true, isCurrent: true, isLocked: false },
-  { phase: 2, isPassed: false, isCurrent: false, isLocked: true },
-  { phase: 3, isPassed: false, isCurrent: false, isLocked: true },
-  { phase: 4, isPassed: false, isCurrent: false, isLocked: true },
+  {
+    phase: 1,
+    isPassed: true,
+    isCurrent: true,
+    isLocked: false,
+    state: "current" as const,
+    stateLabel: "passed · current",
+  },
+  {
+    phase: 2,
+    isPassed: false,
+    isCurrent: false,
+    isLocked: true,
+    state: "later" as const,
+    stateLabel: "later",
+  },
+  {
+    phase: 3,
+    isPassed: false,
+    isCurrent: false,
+    isLocked: true,
+    state: "later" as const,
+    stateLabel: "later",
+  },
+  {
+    phase: 4,
+    isPassed: false,
+    isCurrent: false,
+    isLocked: true,
+    state: "later" as const,
+    stateLabel: "later",
+  },
 ];
 
 const QUIZZES = [

@@ -132,18 +132,16 @@ describe("quizSessionStore — announcements (§26.2.4)", () => {
     await useQuizSessionStore.getState().submitAnswer("ba", 1);
 
     // Local state says passed; the server stub that lands later says otherwise
-    // and must not be able to rewrite (or re-announce) the summary.
+    // and must not be able to rewrite (or re-announce) the summary. The summary
+    // deliberately states FACTS only: `tierRules` can raise a format's threshold
+    // server-side, so a local "Passed." could contradict the badge.
     expect(useQuizSessionStore.getState().phase).toBe("RESULTS");
-    expect(useQuizSessionStore.getState().announcement).toBe(
-      "Quiz complete. 1 of 1, 100 percent. Passed.",
-    );
+    expect(useQuizSessionStore.getState().announcement).toBe("Quiz complete. 1 of 1, 100 percent.");
 
     await vi.waitFor(() => {
       expect(useQuizSessionStore.getState().completionResult).toEqual(GUEST_STUB_RESULT);
     });
-    expect(useQuizSessionStore.getState().announcement).toBe(
-      "Quiz complete. 1 of 1, 100 percent. Passed.",
-    );
+    expect(useQuizSessionStore.getState().announcement).toBe("Quiz complete. 1 of 1, 100 percent.");
   });
 });
 

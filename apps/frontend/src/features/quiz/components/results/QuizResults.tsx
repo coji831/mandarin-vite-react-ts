@@ -54,6 +54,14 @@ const REVIEW_TYPE_BY_STRATEGY: Record<string, string> = {
 const PRACTICES_REVIEW_PATH = "/practices/review";
 
 /**
+ * The formats whose answer categories `CategoryBreakdown` models (`pinyin`,
+ * `tones`, `pairs`, `rules`). The backend aggregator drops every other category,
+ * so rendering the bars for a format outside this set would report 0/N under a
+ * perfect score.
+ */
+const CATEGORY_BREAKDOWN_STRATEGIES: ReadonlySet<string> = new Set(["audio-to-pinyin-tone"]);
+
+/**
  * The guest note states the fact and nothing more: a guest attempt wrote no row,
  * so no sentence here may say the score was saved.
  */
@@ -179,8 +187,14 @@ export function QuizResults() {
         </div>
       </Box>
 
-      {/* Category breakdown (only applicable to pinyin/tone quizzes, not IME simulator) */}
-      {strategyType !== "ime-simulator" && (
+      {/* Category breakdown — rendered only for the formats whose answer
+          categories it actually models. `CategoryBreakdown` knows `pinyin` /
+          `tones` / `pairs` / `rules`, and the backend aggregator skips any other
+          category, so showing it for a practice format would print "0/5 (0%)"
+          under a perfect score. The four Phase-B formats carry their own
+          category (`cloze`, `sentence-building`, `dictation`, `tone-judgment`)
+          and a local correct/total is already shown above. */}
+      {CATEGORY_BREAKDOWN_STRATEGIES.has(strategyType) && (
         <CategoryBreakdown
           answers={answers}
           // The stub breakdown is as unusable as the stub score: a local-scored

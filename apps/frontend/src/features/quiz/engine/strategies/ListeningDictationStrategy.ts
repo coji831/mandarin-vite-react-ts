@@ -17,6 +17,12 @@ import { quizService } from "../../services/quizService";
  * `normalizePinyinForComparison` strips a tone digit only from the END of the
  * string it is given, so it is applied per syllable: `ni3 hao3`, `nǐ hǎo` and
  * `ni hao` all canonicalise to `ni hao`.
+ *
+ * Scope note: the server grades the same payload with the whole-string form, so
+ * a MULTI-syllable digit answer (`ni3 hao3`) is still rejected there while the
+ * local verdict accepts it. Dictation is character-level in this epic, where the
+ * two agree exactly; word-level dictation is deferred, and the learner-facing
+ * copy promises only the single-syllable case until it lands.
  */
 function canonicalTranscription(value: string): string {
   return (value ?? "")

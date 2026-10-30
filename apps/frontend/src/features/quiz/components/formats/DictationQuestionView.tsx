@@ -165,7 +165,7 @@ export function DictationQuestionView({
             onAnswerChange?.(event.target.value);
           }}
           onKeyDown={handleFieldKeyDown}
-          placeholder="e.g. ni3 hao3"
+          placeholder="e.g. ma3"
           autoComplete="off"
           className="w-full"
           aria-disabled={isLocked || undefined}

@@ -52,13 +52,6 @@ const QUIZ_LABELS: Record<string, string> = {
   "sentence-building": "Sentence Building",
 };
 
-const TIMELINE_STATE_LABELS: Record<PhaseTimelineState, string> = {
-  passed: "passed",
-  current: "current",
-  unpassed: "not passed",
-  later: "not yet reached",
-};
-
 export function quizLabel(type: string, tier: number): string {
   const base = QUIZ_LABELS[type] ?? type;
   return tier > 1 ? `${base} (tier ${tier})` : base;
@@ -93,6 +86,7 @@ export function useQuizCard() {
   const timeline: PhaseTimelineEntry[] = [1, 2, 3, 4].map((p) => {
     const isPassed = passedByPhase[p];
     const isCurrent = p === currentPhase;
+    const isLocked = p > currentPhase;
     const state: PhaseTimelineState = isCurrent
       ? "current"
       : isPassed
@@ -101,13 +95,20 @@ export function useQuizCard() {
           ? "unpassed"
           : "later";
 
+    // The visible words are the single source: the card renders `stateLabel`
+    // verbatim rather than re-deriving its own vocabulary.
+    const words: string[] = [];
+    if (isPassed) words.push("passed");
+    if (isCurrent) words.push("current");
+    if (!isPassed && !isCurrent) words.push(isLocked ? "later" : "not passed");
+
     return {
       phase: p,
       isPassed,
       isCurrent,
-      isLocked: p > currentPhase,
+      isLocked,
       state,
-      stateLabel: TIMELINE_STATE_LABELS[state],
+      stateLabel: words.join(" · "),
     };
   });
 

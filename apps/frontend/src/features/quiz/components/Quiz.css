@@ -80,11 +80,22 @@
    A utility class on the row would never match. Values are the utility's own
    (2px solid var(--focus-ring), offset 2px), so the two cannot drift apart. */
 .quiz-select__options .radio-group__option:has(.radio-group__input:focus-visible) {
-  /* The ring must land on the option ROW, while focus lands on the opacity:0
-     input inside it — so the `focus-ring-primary` utility (which targets the
+  /* The ring must land on the option ROW, while focus lands on the opacity:0,
+     0x0 input inside it — so the `focus-ring-primary` utility (which targets the
      focused element itself) can never match here. A token-coloured box-shadow
-     carries the same 2px/2px ring without re-declaring the utility's properties. */
+     draws the same 2px ring without re-declaring the utility's properties. */
   box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* forced-colors drops box-shadow, and the RadioGroup input is 0x0, so without
+   this the two single-select formats would have NO focus indicator in High
+   Contrast (WCAG 2.2 2.4.7). `Highlight` is the system colour reserved for
+   exactly this; the pattern matches Spinner/Skeleton/ProgressBar. */
+@media (forced-colors: active) {
+  .quiz-select__options .radio-group__option:has(.radio-group__input:focus-visible) {
+    outline-color: Highlight;
+    outline-style: solid;
+  }
 }
 
 /* ═══════════════════════════════════════════════

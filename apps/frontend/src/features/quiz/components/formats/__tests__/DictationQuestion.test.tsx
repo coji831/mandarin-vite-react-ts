@@ -72,6 +72,15 @@ describe("DictationQuestion", () => {
     vi.restoreAllMocks();
   });
 
+  it("never shows the answer glyph — the prompt is the audio alone", () => {
+    render(<DictationQuestion />);
+
+    // `promptGlyph: "hide"` is the contract: the glyph is the answer, so it must
+    // not be on screen before the learner types it.
+    expect(screen.queryByText("你好")).not.toBeInTheDocument();
+    expect(screen.queryByText("nǐ hǎo")).not.toBeInTheDocument();
+  });
+
   it("keeps the replay control focusable while playing (aria-disabled, never disabled)", () => {
     audioState.isPlaying = true;
     render(<DictationQuestion />);

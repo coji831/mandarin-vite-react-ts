@@ -12,7 +12,7 @@ import { useAudioItemPlayback } from "shared/hooks";
 import { useQuizSessionStore } from "../../stores/quizSessionStore";
 import { DictationQuestionView } from "./DictationQuestionView";
 
-const INSTRUCTION = "Play the audio, then type what you hear. Tone numbers are fine (ni3 hao3).";
+const INSTRUCTION = "Play the audio, then type what you hear. Tone numbers are fine (ma3).";
 
 export function DictationQuestion() {
   const questions = useQuizSessionStore((s) => s.questions);

@@ -410,7 +410,7 @@ Consequences that must be written into the impl, not discovered later:
 
 - `QuizAttempt.quizType` is an unconstrained `String` (`schema.prisma:276`) → the new ids persist with no migration and no enum.
 - `selectedTone`/`correctTone` are NOT NULL → the `0` sentinel is the encoding for "not a tone answer"; `0` is already a legal value (neutral tone), so a reader must key off `category`/`quizType`, never off "tone = 0".
-- `category` is NOT NULL and feeds `CategoryBreakdown` → the four ids above are the categories; no new breakdown code.
+- `category` is NOT NULL and is set to the format id (`cloze`, `sentence-building`, `dictation`, `tone-judgment`). **Correction (code review, 2026-10-30):** `CategoryBreakdown` and the backend `computeCategoryBreakdown` model only `pinyin` / `tones` / `pairs` / `rules`, and the aggregator silently drops every other key — so the results screen must NOT render the breakdown for the four new formats. It is gated to `audio-to-pinyin-tone` (`QuizResults.CATEGORY_BREAKDOWN_STRATEGIES`); a per-category bar for the practice formats, if wanted, is its own change.
 - `correct: Boolean` stays server-derived.
 - `QuizAttempt.metadata Json?` is the free slot for format provenance (`{ format, bankVersion }`); widening the FE `metadata` type is FE-only (`Json?` already accepts it).
 - **No `response Json?` column, no `StrategyType` Prisma enum, no `QuizAttemptAnswer` reshape.** If a future format needs a structured payload, that is its own epic with an ADR.

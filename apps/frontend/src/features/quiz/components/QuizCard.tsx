@@ -43,13 +43,6 @@ type QuizCardProps = {
   timeline: TimelineItem[];
 };
 
-const STATE_WORDS: Record<PhaseTimelineState, string> = {
-  passed: "passed",
-  current: "current",
-  unpassed: "not passed",
-  later: "later",
-};
-
 export function QuizCard({ currentPhase, label, quizzes, takeQuiz, timeline }: QuizCardProps) {
   return (
     <Box variant="dark" padding="lg" className="quiz-card flex-col gap-md">
@@ -119,13 +112,7 @@ function QuizCardTimeline({
       <ol className="quiz-card__timeline-list m-0 p-0 flex-col gap-xs" aria-label="Phase sequence">
         {timeline.map((entry) => {
           const isCurrent = entry.isCurrent || entry.phase === currentPhase;
-          const words: string[] = [];
-
-          if (entry.isPassed) words.push(STATE_WORDS.passed);
-          if (isCurrent) words.push(STATE_WORDS.current);
-          if (!entry.isPassed && !isCurrent) {
-            words.push(entry.isLocked ? STATE_WORDS.later : STATE_WORDS.unpassed);
-          }
+          const stateLabel = entry.stateLabel ?? "";
 
           return (
             <li key={entry.phase} className="quiz-card__timeline-item flex-align-center gap-xs">
@@ -135,7 +122,7 @@ function QuizCardTimeline({
                 <Icon name="practice" size={16} aria-hidden />
               ) : null}
               <span className="font-xs text-secondary">Phase {entry.phase}</span>
-              <span className="font-xs text-muted">· {words.join(" · ")}</span>
+              <span className="font-xs text-muted">· {stateLabel}</span>
             </li>
           );
         })}

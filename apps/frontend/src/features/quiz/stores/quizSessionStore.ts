@@ -29,10 +29,13 @@ import { getPhoneticHint, getCharacterDetail } from "../services/hintService";
  * local state. It is deliberately not derived in `QuizResults`: the backend
  * result lands later and would announce the same fact a second time.
  */
-function completionAnnouncement(correct: number, total: number, passThreshold?: number): string {
+function completionAnnouncement(correct: number, total: number): string {
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const outcome = passThreshold != null && pct >= passThreshold * 100 ? "Passed." : "Not passed.";
-  return `Quiz complete. ${correct} of ${total}, ${pct} percent. ${outcome}`;
+  // Facts only. The verdict is left to the on-screen badge, which is driven by
+  // the server result: `tierRules` can raise a format's threshold (radical-gate
+  // requires 100%), so announcing a local "Passed." here could contradict the
+  // badge a moment later.
+  return `Quiz complete. ${correct} of ${total}, ${pct} percent.`;
 }
 
 /** The per-question verdict, announced before the FEEDBACK surface takes focus. */
@@ -268,13 +271,12 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     if (isLastQuestion) {
       // Skip FEEDBACK for last question — go directly to RESULTS, so the
       // completion summary is the ONE announcement for this transition.
-      const passThreshold = get().strategyConfig?.passThreshold;
       get().completeAttempt();
       set((s) => ({
         answers: [...s.answers, backendVerdict],
         score: nextScore,
         phase: "RESULTS" as QuizPhase,
-        announcement: completionAnnouncement(nextScore, questions.length, passThreshold),
+        announcement: completionAnnouncement(nextScore, questions.length),
       }));
     } else {
       set((s) => ({
@@ -301,7 +303,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   nextQuestion: () => {
-    const { currentIndex, questions, score, strategyConfig } = get();
+    const { currentIndex, questions, score } = get();
     // Clear per-question hint state
     set({ currentPhoneticHint: null, showRadicalHint: false });
     if (currentIndex + 1 < questions.length) {
@@ -315,11 +317,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       get().completeAttempt();
       set({
         phase: "RESULTS",
-        announcement: completionAnnouncement(
-          score,
-          questions.length,
-          strategyConfig?.passThreshold,
-        ),
+        announcement: completionAnnouncement(score, questions.length),
       });
     }
   },
