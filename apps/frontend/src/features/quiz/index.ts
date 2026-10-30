@@ -11,7 +11,8 @@ import "./components/Quiz.css";
 
 // Engine
 export { getStrategy, QUIZ_STRATEGIES } from "./engine/strategies";
-export { getPhaseQuizzes } from "./engine/PhaseStrategyRegistry";
+export { getPhaseQuizzes, getQuizzesUpToPhase } from "./engine/PhaseStrategyRegistry";
+export type { PhaseConfig, PhaseQuizConfig, PhaseQuizEntry } from "./engine/PhaseStrategyRegistry";
 
 // Types
 export type {
@@ -41,8 +42,8 @@ export { IMEQuestionView } from "./components/ime-input/IMEQuestionView";
 
 // Hooks
 export { useQuizEngine } from "./hooks";
-export { useQuizCard } from "./hooks/useQuizCard";
-export type { QuizAssessment } from "./hooks/useQuizCard";
+export { useQuizCard, quizLabel } from "./hooks/useQuizCard";
+export type { QuizAssessment, PhaseTimelineEntry, PhaseTimelineState } from "./hooks/useQuizCard";
 
 // Stores
 export { useQuizSessionStore } from "./stores";
