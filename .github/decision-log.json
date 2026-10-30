@@ -325,6 +325,13 @@
       "status": "ratified",
       "file": "docs/guides/adr/composition-portals-focus.md",
       "date": "2026-10-26"
+    },
+    {
+      "id": "ADR-014",
+      "title": "Lexical hub is a navigator — standalone cross-page peek sheet in the popover layer (no route, one history entry per open, non-modal above 767px); lands --size-hub-sheet through ADR-005",
+      "status": "ratified",
+      "file": "docs/guides/adr/lexical-hub-sheet.md",
+      "date": "2026-10-29"
     }
   ]
 }

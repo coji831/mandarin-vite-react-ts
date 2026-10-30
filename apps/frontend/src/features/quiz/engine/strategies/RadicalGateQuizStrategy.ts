@@ -18,6 +18,8 @@ export const radicalGateQuizStrategy: QuizStrategy = {
   label: "Radical Gate Quiz",
   icon: "🚪",
   phase: 2,
+  // The question IS the glyph (match radical ↔ meaning), so it stays in the prompt.
+  promptGlyph: "show",
 
   async generateQuestions(count?: number): Promise<QuizQuestion[]> {
     return quizService.fetchQuestions("radical-gate", count ?? 10);

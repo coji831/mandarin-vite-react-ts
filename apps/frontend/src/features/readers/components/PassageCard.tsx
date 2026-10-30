@@ -4,17 +4,26 @@
  * Story 21.4: Reading UI + LexicalHub Phase 1
  * Story 21.7: Added bookmark toggle button and completion checkmark indicator.
  *
+ * Rework (§2): the card no longer prints a "known words" percentage. The API's
+ * `knownWordRatio` is a stored 0–1 column written when the passage was
+ * generated, so it cannot vary per learner — every card read "1%" and was wrong
+ * twice over (wrong unit, meaningless number). The rule the proposal states:
+ * a card whose ratio cannot vary per learner must not show a ratio. What it
+ * shows instead is real and varies: the word count, plus an explicit read
+ * affordance so the card looks as clickable as it is.
+ *
  * Data-resilient: fixed card width, inner scroll for overflow, text-overflow ellipsis.
  * Props-only — no logic, no hooks, no API calls.
  */
 import { memo } from "react";
-import { Badge, Box, ProgressBar } from "shared/components";
+import { Badge, Box } from "shared/components";
 import "./PassageCard.css";
 
 export type PassageCardProps = {
   title: string;
   hskLevel: number;
-  knownWordRatio: number;
+  /** Words in the passage — real, per-passage, and it varies. */
+  wordCount?: number;
   isBookmarked?: boolean;
   isCompleted?: boolean;
   onClick: () => void;
@@ -25,14 +34,19 @@ export type PassageCardProps = {
 export const PassageCard = memo(function PassageCard({
   title,
   hskLevel,
-  knownWordRatio: rawRatio,
+  wordCount,
   isBookmarked = false,
   isCompleted = false,
   onClick,
   onBookmarkToggle,
 }: PassageCardProps) {
-  // Clamp knownWordRatio to [0, 100] range
-  const knownWordRatio = Math.min(100, Math.max(0, rawRatio));
+  const meta = [
+    wordCount !== undefined ? `${wordCount} words` : null,
+    isCompleted ? "finished" : null,
+    isBookmarked ? "bookmarked" : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <Box
@@ -106,21 +120,15 @@ export const PassageCard = memo(function PassageCard({
         type="button"
         className="passage-card__open flex-col gap-sm"
         onClick={onClick}
-        aria-label={
-          `Passage: ${title}, HSK level ${hskLevel}, ${knownWordRatio}% known words` +
-          (isCompleted ? ", completed" : "") +
-          (isBookmarked ? ", bookmarked" : "")
-        }
+        aria-label={`Read passage: ${title}, HSK level ${hskLevel}${meta ? `, ${meta}` : ""}`}
       >
         <h2 className="passage-card__title overflow-hidden whitespace-nowrap text-ellipsis font-md fw-600 text-secondary m-0 lh-1-3">
           {title}
         </h2>
 
-        {/* Known-word ratio */}
-        <div className="passage-card__ratio flex-col gap-xs">
-          <span className="font-xs text-muted">Known words</span>
-          <ProgressBar value={knownWordRatio} aria-label={`${title} known words progress`} />
-          <span className="font-xs text-tertiary">{knownWordRatio}%</span>
+        <div className="flex-between gap-sm font-xs text-tertiary">
+          <span>{wordCount !== undefined ? `${wordCount} words` : "Graded passage"}</span>
+          <span className="text-accent fw-600">Read →</span>
         </div>
       </button>
     </Box>

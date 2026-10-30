@@ -1,8 +1,15 @@
 /**
  * @file shared/layouts/__tests__/AppLayout.test.tsx
  * @description Tests for AppLayout (Story 22.4 composition: AppTopBar +
- * auth-free SideNav with phase-gated Learn group + Outlet; lexical sessions are
- * routed detail pages, so the shell mounts a navigation bridge and no overlay).
+ * auth-free SideNav with the Learn group + Outlet; lexical sessions are routed
+ * detail pages, so the shell mounts a navigation bridge and no overlay).
+ *
+ * Story 25-3 / A25 (BM-1 §3, L6): the shell renders chrome + <Outlet /> only.
+ * It reads NO phase for navigation (the `usePhaseGate`/`effectivePhase` wiring
+ * and the SideNav phase props are deleted), every Learn item is an ordinary
+ * link for every visitor, and there is no guest region/banner/badge here —
+ * guest state lives on the Browse dashboard (`features/dashboard`
+ * `DashboardGuest`).
  *
  * Auth-page behavior (VisFix W5): Login AND Register must both render
  * standalone (no main nav sidebar), but the AppTopBar/UserMenu remain.
@@ -10,25 +17,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { LEARN_NAV_ITEMS } from "shared/constants";
 import { AppLayout } from "../AppLayout";
 
-const { mockUseAuth, mockUsePhaseGate } = vi.hoisted(() => ({
+const { mockUseAuth } = vi.hoisted(() => ({
   mockUseAuth: vi.fn(),
-  mockUsePhaseGate: vi.fn(),
 }));
 
 vi.mock("features/auth", () => ({
   useAuth: mockUseAuth,
-}));
-
-// The bridge only navigates (renders nothing) — stub it so the shell is isolated.
-vi.mock("shared/hub-entry", async () => {
-  const actual = await vi.importActual<typeof import("shared/hub-entry")>("shared/hub-entry");
-  return { ...actual, HubRouteBridge: () => null };
-});
-
-vi.mock("shared/hooks", () => ({
-  usePhaseGate: mockUsePhaseGate,
 }));
 
 function renderAppLayout(initialPath: string, initialCollapsed?: boolean) {
@@ -52,8 +49,15 @@ beforeEach(() => {
     isAuthenticated: true,
     logout: vi.fn(),
   });
-  mockUsePhaseGate.mockReturnValue({ phaseGate: { currentPhase: 4 }, isLoading: false });
 });
+
+const mockGuest = () => {
+  mockUseAuth.mockReturnValue({
+    user: null,
+    isAuthenticated: false,
+    logout: vi.fn(),
+  });
+};
 
 describe("AppLayout auth-page sidebar behavior", () => {
   it("hides the sidebar on the login page but keeps the AppTopBar UserMenu (standalone)", () => {
@@ -81,9 +85,11 @@ describe("AppLayout composition (Story 22.4)", () => {
     expect(userMenu()).toBeInTheDocument();
   });
 
-  it("renders the phase-gated Learn group in the sidebar (children present)", () => {
+  it("renders the Learn group in the sidebar with every child present", () => {
     renderAppLayout("/learn/grammar");
-    expect(screen.getByRole("link", { name: /Grammar/ })).toBeInTheDocument();
+    for (const item of LEARN_NAV_ITEMS) {
+      expect(screen.getByRole("link", { name: item.label })).toBeInTheDocument();
+    }
   });
 
   it("renders the collapsed rail when initialized collapsed (no Learn children, has expand toggle)", () => {
@@ -92,40 +98,58 @@ describe("AppLayout composition (Story 22.4)", () => {
     expect(screen.queryByRole("link", { name: /Grammar/ })).not.toBeInTheDocument();
   });
 
-  it("keeps the Learn group unlocked while the phase gate is loading (no false phase-1 lock)", () => {
-    // Review N7: on in-flight/failed gate fetch, authed users default to "all unlocked".
-    mockUsePhaseGate.mockReturnValue({ phaseGate: null, isLoading: true });
-    renderAppLayout("/");
-    const grammar = screen.getByRole("link", { name: /Grammar/ });
-    expect(grammar).not.toHaveAttribute("aria-disabled");
+  it("renders chrome + <Outlet /> only — no guest region, banner, or badge (A25)", () => {
+    // Guest state is Browse-only (BM-1 §3 / A25): the shell must never grow a
+    // persistent guest affordance, because chrome is inherited by every route
+    // and would occupy Focus surfaces permanently. The dashboard owns it.
+    mockGuest();
+    const { container } = renderAppLayout("/");
+
+    // <main> holds the routed page and nothing else — no injected region.
+    const main = screen.getByText("page content").closest("main");
+    expect(main).not.toBeNull();
+    expect(main!.children).toHaveLength(1);
+    expect(main!.querySelector("[class*='guest'], [data-testid*='guest']")).toBeNull();
+
+    // The shell is chrome + <Outlet />: the rail and the main column, nothing else.
+    const shell = container.querySelector(".app-layout")!;
+    expect(Array.from(shell.children).map((el) => el.className.split(" ")[0])).toEqual([
+      "side-nav",
+      "app-main",
+    ]);
+
+    // The only guest-marked node is the TopBar account control (UserMenu) —
+    // no guest banner/badge/region was added to the layout.
+    const guestNodes = Array.from(
+      container.querySelectorAll("[class*='guest'], [data-testid*='guest']"),
+    );
+    expect(guestNodes).toHaveLength(1);
+    expect(guestNodes[0]).toHaveClass("user-menu--guest");
+    expect(screen.queryByText(/^guest$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/sign up/i)).not.toBeInTheDocument();
   });
 
-  it("renders the calibrated Phase-1 identity for a guest — Phase-2+ Learn items locked (Story 24-7)", () => {
-    // Guest: no auth + the calibrated guest gate ({currentPhase: 1, isGuest: true}).
-    // The shell must NOT fall back to the old all-unlocked `: 4` override.
-    mockUseAuth.mockReturnValue({
-      user: null,
-      isAuthenticated: false,
-      logout: vi.fn(),
-    });
-    mockUsePhaseGate.mockReturnValue({
-      phaseGate: { currentPhase: 1, isGuest: true },
-      isLoading: false,
-    });
-    renderAppLayout("/learn/grammar");
+  it("leaves every Learn item enabled for a guest — no lock, no title prompt (A25)", () => {
+    mockGuest();
+    renderAppLayout("/learn/chengyu");
 
-    // Phase-1 (Foundations) stays unlocked for the guest…
-    expect(screen.getByRole("link", { name: /Foundations/ })).not.toHaveAttribute("aria-disabled");
-    // …but Phase-2+ items (Radicals/Grammar/…) render locked, not all-unlocked.
-    const grammar = screen.getByRole("link", { name: /Grammar/ });
-    expect(grammar).toHaveAttribute("aria-disabled");
-    expect(grammar).toHaveAttribute("title", "Complete Phase 2 to unlock");
+    for (const item of LEARN_NAV_ITEMS) {
+      const link = screen.getByRole("link", { name: item.label });
+      expect(link).toHaveAttribute("href", item.path);
+      expect(link).not.toHaveAttribute("aria-disabled");
+      expect(link).not.toHaveAttribute("tabindex");
+      expect(link.getAttribute("title") ?? "").not.toMatch(/unlock|locked|requires/i);
+    }
+    // The deep-linked phase-ahead item is current — the pill is not suppressed.
+    expect(screen.getByRole("link", { name: "Chengyu" })).toHaveAttribute("aria-current", "page");
   });
 });
 
 describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
   it("renders a Focus route with a forced-collapsed rail and a recessed top bar", () => {
-    const { container } = renderAppLayout("/practices/review");
+    // A session is a Focus surface. Since §4/§7 the practice sessions live on a
+    // query, and the Blueprint (`/learn/foundations`, wizard) is Focus outright.
+    const { container } = renderAppLayout("/learn/foundations");
     // The rail is mounted (non-auth) but forced to the icon rail — Learn
     // children are unmounted and the manual collapse toggle is hidden (Focus
     // chrome is fixed, not user-toggled).
@@ -134,6 +158,14 @@ describe("AppLayout mode-aware chrome (dual-mode chrome law)", () => {
     expect(screen.queryByRole("button", { name: /sidebar/i })).not.toBeInTheDocument();
     // The top bar recedes (Focus chrome).
     expect(container.querySelector(".app-top-bar--recessed")).toBeInTheDocument();
+  });
+
+  it("keeps the review picker in Browse until a session starts", () => {
+    // §4: choosing a deck is not a change of intent — the rail stays expanded
+    // and the top bar stays standard with no session params in the URL.
+    const { container } = renderAppLayout("/practices/review");
+    expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+    expect(container.querySelector(".app-top-bar--recessed")).not.toBeInTheDocument();
   });
 
   it("renders a Browse route with the expanded rail and a standard top bar", () => {

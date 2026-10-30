@@ -116,12 +116,12 @@ export function AudioControlBar({
       {/* Error indicator */}
       {hasError && (
         <span
-          className="audio-control-bar__error"
+          className="audio-control-bar__error text-warning"
           role="alert"
           aria-label="Audio error detected"
           title="Some sentences failed to load audio"
         >
-          ⚠
+          <Icon name="cross" size={16} aria-hidden />
         </span>
       )}
     </div>

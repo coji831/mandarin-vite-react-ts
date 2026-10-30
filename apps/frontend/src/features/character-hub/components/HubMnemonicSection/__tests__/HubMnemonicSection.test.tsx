@@ -216,6 +216,11 @@ describe("HubMnemonicSection", () => {
     await waitFor(() => {
       expect(screen.getByText("Generate Story")).toBeTruthy();
     });
+
+    // The lexical hub sheet carries no primary at all — this is a ghost.
+    expect(screen.getByText("Generate Story").closest("button")?.className).not.toContain(
+      "btn-primary",
+    );
   });
 
   // ── Display State ───────────────────────────────────

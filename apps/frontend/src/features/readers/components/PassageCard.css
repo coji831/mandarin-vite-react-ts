@@ -2,8 +2,11 @@
  * @file PassageCard.css
  * @description Styles for PassageCard component.
  * Story 21.4: Reading UI + LexicalHub Phase 1
+ *
+ * The card's layout is className utilities in the JSX. What remains here is the
+ * <button> reset (the open affordance is a real button so the bookmark toggle is
+ * never nested inside another interactive element) plus its focus ring.
  */
-
 .passage-card__top-row {
   min-height: 24px;
 }
@@ -12,24 +15,32 @@
    the bookmark toggle inside another interactive element). Transparent,
    full-width, left-aligned so it visually reads as the whole card surface. */
 .passage-card__open {
+  /* a button's UA chrome would paint a second card surface inside the card */
   background: none;
+  /* bundled with the UA-chrome reset above */
   border: none;
+  /* bundled with the UA-chrome reset above */
   padding: 0;
+  /* bundled with the UA-chrome reset above */
   margin: 0;
+  /* inherit the card's type scale — the body must not look like a control */
   font: inherit;
   color: inherit;
+  /* icon + title read left-to-right from the card edge */
   text-align: left;
+  /* the whole card is the target */
   cursor: pointer;
+  /* flex child — prevents blow-out inside the grid column */
   min-width: 0;
+  /* bundled with the flex-child guard above */
   min-height: 0;
 }
 
 .passage-card__open:focus-visible {
+  /* :focus-visible pseudo-class — the ring belongs to the body button */
   outline: 2px solid var(--focus-ring);
+  /* bundled with the ring above */
   outline-offset: 2px;
+  /* the ring follows the card's corner, not the button's square corners */
   border-radius: var(--radius-sm);
-}
-
-.passage-card__ratio {
-  margin-top: auto;
 }

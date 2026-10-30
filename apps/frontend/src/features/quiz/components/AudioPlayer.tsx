@@ -13,6 +13,7 @@ import { useState, useCallback } from "react";
 import { resolveHanzi } from "@mandarin/shared-utils";
 import { useAudioItemPlayback, usePinyinCharacterMap } from "shared/hooks";
 import { Button, Icon } from "shared/components";
+import type { ButtonVariant } from "shared/components";
 
 type AudioPlayerProps = {
   /** Pinyin audio key (e.g., "bā") */
@@ -21,10 +22,21 @@ type AudioPlayerProps = {
   character?: string | null;
   /** Custom label for the button */
   label?: string;
+  /**
+   * Button weight. Defaults to `primary` (the player IS the action when it
+   * stands alone); a host that already owns the viewport's one primary — the
+   * quiz feedback card, where `Next Question` is the way on — passes `ghost`.
+   */
+  variant?: ButtonVariant;
 };
 
 /** Audio playback button using shared per-item audio hook */
-export function AudioPlayer({ audioKey, character, label = "Play Audio" }: AudioPlayerProps) {
+export function AudioPlayer({
+  audioKey,
+  character,
+  label = "Play Audio",
+  variant = "primary",
+}: AudioPlayerProps) {
   const [hasPlayed, setHasPlayed] = useState(false);
   const { play, isPlaying, isLoading, error, status } = useAudioItemPlayback();
   const { charMap } = usePinyinCharacterMap();
@@ -45,7 +57,7 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
   return (
     <div className="flex-center">
       <Button
-        variant="primary"
+        variant={variant}
         size="md"
         onClick={handlePlay}
         disabled={buttonDisabled}
@@ -67,7 +79,7 @@ export function AudioPlayer({ audioKey, character, label = "Play Audio" }: Audio
           {isBlocked
             ? "Tap to play"
             : error
-              ? "⚠️ Error"
+              ? "Error"
               : isLoading
                 ? "Loading..."
                 : isPlaying

@@ -94,7 +94,7 @@ export function CharacterStrokePlayer({
             title="Step back"
             aria-label="Step back"
           >
-            ◀
+            <Icon name="chevron-left" size={16} aria-hidden />
           </Button>
           {isPlaying ? (
             <Button
@@ -106,7 +106,7 @@ export function CharacterStrokePlayer({
               title="Pause"
               aria-label="Pause"
             >
-              ⏸
+              <Icon name="pause" size={16} aria-hidden />
             </Button>
           ) : (
             <Button
@@ -118,7 +118,7 @@ export function CharacterStrokePlayer({
               title="Play stroke"
               aria-label="Play stroke animation"
             >
-              ▶
+              <Icon name="play" size={16} aria-hidden />
             </Button>
           )}
           <Button
@@ -130,7 +130,7 @@ export function CharacterStrokePlayer({
             title="Step forward"
             aria-label="Step forward"
           >
-            ▶
+            <Icon name="chevron-right" size={16} aria-hidden />
           </Button>
         </div>
       </div>
@@ -176,7 +176,9 @@ export function CharacterStrokePlayer({
       {/* Error fallback */}
       {error && (
         <Box variant="surface" padding="xs" className="font-xs text-error text-center radius-sm">
-          <span>⚠️ {error}</span>
+          <span>
+            <Icon name="cross" size={16} aria-hidden /> {error}
+          </span>
           <span className="text-muted"> — Character outline still available</span>
         </Box>
       )}
@@ -188,7 +190,7 @@ export function CharacterStrokePlayer({
         onClick={() => openHub({ entityType: "character", entityId: character, label: character })}
         aria-label="Open in Character Detail Hub"
       >
-        📖 Open in Character Hub
+        <Icon name="book" size={16} aria-hidden /> Open in Character Hub
       </Button>
 
       {/* Controls */}
@@ -202,7 +204,11 @@ export function CharacterStrokePlayer({
           title={isPlaying ? "Pause" : "Play"}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
-          {isPlaying ? "⏸" : "▶"}
+          {isPlaying ? (
+            <Icon name="pause" size={16} aria-hidden />
+          ) : (
+            <Icon name="play" size={16} aria-hidden />
+          )}
         </Button>
         <Button
           variant="control"
@@ -213,7 +219,7 @@ export function CharacterStrokePlayer({
           title="Step back"
           aria-label="Step back"
         >
-          ◀
+          <Icon name="chevron-left" size={16} aria-hidden />
         </Button>
         <Button
           variant="control"
@@ -224,7 +230,7 @@ export function CharacterStrokePlayer({
           title="Step forward"
           aria-label="Step forward"
         >
-          ▶
+          <Icon name="chevron-right" size={16} aria-hidden />
         </Button>
         <span className="font-xs text-muted">
           {isReady ? `${currentStroke} / ${totalStrokes}` : "—"}

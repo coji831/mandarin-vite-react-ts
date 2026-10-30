@@ -28,7 +28,9 @@
  *     deferred to epic-29 — no counter ships here).
  *   - Registered user (valid token) → 200, same shape (authenticated).
  *   - Invalid/garbage token → STILL 200 as a guest (optionalAuth never 401s —
- *     calibrated F6: a bad token is treated as guest, never rejected).
+ *     calibrated F6: a bad token is treated as guest, never rejected), and the
+ *     cache hit stays `{ cached: true }` with NO billable generation (Story
+ *     25-4 pins the bad-token variant of the F5 free-read contract).
  *   - 4xx/5xx: status + the `{ code, message, requestId }` envelope (the
  *     requestId echoes the sent `X-Request-Id`): empty text / pinyin /
  *     too-many words → 400 `VALIDATION_ERROR`; upstream TTS failure → 500
@@ -292,6 +294,10 @@ describe.skipIf(!db.available)("Nest audio + health regression (integration, DB)
       );
       expectParity2xx(res);
       expect(res.nestRes.body).toEqual({ audioUrl: expect.any(String), cached: true });
+      // F6: a bad token resolves to the GUEST branch, so the cache hit must
+      // stay free — the billable generation path is never reached either.
+      expect(mockTts.synthesizeSpeech).not.toHaveBeenCalled();
+      expect(mockGcs.uploadFile).not.toHaveBeenCalled();
     });
 
     it("empty text — 400 VALIDATION_ERROR envelope", async () => {

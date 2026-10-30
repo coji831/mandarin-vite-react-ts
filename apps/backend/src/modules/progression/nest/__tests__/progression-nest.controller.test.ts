@@ -4,14 +4,27 @@
  * Progression Port). Adapts the Express `ProgressionController` test surface to
  * the Nest controller shape — same guest session-local/empty shapes, same
  * service delegation + ReviewService side-effect, same 4xx/5xx codes. The
- * CALIBRATED `/gates` guest branch (24-13) is asserted explicitly: Phase-1-only
- * gates, NEVER the all-passed GUEST shape.
+ * CALIBRATED `/gates` guest branch (24-13) is asserted explicitly, against
+ * HAND-WRITTEN payloads — Phase 1 locked (`reason: "GUEST"`), and (since 25-2)
+ * a stubbed Phase-4 guest turning every gate passed. The guest answer comes from
+ * `createGuestPhaseGate()`, so stubbing it proves the projection is wired to the
+ * one shared source rather than to a second literal.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import type { Request } from "express";
+import { createGuestPhaseGate } from "@mandarin/shared-constants";
 import { ProgressionNestController } from "../progression-nest.controller.js";
+
+// BOTH guest branches derive from `createGuestPhaseGate()`. Wrapping it (the
+// default implementation is the real function) is how the tests below prove the
+// derivation goes through the shared answer: stub a Phase-4 guest and the gates
+// must move, which a second hard-coded literal could not do.
+vi.mock("@mandarin/shared-constants", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@mandarin/shared-constants")>();
+  return { ...actual, createGuestPhaseGate: vi.fn(actual.createGuestPhaseGate) };
+});
 
 vi.mock("../../../../shared/utils/logger.js", () => ({
   createLogger: vi.fn(() => ({
@@ -173,6 +186,33 @@ describe("ProgressionNestController (Story 24-13)", () => {
           reason: "GUEST",
           details: "Guest — Phase 1 only",
         });
+      }
+    });
+
+    it("guest → /gates follows a stubbed createGuestPhaseGate() (Phase 4 → every gate passed)", async () => {
+      // Hand-written expectation, NOT `buildGuestGateStatus(...)`: comparing the
+      // controller's output against the very function it calls cannot fail. The
+      // Phase-1 case above pins the locked wire shape; this one pins the wiring
+      // (one shared guest answer) and the phase-2+ shape — `passed: true`, no
+      // `reason` key at all.
+      // `createGuestPhaseGate()` types `currentPhase` as the literal `1`, so the
+      // stub widens just that field (single cast, no double-cast) to drive the
+      // derivation with a second phase.
+      const phaseFourGuest: { currentPhase: number } = { ...createGuestPhaseGate() };
+      phaseFourGuest.currentPhase = 4;
+      vi.mocked(createGuestPhaseGate).mockReturnValueOnce(
+        phaseFourGuest as ReturnType<typeof createGuestPhaseGate>,
+      );
+
+      const gates = (await controller.getGates(makeReq({ userId: undefined }))) as Record<
+        string,
+        unknown
+      >;
+
+      expect(mockProgressionService.getGateStatus).not.toHaveBeenCalled();
+      for (const gate of ["phase2Gate", "characterCountGate", "phase3To4Gate"]) {
+        expect(gates[gate]).toEqual({ passed: true, details: "Guest — Phase 4 only" });
+        expect(Object.keys(gates[gate] as object)).toEqual(["passed", "details"]);
       }
     });
 

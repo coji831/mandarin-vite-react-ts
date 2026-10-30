@@ -16,11 +16,12 @@
  * in the populated state — hiding it during loading/empty/error avoids an
  * empty bar and a layout jump.
  *
- * Access is gated at the route level (`LearnRoutes` PhaseGate requiredPhase={4}),
- * and idiom cards carry no phase/lock state — so the page itself does not need
- * to re-derive the phase gate (mirrors `ReadersPage`, which is also route-gated
- * and lock-free). Phase source remains `usePhaseGate()` (numeric; guests = 1 —
- * calibrated guest identity, Story 24-7) — never `userStore`.
+ * Access: OPEN for every visitor (Story 25-3 / A25 — BM-1 §3 "Learn — all
+ * content … browse/demo (no lock)"). The route-level phase gate that used to
+ * wrap `/learn/chengyu` is deleted, so the page renders for guests at phase 1
+ * exactly as for any other learner. Idiom cards carry no phase/lock state, and
+ * phase is sequencing metadata only (`shared/constants/learnNav.ts`) — the page
+ * never re-derives a gate. Do not reintroduce a route wall.
  */
 import { PageHeader, PageShell, PageStack } from "shared/components";
 import { openHub } from "shared/hub-entry";

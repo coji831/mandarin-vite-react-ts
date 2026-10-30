@@ -15,6 +15,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "features/auth";
 import { usePhaseGate, useSearchParamState } from "shared/hooks";
 import { SEARCH_PARAMS } from "shared/constants";
 import { Box, Button, PageHeader, PageShell, PageStack } from "shared/components";
@@ -36,6 +37,7 @@ type TreeMode = (typeof TREE_MODES)[number];
 export function RadicalsPage() {
   const { radicals, filteredRadicals, filter, setFilter, resetFilter, isLoading, error, refetch } =
     useRadicals();
+  const { isAuthenticated } = useAuth();
   const { phaseGate } = usePhaseGate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -78,9 +80,11 @@ export function RadicalsPage() {
     );
   }, [searchParams, radicals, setSearchParams, setView]);
 
-  // If API fails (null phaseGate), default to Phase 1 in prod, Phase 3 in dev
+  // If API fails (null phaseGate): authed learners get the dev/prod tree-preview
+  // phase; guests stay Phase 1 (never above — Story 25-2), so a failed fetch
+  // cannot present trees the server never granted.
   const defaultPhase = import.meta.env.DEV ? 3 : 1;
-  const effectivePhase = phaseGate?.currentPhase ?? defaultPhase;
+  const effectivePhase = phaseGate?.currentPhase ?? (isAuthenticated ? defaultPhase : 1);
   const isPhase3 = effectivePhase >= 3;
 
   const showTrees = view === "trees";

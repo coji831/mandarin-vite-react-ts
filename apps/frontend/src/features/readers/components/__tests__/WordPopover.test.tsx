@@ -10,6 +10,8 @@ import userEvent from "@testing-library/user-event";
 import { useReadingStore } from "../../stores";
 import { WordPopover } from "../WordPopover";
 
+const mockOpenHub = vi.hoisted(() => vi.fn());
+
 // Mock useWordDetail
 vi.mock("features/word-hub/hooks", () => ({
   useWordDetail: vi.fn(),
@@ -20,6 +22,7 @@ vi.mock("shared/store", async () => {
   const actual = await vi.importActual("shared/store");
   return {
     ...actual,
+    openHub: mockOpenHub,
     useHubStore: Object.assign(
       (selector?: (s: Record<string, unknown>) => unknown) => {
         const state = {
@@ -155,5 +158,70 @@ describe("WordPopover", () => {
 
     expect(trigger).toHaveFocus();
     trigger.remove();
+  });
+
+  it("opens the CHARACTER hub for a single hanzi the word API has no row for", async () => {
+    useReadingStore.getState().openPopover("喜", { left: 100, bottom: 200 } as DOMRect);
+
+    // 404 from /words/喜 — the popover still renders, with no word detail.
+    vi.mocked(useWordDetail).mockReturnValue({
+      data: null,
+      isLoading: false,
+      isError: true,
+    });
+
+    render(<WordPopover />);
+    await userEvent.click(screen.getByRole("button", { name: /view details/i }));
+
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "character",
+      entityId: "喜",
+      label: undefined,
+    });
+  });
+
+  it("opens the WORD hub for a multi-character token", async () => {
+    useReadingStore.getState().openPopover("喜欢", { left: 100, bottom: 200 } as DOMRect);
+
+    vi.mocked(useWordDetail).mockReturnValue({
+      data: null,
+      isLoading: false,
+      isError: false,
+    });
+
+    render(<WordPopover />);
+    await userEvent.click(screen.getByRole("button", { name: /view details/i }));
+
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "word",
+      entityId: "喜欢",
+      label: undefined,
+    });
+  });
+
+  it("opens the WORD hub for a single hanzi that has a word record", async () => {
+    useReadingStore.getState().openPopover("好", { left: 100, bottom: 200 } as DOMRect);
+
+    vi.mocked(useWordDetail).mockReturnValue({
+      data: {
+        id: "wd_hao",
+        glyph: "好",
+        pinyin: "hǎo",
+        definitions: ["good", "fine"],
+        hskLevel: 1,
+        constituentCharacters: [],
+      },
+      isLoading: false,
+      isError: false,
+    });
+
+    render(<WordPopover />);
+    await userEvent.click(screen.getByRole("button", { name: /view details/i }));
+
+    expect(mockOpenHub).toHaveBeenCalledWith({
+      entityType: "word",
+      entityId: "好",
+      label: "hǎo",
+    });
   });
 });

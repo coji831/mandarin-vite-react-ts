@@ -48,6 +48,7 @@ function transformPassageResponse(data: PassageDetailApiResponse | null): Passag
     id: data.id,
     title: data.title,
     hskLevel: data.hskLevel,
+    wordCount: data.wordCount,
     sentences: data.sentences.map((s: SentenceApiResponse) => ({
       index: s.index,
       text: s.text,

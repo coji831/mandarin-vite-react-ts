@@ -1,35 +1,29 @@
 /**
  * @file ReadersPageFull.stories.tsx
- * @description Consolidated page-level Storybook stories for Graded Readers page.
+ * @description Page-level stories for Graded Readers.
  * Story 21.4: Reading UI + LexicalHub Phase 1
- * Story 21.5: Added reading variants with audio sync.
+ * Story 21.5: audio sync variants.
  *
- * Covers 19+ variants: library (populated, loading, empty, error, filtered, edge)
- * and reading (default, loading, error, short, all-known, all-unknown, long,
- * popover desktop, popover mobile, with audio, audio complete, audio paused).
- *
- * Library variants use MSW handlers (API-driven). Reading variants use MSW
- * handlers for passage detail + withReadingStore decorator for store state.
- * Audio state variants (complete, paused) use custom render with ReadingView
- * for controlled visual state, since useSentenceAudio has internal useState.
+ * Rework (§2): the page takes NO `mode` prop any more — a reading session is a
+ * ROUTE (`/learn/readers/:passageId`), so these stories set a ROUTE instead of
+ * an arg. `parameters.readerRoute` feeds the decorator below, which mounts the
+ * page at that address with the param matched; library stories stay at
+ * `/learn/readers`. The reading stories render the PAPER register the way the
+ * real route does (PageShell surface="paper" → ReadingView surface="paper").
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { http, HttpResponse } from "msw";
-import { Box } from "shared/components";
+import { PageShell, PageStack } from "shared/components";
 import { ReadersPage, ReadingView, SentenceDisplay } from "../../../features/readers";
 import type { PassageDetail } from "../../../features/readers";
 import { mswHandlers } from "../../../../.storybook/msw-handlers";
-import { withGuestAuth, withReadingStore, withAudioStore } from "../../../../.storybook/decorators";
+import { withAudioStore, withReadingStore } from "../../../../.storybook/decorators";
 
 const API_BASE = "http://localhost:3001/api/v1";
-
-// ============================================================================
-// Helper — inline MSW handler for passage detail with custom data
-// ============================================================================
-
 const API_PASSAGE_DETAIL = `${API_BASE}/readers/passages/:id`;
 
+/** Inline passage-detail handler for the custom passage variants. */
 function passageDetailHandler(data: PassageDetail) {
   return http.get(API_PASSAGE_DETAIL, () =>
     HttpResponse.json({
@@ -53,10 +47,6 @@ function passageDetailHandler(data: PassageDetail) {
     }),
   );
 }
-
-// ============================================================================
-// Test data shapes for reading stories
-// ============================================================================
 
 const defaultPassageDetail: PassageDetail = {
   id: "p-1",
@@ -88,41 +78,6 @@ const defaultPassageDetail: PassageDetail = {
         { glyph: "。", isKnown: true },
       ],
     },
-    {
-      index: 2,
-      text: "我们一起学习中文。",
-      pinyin: "Wǒmen yīqǐ xuéxí zhōngwén。",
-      words: [
-        { glyph: "我们", isKnown: true },
-        { glyph: "一起", isKnown: true },
-        { glyph: "学习", isKnown: false, hskLevel: 1 },
-        { glyph: "中文", isKnown: false, hskLevel: 1 },
-        { glyph: "。", isKnown: true },
-      ],
-    },
-    {
-      index: 3,
-      text: "老师很耐心。",
-      pinyin: "Lǎoshī hěn nàixīn。",
-      words: [
-        { glyph: "老师", isKnown: false, hskLevel: 1 },
-        { glyph: "很", isKnown: true },
-        { glyph: "耐心", isKnown: false, hskLevel: 2 },
-        { glyph: "。", isKnown: true },
-      ],
-    },
-    {
-      index: 4,
-      text: "我喜欢学中文。",
-      pinyin: "Wǒ xǐhuān xué zhōngwén。",
-      words: [
-        { glyph: "我", isKnown: true },
-        { glyph: "喜欢", isKnown: false, hskLevel: 1 },
-        { glyph: "学", isKnown: true },
-        { glyph: "中文", isKnown: false, hskLevel: 1 },
-        { glyph: "。", isKnown: true },
-      ],
-    },
   ],
 };
 
@@ -133,48 +88,11 @@ const shortPassageDetail: PassageDetail = {
   sentences: [
     {
       index: 0,
-      text: "你好！",
-      pinyin: "Nǐ hǎo!",
+      text: "你好。",
+      pinyin: "Nǐ hǎo。",
       words: [
         { glyph: "你好", isKnown: true },
-        { glyph: "！", isKnown: true },
-      ],
-    },
-  ],
-};
-
-const allKnownPassageDetail: PassageDetail = {
-  id: "p-all-known",
-  title: "简单句子",
-  hskLevel: 1,
-  sentences: [
-    {
-      index: 0,
-      text: "我是学生。",
-      pinyin: "Wǒ shì xuéshēng。",
-      words: [
-        { glyph: "我", isKnown: true },
-        { glyph: "是", isKnown: true },
-        { glyph: "学生", isKnown: true },
         { glyph: "。", isKnown: true },
-      ],
-    },
-  ],
-};
-
-const allUnknownPassageDetail: PassageDetail = {
-  id: "p-all-unknown",
-  title: "经济学原理",
-  hskLevel: 4,
-  sentences: [
-    {
-      index: 0,
-      text: "经济学原理",
-      pinyin: "Jīngjìxué yuánlǐ",
-      words: [
-        { glyph: "经济", isKnown: false, hskLevel: 4 },
-        { glyph: "学", isKnown: false, hskLevel: 3 },
-        { glyph: "原理", isKnown: false, hskLevel: 5 },
       ],
     },
   ],
@@ -182,17 +100,33 @@ const allUnknownPassageDetail: PassageDetail = {
 
 const longPassageDetail: PassageDetail = {
   id: "p-long",
-  title: "长篇阅读练习",
-  hskLevel: 2,
-  sentences: Array.from({ length: 15 }, (_, i) => ({
-    ...defaultPassageDetail.sentences[i % defaultPassageDetail.sentences.length],
+  title: "一个非常长的段落标题用来测试文字截断效果",
+  hskLevel: 4,
+  sentences: Array.from({ length: 8 }, (_, i) => ({
     index: i,
+    text: `这是第${i + 1}个句子，用来测试长段落的滚动与阅读节奏。`,
+    pinyin: `Zhè shì dì ${i + 1} gè jùzi。`,
+    words: [
+      { glyph: "这是", isKnown: true },
+      { glyph: `第${i + 1}个`, isKnown: false, hskLevel: 2 },
+      { glyph: "句子", isKnown: true },
+      { glyph: "。", isKnown: true },
+    ],
   })),
 };
 
-// ============================================================================
-// Meta
-// ============================================================================
+/** Route-aware decorator: library at `/learn/readers`, a session at `/learn/readers/<id>`. */
+const withReaderRoute = (Story: React.FC, context: { parameters: Record<string, unknown> }) => {
+  const route = (context.parameters.readerRoute as string) ?? "/learn/readers";
+  return (
+    <MemoryRouter initialEntries={[route]}>
+      <Routes>
+        <Route path="/learn/readers" element={<Story />} />
+        <Route path="/learn/readers/:passageId" element={<Story />} />
+      </Routes>
+    </MemoryRouter>
+  );
+};
 
 const meta = {
   title: "Pages/Learn/ReadersPage",
@@ -202,65 +136,39 @@ const meta = {
     layout: "fullscreen",
     msw: { handlers: [mswHandlers.readers.passages.default()] },
   },
-  decorators: [
-    (Story: React.FC) => (
-      <MemoryRouter initialEntries={["/learn/readers"]}>
-        <Story />
-      </MemoryRouter>
-    ),
-  ],
-  args: {
-    mode: "library",
-  },
+  decorators: [withReaderRoute],
 } satisfies Meta<typeof ReadersPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // ============================================================================
-// LIBRARY MODE VARIANTS
+// LIBRARY (list / Browse)
 // ============================================================================
 
 export const LibraryPopulated: Story = {
-  args: { mode: "library" },
+  name: "Library — populated",
   parameters: { msw: { handlers: [mswHandlers.readers.passages.default()] } },
 };
 
 export const LibraryLoading: Story = {
-  args: { mode: "library" },
+  name: "Library — loading",
   parameters: { msw: { handlers: [mswHandlers.readers.passages.loading()] } },
 };
 
 export const LibraryEmpty: Story = {
-  args: { mode: "library" },
+  name: "Library — empty",
   parameters: { msw: { handlers: [mswHandlers.readers.passages.empty()] } },
 };
 
 export const LibraryError: Story = {
-  args: { mode: "library" },
+  name: "Library — error",
   parameters: { msw: { handlers: [mswHandlers.readers.passages.error()] } },
 };
 
-export const LibraryFilteredByLevel: Story = {
-  args: { mode: "library" },
-  parameters: { msw: { handlers: [mswHandlers.readers.passages.default()] } },
-};
-
-export const LibraryEmptyFilter: Story = {
-  args: { mode: "library" },
-  parameters: {
-    msw: {
-      handlers: [
-        http.get(`${API_BASE}/readers/passages`, () =>
-          HttpResponse.json({ data: [] }, { status: 200 }),
-        ),
-      ],
-    },
-  },
-};
-
-export const LibraryWithEdgePassages: Story = {
-  args: { mode: "library" },
+/** Edge: a graded list with a very long title, a zero-word list and bookmarks. */
+export const LibraryEdgePassages: Story = {
+  name: "Library — edge (long titles, bookmarks)",
   parameters: {
     msw: {
       handlers: [
@@ -268,25 +176,18 @@ export const LibraryWithEdgePassages: Story = {
           HttpResponse.json(
             {
               data: [
-                { id: "p-e1", title: "你好", hskLevel: 1, knownWordRatio: 95, isBookmarked: true },
+                { id: "p-e1", title: "你好", hskLevel: 1, wordCount: 12, isBookmarked: true },
                 {
                   id: "p-e2",
                   title: "Advanced Classical Chinese Literature Analysis",
                   hskLevel: 6,
-                  knownWordRatio: 0,
+                  wordCount: 240,
                 },
                 {
                   id: "p-e3",
                   title: "一个非常非常长的中文文章标题用来测试文字截断效果",
                   hskLevel: 5,
-                  knownWordRatio: 30,
-                },
-                {
-                  id: "p-e4",
-                  title: "古典文学",
-                  hskLevel: 6,
-                  knownWordRatio: 10,
-                  isBookmarked: true,
+                  wordCount: 88,
                 },
               ],
             },
@@ -299,203 +200,56 @@ export const LibraryWithEdgePassages: Story = {
 };
 
 // ============================================================================
-// READING MODE VARIANTS
+// READING (detail / Focus, PAPER register)
 // ============================================================================
 
 export const ReadingDefault: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
+  name: "Reading — paper register",
   parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.default()],
-    },
+    readerRoute: "/learn/readers/p-1",
+    msw: { handlers: [mswHandlers.readers.passageDetail.default()] },
   },
+  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
 };
 
 export const ReadingLoading: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-loading" })],
+  name: "Reading — loading",
   parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.loading()],
-    },
+    readerRoute: "/learn/readers/p-loading",
+    msw: { handlers: [mswHandlers.readers.passageDetail.loading()] },
   },
 };
 
 export const ReadingError: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-error" })],
+  name: "Reading — error",
   parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.error()],
-    },
+    readerRoute: "/learn/readers/p-error",
+    msw: { handlers: [mswHandlers.readers.passageDetail.error()] },
   },
 };
 
 export const ReadingShortPassage: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-short" })],
+  name: "Reading — one sentence (Finish CTA)",
   parameters: {
-    msw: {
-      handlers: [passageDetailHandler(shortPassageDetail)],
-    },
-  },
-};
-
-export const ReadingAllKnownPassage: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-all-known" })],
-  parameters: {
-    msw: {
-      handlers: [passageDetailHandler(allKnownPassageDetail)],
-    },
-  },
-};
-
-export const ReadingAllUnknownPassage: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-all-unknown" })],
-  parameters: {
-    msw: {
-      handlers: [passageDetailHandler(allUnknownPassageDetail)],
-    },
+    readerRoute: "/learn/readers/p-short",
+    msw: { handlers: [passageDetailHandler(shortPassageDetail)] },
   },
 };
 
 export const ReadingLongPassage: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-long" })],
+  name: "Reading — long passage",
   parameters: {
-    msw: {
-      handlers: [passageDetailHandler(longPassageDetail)],
-    },
+    readerRoute: "/learn/readers/p-long",
+    msw: { handlers: [passageDetailHandler(longPassageDetail)] },
   },
 };
 
-export const ReadingHSK1: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-hsk1" })],
+/** Edge: the paper sheet with a stopped transport and a completed passage. */
+export const ReadingCompleted: Story = {
+  name: "Reading — paper sheet (completed transport)",
   parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.hsk1()],
-    },
-  },
-};
-
-export const ReadingHSK4: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-hsk4" })],
-  parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.hsk4()],
-    },
-  },
-};
-
-export const ReadingHSK6: Story = {
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-hsk6" })],
-  parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.hsk6()],
-    },
-  },
-};
-
-export const ReadingWithWordPopover: Story = {
-  args: { mode: "reading" },
-  decorators: [
-    withReadingStore({
-      mode: "reading",
-      currentPassageId: "p-1",
-      popover: { glyph: "喜欢", position: { x: 300, y: 200 } },
-    }),
-  ],
-  parameters: {
-    msw: {
-      handlers: [mswHandlers.readers.passageDetail.default()],
-    },
-  },
-};
-
-export const ReadingWithPopoverMobile: Story = {
-  args: { mode: "reading" },
-  decorators: [
-    withReadingStore({
-      mode: "reading",
-      currentPassageId: "p-1",
-      popover: { glyph: "喜欢", position: { x: 100, y: 200 } },
-    }),
-  ],
-  parameters: {
+    readerRoute: "/learn/readers/p-1",
     msw: { handlers: [mswHandlers.readers.passageDetail.default()] },
-    viewport: { defaultViewport: "mobile1" },
-  },
-};
-
-// ============================================================================
-// READING MODE VARIANTS — Audio Sync (Story 21.5)
-// ============================================================================
-
-export const ReadingWithAudio: Story = {
-  name: "Reading — With Audio Sync",
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
-  parameters: {
-    msw: {
-      handlers: [
-        mswHandlers.readers.passageDetail.default(),
-        mswHandlers.readers.passageAudio.default(),
-      ],
-    },
-  },
-};
-
-export const ReadingWithAudioLoading: Story = {
-  name: "Reading — Audio Loading",
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" })],
-  parameters: {
-    msw: {
-      handlers: [
-        mswHandlers.readers.passageDetail.default(),
-        mswHandlers.readers.passageAudio.loading(),
-      ],
-    },
-  },
-};
-
-/**
- * Reading — Audio Guest (optionalAuth): `withGuestAuth` forces the AuthContext
- * to logged-out. Guests and users share ONE fetch path —
- * `buildPassageAudioBehavior` POSTs `POST /v1/readers/passages/:id/audio`
- * (optionalAuth) and renders REAL signed-URL items for every sentence. The
- * audio bar renders URL items off the shared `passageAudio.default()` handler
- * — no TTS short-circuit, no network exemption for guests.
- */
-export const ReadingWithAudioGuest: Story = {
-  name: "Reading — Audio Guest (optionalAuth, real URLs)",
-  args: { mode: "reading" },
-  decorators: [withReadingStore({ mode: "reading", currentPassageId: "p-1" }), withGuestAuth],
-  parameters: {
-    msw: {
-      handlers: [
-        mswHandlers.readers.passageDetail.default(),
-        mswHandlers.readers.passageAudio.default(),
-      ],
-    },
-  },
-};
-
-export const ReadingWithAudioComplete: Story = {
-  name: "Reading — Audio Complete",
-  parameters: {
-    msw: {
-      handlers: [
-        mswHandlers.readers.passageDetail.default(),
-        mswHandlers.readers.passageAudio.default(),
-      ],
-    },
   },
   decorators: [
     withReadingStore({ mode: "reading", currentPassageId: "p-1" }),
@@ -504,55 +258,24 @@ export const ReadingWithAudioComplete: Story = {
   render: () => {
     const passage = defaultPassageDetail;
     return (
-      <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
-        <h2 className="font-2xl fw-700 text-primary m-0">Graded Readers</h2>
-        <ReadingView
-          passage={passage}
-          onBack={() => {}}
-          isLoading={false}
-          hasError={false}
-          onRetry={() => {}}
-        >
-          {passage.sentences.map((sentence) => (
-            <SentenceDisplay key={sentence.index} sentence={sentence} onPopoverOpen={() => {}} />
-          ))}
-        </ReadingView>
-      </Box>
-    );
-  },
-};
-
-export const ReadingWithAudioPaused: Story = {
-  name: "Reading — Audio Paused",
-  parameters: {
-    msw: {
-      handlers: [
-        mswHandlers.readers.passageDetail.default(),
-        mswHandlers.readers.passageAudio.default(),
-      ],
-    },
-  },
-  decorators: [
-    withReadingStore({ mode: "reading", currentPassageId: "p-1" }),
-    withAudioStore({ currentIndex: 2, status: "paused" }),
-  ],
-  render: () => {
-    const passage = defaultPassageDetail;
-    return (
-      <Box variant="dark" padding="md" className="readers-page flex-col gap-md">
-        <h2 className="font-2xl fw-700 text-primary m-0">Graded Readers</h2>
-        <ReadingView
-          passage={passage}
-          onBack={() => {}}
-          isLoading={false}
-          hasError={false}
-          onRetry={() => {}}
-        >
-          {passage.sentences.map((sentence) => (
-            <SentenceDisplay key={sentence.index} sentence={sentence} onPopoverOpen={() => {}} />
-          ))}
-        </ReadingView>
-      </Box>
+      <PageShell archetype="detail" surface="paper">
+        <PageStack size="default">
+          <ReadingView
+            passage={passage}
+            surface="paper"
+            onBack={() => {}}
+            isLoading={false}
+            hasError={false}
+            onRetry={() => {}}
+            onNextPassage={() => {}}
+            nextPassageTitle="我的朋友"
+          >
+            {passage.sentences.map((sentence) => (
+              <SentenceDisplay key={sentence.index} sentence={sentence} onPopoverOpen={() => {}} />
+            ))}
+          </ReadingView>
+        </PageStack>
+      </PageShell>
     );
   },
 };

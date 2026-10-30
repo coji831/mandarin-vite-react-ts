@@ -17,7 +17,7 @@
  * Persistence rule (Story 22.5 — nav/URL sync):
  *   - Params are ROUTE-SCOPED: no cross-route persistence — leaving a route
  *     drops its params (sidebar links land on the canonical bare path).
- *   - Sub-state writes (`tab`/`view`/`mode`/`page`/`q`/`hsk`/`phase`) use
+ *   - Sub-state writes (`tab`/`view`/`mode`/`page`/`q`/`hsk`/`phase`/`step`) use
  *     `replace: true` so Back *exits the page* instead of rewinding tabs.
  *   - Session starts (quiz/review/dashboard CTAs) use `push`.
  *   - Same-page sidebar clicks are a no-op that preserves the current
@@ -35,6 +35,11 @@ export const SEARCH_PARAMS = {
   hsk: "hsk",
   phase: "phase",
   page: "page",
+  /**
+   * `/learn/foundations` — the Blueprint step on screen (`?step=tones`).
+   * Deep-linkable so any step is reachable without walking the ones before it.
+   */
+  step: "step",
 } as const;
 
 export type SearchParamName = (typeof SEARCH_PARAMS)[keyof typeof SEARCH_PARAMS];

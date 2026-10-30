@@ -1,7 +1,7 @@
 ---
 purpose: "High-level system design decisions, architectural patterns, and technology choices"
 status: active
-last-verified: 2026-08-24
+last-verified: 2026-10-27
 type: architecture
 ---
 
@@ -104,7 +104,7 @@ mandarin-vite-react-ts/
   - **Dashboard**: Learning statistics and activity overview (DashboardGuest, DashboardSections, DashboardWelcome)
   - **Foundations**: Phase 1 learning path with Pinyin, Tones, Strokes, and Animations reference content
   - **Grammar** (`features/grammar`): searchable, HSK/phase-tagged grammar pattern reference — list/detail via `GET /v1/grammar/patterns` (+ `/patterns/:id`), detail panel in the LexicalHub `GrammarHub`, example-sentence audio, and word→Character Hub cross-linking
-  - **Chengyu** (`features/chengyu`): searchable idiom (成语) reference — list/detail via `GET /v1/chengyu/idioms` (+ `/idioms/:id`), detail panel in the LexicalHub `ChengyuHub`, and the Phase-4-gated `/learn/chengyu` library page
+  - **Chengyu** (`features/chengyu`): searchable idiom (成语) reference — list/detail via `GET /v1/chengyu/idioms` (+ `/idioms/:id`), detail panel in the LexicalHub `ChengyuHub`, and the `/learn/chengyu` library page (open to every visitor — phase is sequencing metadata, never a route gate)
   - **PhoneticClusters** (`features/phonetic-clusters`): DB-driven phonetic family browsing — cluster membership from `GET /v1/phonetic-clusters` with HSK filtering
   - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
@@ -114,18 +114,18 @@ mandarin-vite-react-ts/
   - **LexicalHub** (`features/lexical-hub`): Entity detail hub — modal overlay hosting a registry of entity-specific detail panels (CharacterHub, WordHub); opened from anywhere via `openHub()` in `shared/hub-entry`
   - **Readers** (`features/readers`): Graded readers — passage browsing/reading, reading sessions, bookmarks, and in-text word lookup via `WordPopover` → LexicalHub
 - **Pages** (`src/pages/`): Route-level page orchestrators
-  - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs, ContentPlaceholderPage for locked sections)
+  - `pages/learn/`: Learn section pages (FoundationsPage with 4 sub-tabs; `ContentPlaceholderPage` is a retained "Coming in a future update" placeholder with no current route consumer — Learn sections are not locked)
 - **Router** (`src/router/`): React Router configuration
-  - `LearnRoutes.tsx`: Phase-gated route definitions for the `/learn/*` section with redirects from deprecated routes
-- **Navigation & Account**: persistent collapsible `SideNav` (auth-free; phase-gated "Learn" group with locked children) + `AppTopBar` → `UserMenu` as the single account surface (Profile/Settings/Logout; guest Login/Register), present on all routes; thin `/profile` + `/settings` pages. URL state follows a single search-param convention (`SEARCH_PARAMS`/`buildSearchParams` in `shared/constants/searchParams.ts` + `useSearchParamState`/`useSearchParamsBatch` in `shared/hooks/useSearchParamState.ts`): route-scoped params, `replace: true` sub-state writes, shareable deep links.
+  - `LearnRoutes.tsx`: Route definitions for the `/learn/*` section with redirects from deprecated routes — **no phase gate**: every Learn route renders for every visitor (including a Phase-1 guest)
+- **Navigation & Account**: persistent collapsible `SideNav` (auth-free; "Learn" group where phase is sequencing metadata only — no locked or disabled children) + `AppTopBar` → `UserMenu` as the single account surface (Profile/Settings/Logout; guest Login/Register), present on all routes; thin `/profile` + `/settings` pages. URL state follows a single search-param convention (`SEARCH_PARAMS`/`buildSearchParams` in `shared/constants/searchParams.ts` + `useSearchParamState`/`useSearchParamsBatch` in `shared/hooks/useSearchParamState.ts`): route-scoped params, `replace: true` sub-state writes, shareable deep links.
 - **Shared Layer** (`src/shared/`): Cross-cutting concerns
   - **api/**: HTTP client (axiosClient, aliased as `services`)
   - **audio/**: Transport-only playback core — `AudioManager` (app-wide singleton), `AudioEngine` (HTMLAudio), `BrowserTTS` (SpeechSynthesis), `AudioUrlCache`, playback strategies, and feature-free `contracts/` (default word `AudioBehavior`). It plays `PlayableItem[]` with ordered candidates; fallback policy is DATA (`candidates`), never a resolver. Never imports features/modules.
   - **components/**: Reusable UI primitives (Button, Input, ToggleSwitch, Skeleton, ClassificationBadge, MnemonicCard, etc.)
   - **config/**: Application configuration (API_CONFIG)
   - **constants/**: Path constants, tone maps
-  - **hooks/**: Shared React hooks (usePhaseGate for phase-gating access, useReview for SRS review sessions, useAudioManager / useAudioItemPlayback for audio playback)
-  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's phase-gated Learn group)
+  - **hooks/**: Shared React hooks (usePhaseGate for the server-issued phase gate — readiness signals only, never a navigation lock; useReview for SRS review sessions; useAudioManager / useAudioItemPlayback for audio playback)
+  - **layouts/**: AppLayout, LearnLayout (scroll container around the outlet; Learn-section navigation lives in the sidebar's Learn group, which reads no user phase)
 
 ### Component Hierarchy
 
@@ -341,7 +341,7 @@ Computed per-user gate status is served by `GET /api/v1/progression/gates` (`ROU
 - **`characterCountGate`** — ≥500 distinct characters learned (`CharacterProgress` rows with `confidence > 0`).
 - **`phase3To4Gate`** — comprehension: ≥60% on the passage comprehension quiz AND ≥90% known-word ratio in a passage at the learner's HSK level; falls back to a 5-question qualification quiz when no passage exists at that level.
 
-The route uses `optionalAuth` — **guest users receive an all-passed response**; authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
+The route uses `optionalAuth` — **guest users receive Phase-1-only gates**: all three gates come back `passed: false` with `reason: "GUEST"` and `details: "Guest — Phase 1 only"` (the reason is the `GUEST` lock code; the human-readable text is the `details` field), derived by `buildGuestGateStatus(createGuestPhaseGate())` from the same `{ currentPhase: 1, isGuest: true }` answer `GET /v1/progression/phase-gate` serves for that anonymous identity. Authenticated users get the computed per-user status. All threshold values live in `apps/backend/src/config/gate-thresholds.ts` (`GATE_THRESHOLDS`) — no magic numbers in service code.
 
 > **Known gap:** `/v1/progression/gates` currently has **no frontend route consumer** — the UI reads the persisted `/v1/progression/phase-gate` instead. A gate passed outside the quiz flow (e.g. the ≥500 character-count gate) is computed server-side but not yet surfaced in the UI.
 
@@ -475,4 +475,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** August 15, 2026
+**Last Updated:** October 27, 2026

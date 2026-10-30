@@ -35,10 +35,16 @@ function ContentBrowser({
   contentSource,
   defaultTab = "all",
   userPhase = 1,
+  onItemClick,
+  activeItemId,
 }: {
   contentSource: ContentSource;
   defaultTab?: string;
   userPhase?: number;
+  /** Called when a card is activated — the Library opens the lexical hub here. */
+  onItemClick?: (item: ContentItem) => void;
+  /** Id of the item currently open in the hub (non-colour "current" cue). */
+  activeItemId?: string | null;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -60,7 +66,12 @@ function ContentBrowser({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Phase-gated tab visibility (wireframe Section 1.4)
+  // Phase-lookalike tab map — INERT (Story 25-3 / A25 tripwire).
+  // This is the second phase map in the app and it is NOT sanctioned: BM-1 L6
+  // makes the roadmap "signals, not walls", so nav/content locks are not a
+  // pattern post-A25. It stays inert today only because the sole caller
+  // (`LibraryPage`) passes `userPhase={4}`; nothing here should ever grow into
+  // a gate. Deferred to the epic-26 copy pass (recorded in the 25-3 impl doc).
   const visibleTabs = useMemo(() => {
     const phaseAccess: Record<string, number> = {
       foundations: 1,
@@ -204,10 +215,7 @@ function ContentBrowser({
 
   if (error) {
     return (
-      <div
-        className="content-browser flex flex-col gap-lg text-secondary"
-        role="alert"
-      >
+      <div className="content-browser flex flex-col gap-lg text-secondary" role="alert">
         <Box
           variant="error"
           padding="xl"
@@ -308,7 +316,8 @@ function ContentBrowser({
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
-        onItemClick={() => {}}
+        onItemClick={onItemClick}
+        activeItemId={activeItemId}
         isLoading={isLoading}
         onClearFilters={handleClearAllFilters}
         onTabSuggestion={handleTabSuggestion}

@@ -12,13 +12,12 @@ export {
   dashboard_route,
   learn_page,
   learn_foundations,
+  learn_foundations_reference,
   learn_radicals,
   learn_grammar,
   learn_phonetic_clusters,
   learn_readers,
   learn_chengyu,
-  learn_lexical_hub,
-  lexical_entity_route,
   practices_page,
   practices_review,
   practices_quiz,
@@ -28,7 +27,7 @@ export {
   login_page,
   register_page,
 } from "./paths";
-export { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "./learnNav";
+export { LEARN_NAV_ITEMS } from "./learnNav";
 export type { LearnNavItem } from "./learnNav";
 export { modeForArchetype, chromeForMode, resolveArchetype, resolvePageMode } from "./pageChrome";
 export type { PageMode, RailState, TopBarState, ChromeState } from "./pageChrome";

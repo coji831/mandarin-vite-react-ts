@@ -4,14 +4,14 @@
  * render with MSW-mocked API data.
  * Story 22.3: Grammar UI
  *
- * Renders the REAL GrammarPage and lets it fetch grammar patterns + the phase
- * gate through the real services + `apiClient`, intercepted by the MSW node
- * server. Covers search / HSK / phase filtering, locked-card rendering for
- * higher-phase patterns, and loading / empty / error+retry states.
+ * Renders the REAL GrammarPage and lets it fetch grammar patterns through the
+ * real services + `apiClient`, intercepted by the MSW node server. Covers
+ * search / HSK / phase filtering, phase-as-badge rendering (no locks), and
+ * loading / empty / error+retry states.
  */
-import { screen, waitFor, fireEvent } from "@testing-library/react";
+import { screen, waitFor, fireEvent, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { server, grammarHandlers } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { GrammarPage } from "../GrammarPage";
@@ -21,6 +21,9 @@ const GRAMMAR_URL = "http://localhost:3001/api/v1/grammar/patterns";
 const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
 
 const SEARCH_LABEL = "Search grammar by keyword or pattern name...";
+
+/** Every test starts from an empty gate cache (Story 25-2 eviction contract). */
+beforeEach(() => localStorage.clear());
 
 /** Phase-gate body — guests are Phase 1 (calibrated, Story 24-7); tests pin a specific phase. */
 function phaseGateBody(currentPhase: number) {
@@ -153,7 +156,7 @@ describe("GrammarPage (integration + MSW)", () => {
     expect(screen.getByText("把 (bǎ) disposal construction")).toBeInTheDocument();
   });
 
-  it("renders locked/preview cards for patterns above the learner's phase", async () => {
+  it("renders every pattern as clickable with phase as a plain badge (no lock)", async () => {
     server.use(...grammarHandlers.default());
     usePhaseGate(2);
 
@@ -161,9 +164,14 @@ describe("GrammarPage (integration + MSW)", () => {
 
     await waitFor(() => expect(screen.getByText("吗 yes/no questions")).toBeInTheDocument());
 
-    // gr_0005 (Phase 2) → unlocked; gr_0018 / gr_0019 (Phase 4) → locked for a Phase-2 learner
+    // Phase is sequencing metadata only (rework-proposal §9) — above-phase
+    // patterns stay clickable and never claim a lock.
     expect(screen.getByText("吗 yes/no questions")).toBeInTheDocument();
-    expect(screen.getAllByLabelText("Locked until Phase 4")).toHaveLength(2);
+    expect(screen.queryByLabelText(/^Locked until Phase/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/🔒/)).not.toBeInTheDocument();
+    // Scoped to the pattern list: the filter bar's phase select also says "Phase 4".
+    const list = within(screen.getByRole("list", { name: "Grammar patterns" }));
+    expect(list.getAllByText("Phase 4")).toHaveLength(2);
   });
 
   it("renders the empty state when no patterns match", async () => {
@@ -173,6 +181,28 @@ describe("GrammarPage (integration + MSW)", () => {
     renderWithProviders(<GrammarPage />, { route: "/learn/grammar" });
 
     await waitFor(() => expect(screen.getByText("No grammar patterns found")).toBeInTheDocument());
+  });
+
+  it("keeps every pattern open even when the gate fetch fails (no locks)", async () => {
+    // Failure path: there is no gate at all. Nothing on this page may turn that
+    // into a lock — phase is sequencing metadata only (rework-proposal §9).
+    server.use(
+      ...grammarHandlers.default(),
+      http.get(PHASE_GATE_URL, () => HttpResponse.json({ error: "unavailable" }, { status: 500 })),
+    );
+
+    renderWithProviders(<GrammarPage />, {
+      route: "/learn/grammar",
+      auth: { isAuthenticated: false, user: null },
+    });
+
+    await waitFor(() => expect(screen.getByText("吗 yes/no questions")).toBeInTheDocument());
+
+    // All three seeded patterns (Phase 2 / 4 / 4) render unlocked.
+    expect(screen.queryByLabelText(/^Locked until Phase/)).not.toBeInTheDocument();
+    const list = within(screen.getByRole("list", { name: "Grammar patterns" }));
+    expect(list.getByText("Phase 2")).toBeInTheDocument();
+    expect(list.getAllByText("Phase 4")).toHaveLength(2);
   });
 
   it("renders the error state with a working retry", async () => {

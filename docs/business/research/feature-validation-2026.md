@@ -1,7 +1,7 @@
 ---
 purpose: 2026 trend/standard fact-check × LLM/RAG-readiness audit of the feature inventory (Axes 1–2)
 status: active
-last-verified: 2026-08-17
+last-verified: 2026-10-27
 type: business
 ---
 
@@ -15,7 +15,7 @@ type: business
 
 - [System Feature Inventory — Registered-User Full-Access View](feature-inventory.md) — the 71-feature inventory (LIVE-NOW 28 / FIX 20 / BUILD 21 / GATED 2 + ~12 removed)
 
-**Last Updated:** August 17, 2026 — promoted to `docs/business/research/` (2026-08-15, verbatim); §23 final validation applied (RAG-1 → LOCKED FV14; AS12/S15-amended → feature-approved; open-Q closures); count breakdown aligned to the ratified inventory (LIVE-NOW 28 / FIX 20, 2026-08-09 validation fold)
+**Last Updated:** August 17, 2026 — promoted to `docs/business/research/` (2026-08-15, verbatim); §23 final validation applied (RAG-1 → LOCKED FV14; AS12/S15-amended → feature-approved; open-Q closures); count breakdown aligned to the ratified inventory (LIVE-NOW 28 / FIX 20, 2026-08-09 validation fold); dated supersession note added to the gating-model item (b) on 2026-10-27 (the named `LEARN_REQUIRED_PHASE` source was deleted; Learn ships un-gated)
 
 **Status**: design/review — all proposals; no code changed. The new decision IDs in **Proposed new decision IDs** (OB1–OB6, T19, T20, T18-amendment) are **PROPOSALS for owner confirmation**, not ratified decisions. Existing decision series (P/D/R/S/AS/SU/V/T/Q) are untouched and not renumbered. Per §23 Final Validation (2026-08-14), **RAG-1 → LOCKED (FV14)** and **AS12 (C15) / S15-amended (C17) → feature-approved** (see the §23 note below); the OB/T proposals remain PROPOSALS.
 
@@ -98,7 +98,7 @@ The §19 design (T1–T18) is the **right shape** for an LLM/RAG/adaptive system
 ## Gating model — sufficient with one decision
 
 - **(a) LLM phase-scoping (AS4):** sufficient **once G3 (studied-definition) is decided** and P0-2/P0-1 land (guard 1/4). Retrieval filter + prompt constraint + decline+redirect is the right 2026 pattern.
-- **(b) RAG-gate content leak:** sufficient **if** the retrieval scope reads the same single unlock source (`LEARN_REQUIRED_PHASE` + `LearnerState`) as the UI gates, under the §19 invariant (gate reads only shipped projections — extend the same discipline to retrieval). No new design needed.
+- **(b) RAG-gate content leak:** sufficient **if** the retrieval scope reads the same single unlock source as the UI gates, under the §19 invariant (gate reads only shipped projections — extend the same discipline to retrieval). No new design needed. _(Superseded in part, 2026-10-27: there are no Learn route/nav locks — the derived `LEARN_REQUIRED_PHASE` map this bullet named was deleted; a retrieval scope should read `LEARN_NAV_ITEMS[].phase` and the server phase gate as readiness signals, never as a wall.)_
 - **(c) Agent contract (E.5):** `GET /v1/review/due`, `/v1/progress`, `/v1/recommendations/weak` are the right stable surfaces (SU8/V8) **if** G6 (machine token) and G10 (weak-item read path) land first.
 
 ## LLM/RAG-Readiness Scorecard

@@ -94,7 +94,7 @@ describe("ReadersPage", () => {
   });
 
   it("renders page title", () => {
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
     expect(screen.getByText("Graded Readers")).toBeInTheDocument();
   });
 
@@ -108,17 +108,17 @@ describe("ReadersPage", () => {
       retry: vi.fn(),
     });
 
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
     expect(screen.getByText("All")).toBeInTheDocument(); // HSK filter
   });
 
   it("renders empty library state", () => {
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
     expect(screen.getByText("No passages yet")).toBeInTheDocument();
   });
 
   it("renders empty library state with generate button", () => {
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
     expect(screen.getByText("Generate your first passage")).toBeInTheDocument();
   });
 
@@ -133,7 +133,7 @@ describe("ReadersPage", () => {
       reset: vi.fn(),
     });
 
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
 
     // Button loading state renders aria-busy on the disabled generate CTA.
     const generateButton = screen.getByRole("button", { busy: true });
@@ -159,7 +159,7 @@ describe("ReadersPage", () => {
       reset,
     });
 
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
 
     // On mount the generatedId effect refreshes the library, then clears it.
     expect(retry).toHaveBeenCalled();
@@ -176,7 +176,7 @@ describe("ReadersPage", () => {
       reset: vi.fn(),
     });
 
-    renderWithProviders(<ReadersPage mode="library" />);
+    renderWithProviders(<ReadersPage />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText(/Could not generate a passage/)).toBeInTheDocument();

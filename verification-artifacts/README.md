@@ -28,6 +28,8 @@ Examples:
 | `test-report-24-1.md`                   | Test report | Epic 24 T1 pre-migration baseline (test:full / test:integration counts) + P0-1 stopgap post-change verification                      |
 | `release-safety-gate-24-14.md`          | Gate result | Story 24-14 DoD verification (all 12 gates) + pre-flight sign-off + post-flip prod-boot smoke (24-15) + rollback/watch-window record |
 | `epic-25-integration-review.md`         | Review      | Code Reviewer integration-readiness audit of the calibrated guest-access state against the current code (Epic 25 scope)              |
+| `epic-25-route-gating-verification.md`  | Review      | **SUPERSEDED (2026-10-27)** — describes a Learn phase wall that was removed; the code it names (`LockedSurface`, `LEARN_ROUTE_CONFIG`, `LearnRouteGate`) and its two route tests do not exist. Do not cite as precedent for a gate |
+| `epic-25-tts-guest-cost-surface.md`     | Review      | Guest cost surface: per-surface source walk + measured test log proving both `optionalAuth` TTS surfaces are cache-first-free, plus the epic-29 generated-audio handoff |
 | `northstar-canonization-review.md`      | Review      | Working record for the north-star page canonization review (8-gate protocol)                                                         |
 | `uiux-audit-practices-full-userflow.md` | Audit       | UIUX audit of the PracticesPage full userflow (machine layers L1–L3 + Storybook walk + screenshots)                                  |
 | `dashboard-demo-*.png`                  | Screenshots | Browser-captured screenshots supporting earlier audits/reviews                                                                       |

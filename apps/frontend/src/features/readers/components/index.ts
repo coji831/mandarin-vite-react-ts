@@ -11,7 +11,7 @@ export type { ReaderLibraryProps, PassageSummary } from "./ReaderLibrary";
 export { SentenceDisplay } from "./SentenceDisplay";
 export type { SentenceDisplayProps, SentenceData } from "./SentenceDisplay";
 export { ReadingView } from "./ReadingView";
-export type { ReadingViewProps } from "./ReadingView";
+export type { ReadingViewProps, ReadingSurface } from "./ReadingView";
 export type { PassageDetail } from "./ReadingView";
 export { WordPopover } from "./WordPopover";
 export { AudioControlBar } from "./AudioControlBar";

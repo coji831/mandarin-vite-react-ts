@@ -33,9 +33,21 @@ export {
   SuggestionPanel,
   PictographGallery,
   PictographMatchGame,
+  BLUEPRINT_STEPS,
+  BlueprintStepper,
+  BlueprintStepBody,
 } from "./components";
+export type { BlueprintStep, BlueprintStepId } from "./components";
 export { useDragToPan } from "./hooks/useDragToPan";
 export { useFoundationsProgress } from "./hooks/useFoundationsProgress";
+export {
+  useBlueprintPosition,
+  readBlueprintPosition,
+  writeBlueprintPosition,
+  clearBlueprintPosition,
+  isBlueprintStepId,
+} from "./hooks/useBlueprintPosition";
+export type { BlueprintPosition } from "./hooks/useBlueprintPosition";
 export { isValidHanzi } from "./hooks/useCharacterSearch";
 export { useStrokeReferenceData } from "./hooks/useStrokeReferenceData";
 export { foundationsService } from "./services/foundationsService";

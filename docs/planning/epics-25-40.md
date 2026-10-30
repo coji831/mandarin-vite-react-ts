@@ -1,7 +1,7 @@
 ---
 purpose: Ratified re-sliced epic plan 25–40 (calibration + AI roadmap) + OI-1…OI-10 decision record
 status: ratified
-last-verified: 2026-10-26
+last-verified: 2026-10-27
 type: planning
 ---
 
@@ -9,7 +9,7 @@ type: planning
 
 **Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
-**Last Updated:** 2026-10-26 (2026 PO × Designer audit amendments — see §2026 Audit Amendments)
+**Last Updated:** 2026-10-27 (Epic 25 close: A25 supersession pointers added to §Epic 25; 2026 PO × Designer audit amendments — see §2026 Audit Amendments)
 
 **Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D10**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
 
@@ -49,12 +49,12 @@ builds on it.
 
 **Adoption mapping:**
 
-| Adoption item | Owned by |
-| --- | --- |
-| Token consolidation, semantic name alignment, Night Bench paint, **mode-aware chrome (rail collapse + recessed top bar + `mode`/`chrome` fields in `page-inventory.json`)** | **Pre-26 spine epic** (insert before Epic 26) |
-| Gate/CI repair + doc/config alignment | same pre-26 spine epic |
-| Component model (spec-first registry entries, per new surface) | **each UI-carrying epic at BR time** (26, 28, 30–33, 36, 37, 39, 40) |
-| Review governance (R0→R3 + rubric) | process epic, reused at every UI epic close |
+| Adoption item                                                                                                                                                               | Owned by                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Token consolidation, semantic name alignment, Night Bench paint, **mode-aware chrome (rail collapse + recessed top bar + `mode`/`chrome` fields in `page-inventory.json`)** | **Pre-26 spine epic** (insert before Epic 26)                        |
+| Gate/CI repair + doc/config alignment                                                                                                                                       | same pre-26 spine epic                                               |
+| Component model (spec-first registry entries, per new surface)                                                                                                              | **each UI-carrying epic at BR time** (26, 28, 30–33, 36, 37, 39, 40) |
+| Review governance (R0→R3 + rubric)                                                                                                                                          | process epic, reused at every UI epic close                          |
 
 **Amends Re-Slicing Principle 4:** a UI-carrying epic's `UI:` line resolves at BR time against spine — it
 names the page **archetype** (and its `--page-measure-*`), the **components** (existing spine registry or a
@@ -139,8 +139,9 @@ designed once, not invented per page.
 
 **A38/A39 — add the v0 north-star metric.** Define the metric in 38/39: **week-1 (D7) registered
 retention** — % of new registered users active in their second week, computable from `account_registered`
-+ `ActivityEvent` (no guest telemetry required). The growth metric (demo→register) is added when guest
-telemetry unblocks. This closes the "no north-star" gap; 34/35/40 sequence against it.
+
+- `ActivityEvent` (no guest telemetry required). The growth metric (demo→register) is added when guest
+  telemetry unblocks. This closes the "no north-star" gap; 34/35/40 sequence against it.
 
 **A40 — Epic 40: replace, not add.** "Next for you" **replaces** the phase gate as the default sequencing
 rail; it does not sit beside it. Sequence 40 after the v0 north-star exists so its value is judgeable.
@@ -165,13 +166,19 @@ bar, PR #56) is the baseline each epic consumes, and the pre-26 spine epic (A0) 
 
 ## Epic 25 — Secure Guest Identity & Route Gating _(Phase A)_
 
-**Goal:** Make guest mode safe and correct — close the P0-1 cross-tenant SRS leak, land the guest identity shape (`isGuest` + `currentPhase:1`) in lockstep across backend and shell, gate every Learn route, and verify the two `optionalAuth` TTS surfaces are guest-governed.
+> **Superseded in part by A25 (amended 2026-10-27).** The body below is the original 2026-08-17 plan. §2026 Audit
+> Amendments **A25** ("re-bound the gate scope") removed the six phase-gated Learn routes from this epic's
+> boundary and moved the guest-state region out of `AppLayout`: Learn is "no lock" for every visitor and phase
+> is sequencing metadata only. Where the body below still says "gate every Learn route", read it as historical
+> intent. As shipped: P0-1 isolation pinned, one guest gate source, Learn un-gated, TTS cost surface verified.
+
+**Goal:** Make guest mode safe and correct — close the P0-1 cross-tenant SRS leak, land the guest identity shape (`isGuest` + `currentPhase:1`) in lockstep across backend and shell, gate every Learn route _(A25: reversed — Learn routes ship **un-gated**)_, and verify the two `optionalAuth` TTS surfaces are guest-governed.
 
 **Boundary — IN:**
 
 - **P0-1**: repository-level rejection of `undefined` userId on all `optionalAuth` SRS reads; review-GET guest guard (guest → session-local scope, never another user's rows).
 - **Guest identity lockstep**: `createGuestPhaseGate → { currentPhase:1, isGuest:true }`; `AppLayout :4 → isGuest` removal; `getGates`/`getPhaseGate` guest branch unified (single source, one cache key, cleared on auth change — kills the §7.2 staleness); `ProgressionController.getGates` guest branch.
-- **Route gates**: data-driven `LEARN_REQUIRED_PHASE` for all 6 Learn routes, closing the radicals/phonetic-clusters URL bypass.
+- **Route gates**: ~~data-driven `LEARN_REQUIRED_PHASE` for all 6 Learn routes, closing the radicals/phonetic-clusters URL bypass~~ — **A25: reversed.** No Learn route is gated and the derived `LEARN_REQUIRED_PHASE` map was deleted with its last consumers; `LEARN_NAV_ITEMS[].phase` survives as sequencing metadata only. The radicals/phonetic-clusters "URL bypass" is closed by removing the walls, not by adding gates.
 - **Guest cost-surface verification**: the two `optionalAuth` TTS surfaces (`POST /v1/tts`, passage-audio) resolved as **cache-first-free for guests**; generated-audio quota mechanics documented as epic-29's.
 
 **Boundary — NON-GOALS (OUT):** guest CTA/copy + value-moment upgrade prompts → epic-26 (pattern reused in 31/36); demo-quota server counters + circuit breaker + cross-feature budget → epic-29; generated-TTS quota mechanics → epic-29; practice-lane calibration/quiz formats/review wiring → 26/28; soft-readiness gate→recommendation UI → epic-40.
@@ -180,16 +187,16 @@ bar, PR #56) is the baseline each epic consumes, and the pre-26 spine epic (A0) 
 
 1. BE integration: every `optionalAuth` SRS read with an anonymous caller returns 401 (or guest-scoped empty) — the repository rejects `userId === undefined` (no Prisma ignore-undefined path). **[P0-1]**
 2. BE contract: `createGuestPhaseGate` returns `{ currentPhase: 1, isGuest: true }`; `getGates` and `getPhaseGate` agree for the same guest identity under one cache key (evicted on auth change).
-3. FE e2e: with `isGuest` true, the shell renders the Phase-1 shape; direct navigation to any higher-phase Learn route shows the gate screen (radicals/phonetic-clusters bypass closed).
+3. FE e2e: with `isGuest` true, the shell renders the Phase-1 shape _(A25: the shell renders chrome + `<Outlet />` only; there is no guest region in it)_; ~~direct navigation to any higher-phase Learn route shows the gate screen (radicals/phonetic-clusters bypass closed)~~ — **A25: reversed. Direct navigation to any of the six Learn routes renders the page for a guest; there is no gate screen and no redirect.**
 4. BE contract: `POST /v1/tts` + passage-audio verified guest-safe — cache-first reads return without a billable generation; any generated path is explicitly counter-gated (mechanics in 29).
 5. FE regression: existing guest flows (browse, quiz attempt, review view) still function after the gate change.
 6. Release gates green (full suite); new P0-1 security tests committed.
 
-**UI scope:** `UI: guest-mode shell (isGuest badge/banner in AppLayout) + route-gate fallback screen (locked-surface placeholder) — design spec TBD`. _(CTA/copy deliberately not here — see 26.)_
+**UI scope:** ~~`UI: guest-mode shell (isGuest badge/banner in AppLayout) + route-gate fallback screen (locked-surface placeholder) — design spec TBD`~~ — **A25: both reversed.** No guest region in `AppLayout` (the guest affordance lives on the Browse dashboard, `DashboardGuest`) and no route-gate fallback screen exists. _(CTA/copy deliberately not here — see 26.)_
 
 **Dependencies:** none (first post-24 epic). **Lands on NestJS after Epic 24 completes (serial)**; P0-1 + guest-auth semantics are absorbed into Epic 24 (24-1 stopgap + 24-7 identity + 24-11 structural), so epic-25's residual = FE route gating + guest-shell UI + TTS-surface verification on Nest.
 
-**Close criteria:** story BRs + impls (25-1 P0-1 guard, 25-2 guest-gate lockstep, 25-3 route gates + TTS verification) with Status/Last-Update + all ACs boxed; verification artifact `verification-artifacts/epic-25-*`; Tier 1 + Tier 2 gates (backend type-check, full suite, backend-audit skill).
+**Close criteria:** story BRs + impls (25-1 P0-1 guard, 25-2 guest-gate lockstep, 25-3 Learn un-gating + Browse-only guest state, 25-4 TTS cost surface) with Status/Last-Update + all ACs boxed; the guest cost-surface evidence in `verification-artifacts/epic-25-tts-guest-cost-surface.md` (local) plus its committed condensation in the 25-4 impl doc; Tier 1 + Tier 2 gates (backend type-check, full suite, backend-audit skill).
 
 ---
 

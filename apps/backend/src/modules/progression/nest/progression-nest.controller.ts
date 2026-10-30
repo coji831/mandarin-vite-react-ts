@@ -24,15 +24,20 @@
  * progress/:sectionId`, `phase-gate`, `radical-progress/:radicalId`) →
  * `RequireAuthGuard` (registered-only persistence).
  *
- * CALIBRATED `/gates` GUEST BRANCH (24-13 — the 24-7 deferred item): the
- * previous surface's `getGates` guest branch returns the ALL-PASSED `GUEST`
- * object (every gate `passed: true`). The Nest port targets the CALIBRATED
- * shape (24-5 F6 / 24-7 identity): a guest is Phase-1-only, so the Phase 2 IME
- * / character-count / Phase 3→4 gates are NOT passed — `getGates` now AGREES
- * with `getPhaseGate` (`createGuestPhaseGate()` → `currentPhase: 1, isGuest:
- * true`) for the same guest identity. This is a documented contract deviation
- * (per the F6 port target); the parity harness asserts the calibrated shape on
- * Nest explicitly.
+ * ONE GUEST ANSWER, TWO SHAPES (25-2 — the 24-13/24-7 follow-up): a guest is
+ * Phase-1-only (`createGuestPhaseGate()` → `currentPhase: 1, isGuest: true`),
+ * so the Phase 2 IME / character-count / Phase 3→4 gates are NOT passed. Both
+ * guest branches derive from that ONE answer — `getPhaseGate` returns it
+ * verbatim, `getGates` projects it through `buildGuestGateStatus(...)` — so
+ * there is no second hand-written "Guest — Phase 1 only" payload to drift.
+ * Retains the 24-7 calibration (never all-unlocked) and the 24-13 F6 contract
+ * deviation from the retired Express all-passed `GUEST` object; the parity
+ * harness asserts both shapes for the same anonymous identity.
+ *
+ * There is NO server-side gate cache (neither branch touches Redis/Prisma for
+ * a guest; an authed read recomputes from the database every time), so no
+ * identity can be served another identity's gate. The 25-2 integration
+ * harness pins that as an invariant, not an observation.
  *
  * The `if (!userId)` 401 `AUTH_ERROR`/empty branches on the user-scoped routes
  * are defense-in-depth (unreachable under `RequireAuthGuard`).
@@ -54,6 +59,7 @@ import type { Request } from "express";
 import { createLogger } from "../../../shared/utils/logger.js";
 import { createGuestPhaseGate } from "@mandarin/shared-constants";
 import { ProgressionService } from "../services/ProgressionService.js";
+import { buildGuestGateStatus } from "../services/gateStatus.factory.js";
 import { ReviewService } from "../../review/services/ReviewService.js";
 import { OptionalAuthGuard } from "../../../nest/guards/optional-auth.guard.js";
 import { RequireAuthGuard } from "../../../nest/guards/require-auth.guard.js";
@@ -135,14 +141,16 @@ export class ProgressionNestController {
    * GET /v1/progression/phase-gate
    * Fetch user's phase gate status (auto-creates with defaults if none
    * exists). optionalAuth — a guest gets the calibrated
-   * `createGuestPhaseGate()` (`currentPhase: 1, isGuest: true` — 24-7).
+   * `createGuestPhaseGate()` (`currentPhase: 1, isGuest: true` — 24-7); this is
+   * the ONE guest answer `getGates` derives its payload from (25-2).
    */
   @Get("phase-gate")
   @UseGuards(OptionalAuthGuard)
   async getPhaseGate(@Req() req: Request): Promise<unknown> {
     const userId = req.userId;
     if (!userId) {
-      // Guest — calibrated Phase-1 gate (never all-unlocked).
+      // Guest — calibrated Phase-1 gate (never all-unlocked). Source of truth
+      // for every guest surface: /gates derives from this same value.
       return createGuestPhaseGate();
     }
     try {
@@ -160,11 +168,10 @@ export class ProgressionNestController {
   /**
    * GET /v1/progression/gates
    * Fetch COMPUTED gate statuses (Phase 2 IME, character count ≥500, Phase
-   * 3→4 comprehension). optionalAuth — CALIBRATED guest branch (24-13): a guest
-   * is Phase-1-only, so none of the Phase 2+ gates are passed — agreeing with
-   * `getPhaseGate` for the same guest identity. NEVER the all-passed `GUEST`
-   * shape the Express controller still returns (F6-inconsistent; Express is
-   * unified at cutover, 24-15).
+   * 3→4 comprehension). optionalAuth — the guest branch projects the SAME
+   * `createGuestPhaseGate()` answer `getPhaseGate` serves through
+   * `buildGuestGateStatus()`, so the Phase 2+ gates stay locked exactly as
+   * `/phase-gate` reports for that anonymous identity (never all-unlocked).
    */
   @Get("gates")
   @UseGuards(OptionalAuthGuard)
@@ -172,13 +179,9 @@ export class ProgressionNestController {
     const userId = req.userId;
     try {
       if (!userId) {
-        // Calibrated guest — Phase-1-only: the Phase 2+ gates are NOT passed
-        // (unified with createGuestPhaseGate() → currentPhase: 1, isGuest: true).
-        return {
-          phase2Gate: { passed: false, reason: "GUEST", details: "Guest — Phase 1 only" },
-          characterCountGate: { passed: false, reason: "GUEST", details: "Guest — Phase 1 only" },
-          phase3To4Gate: { passed: false, reason: "GUEST", details: "Guest — Phase 1 only" },
-        };
+        // Guest — one derived payload from the shared guest answer (25-2); no
+        // hand-written gate literal survives here to drift from /phase-gate.
+        return buildGuestGateStatus(createGuestPhaseGate());
       }
       const gates = await this.progressionService.getGateStatus(userId);
       return gates;

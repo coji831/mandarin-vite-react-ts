@@ -4,7 +4,7 @@
  * Story 18.4: Stroke Order Reference & Animations
  */
 
-import { Button } from "shared/components";
+import { Button, Icon } from "shared/components";
 import "./AnimationControls.css";
 
 export interface AnimationControlsProps {
@@ -49,7 +49,11 @@ export function AnimationControls({
         title={isPlaying ? "Pause" : "Play"}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
-        {isPlaying ? "⏸" : "▶"}
+        {isPlaying ? (
+          <Icon name="pause" size={16} aria-hidden />
+        ) : (
+          <Icon name="play" size={16} aria-hidden />
+        )}
       </Button>
       <Button
         variant="ghost-primary"
@@ -60,7 +64,7 @@ export function AnimationControls({
         title="Step back"
         aria-label="Step back one stroke"
       >
-        ⏪
+        <Icon name="chevron-left" size={16} aria-hidden />
       </Button>
       <Button
         variant="ghost-primary"
@@ -71,7 +75,7 @@ export function AnimationControls({
         title="Step forward"
         aria-label="Step forward one stroke"
       >
-        ⏩
+        <Icon name="chevron-right" size={16} aria-hidden />
       </Button>
       {showSpeedSlider && (
         <div className="flex">

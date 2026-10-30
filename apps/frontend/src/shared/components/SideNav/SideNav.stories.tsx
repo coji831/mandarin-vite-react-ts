@@ -7,15 +7,19 @@
  *
  * Covers: expanded (Dashboard/Learn active), collapsed rail with the bottom
  * collapse toggle, child hierarchy (indent-only, no left rail; active child +
- * active parent pill), collapsed rail active pill + tooltip, phase-gated
- * Learn locks, and the Story 22.5 split Learn header (label default-landing
- * link + chevron accordion toggle) with URL-aware sub-state preservation.
+ * active parent pill), collapsed rail active pill + tooltip, the phase-ahead
+ * Learn group at phase 1 (A25 — nothing blocked), and the Story 22.5 split
+ * Learn header (label default-landing link + chevron accordion toggle) with
+ * URL-aware sub-state preservation.
+ *
+ * A25 / Story 25-3: SideNav holds no user-phase state — there is no locked
+ * story because there is no lock (BM-1 §3, L6).
  */
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router-dom";
 import type { NavItem, SideNavProps } from "./SideNav";
 import { SideNav } from "./SideNav";
-import { LEARN_NAV_ITEMS, LEARN_REQUIRED_PHASE } from "shared/constants";
+import { LEARN_NAV_ITEMS } from "shared/constants";
 import { withRouter } from "../../../../.storybook/decorators";
 
 const navItems: NavItem[] = [
@@ -29,8 +33,6 @@ const navItems: NavItem[] = [
 const defaultArgs: SideNavProps = {
   navItems,
   currentPath: "/",
-  phaseGate: 4,
-  requiredPhase: (id) => LEARN_REQUIRED_PHASE[id] ?? 1,
   onToggleCollapse: () => {},
 };
 
@@ -44,7 +46,6 @@ const meta: Meta<typeof SideNav> = {
   argTypes: {
     navItems: { control: "object" },
     currentPath: { control: "text" },
-    phaseGate: { control: "number" },
     collapsed: { control: "boolean" },
     onToggleCollapse: { action: "toggle-collapse" },
   },
@@ -89,20 +90,23 @@ export const CollapsedRailActive: Story = {
 };
 
 export const ChildHierarchy: Story = {
-  name: "Learn — active + locked children (indent-only, no rail)",
+  name: "Learn — active child (indent-only, no rail)",
   decorators: [withRouter(["/learn/grammar"])],
   args: {
     currentPath: "/learn/grammar",
-    phaseGate: 2,
   },
 };
 
-export const PhaseLocked: Story = {
-  name: "Phase 1 — Learn children locked",
+/**
+ * A25: at phase 1 every Learn item is an ordinary link — no lock icon, no
+ * aria-disabled, no dimming. If this story ever renders a lock, a phase wall
+ * came back. BM-1 §3 / L6.
+ */
+export const LearnPhaseAheadNothingBlocked: Story = {
+  name: "Learn — phase ahead, nothing blocked (phase 1)",
   decorators: [withRouter(["/learn/foundations"])],
   args: {
     currentPath: "/learn/foundations",
-    phaseGate: 1,
   },
 };
 

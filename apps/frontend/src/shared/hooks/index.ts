@@ -1,5 +1,6 @@
 export { useFocusTrap } from "./useFocusTrap";
 export type { UseFocusTrapOptions } from "./useFocusTrap";
+export { useMediaQuery } from "./useMediaQuery";
 export { usePageTitle } from "./usePageTitle";
 export { usePhaseGate } from "./usePhaseGate";
 export { useReview } from "./useReview";

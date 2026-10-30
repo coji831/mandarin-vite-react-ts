@@ -24,22 +24,15 @@ const register_page = auth_page + "/register";
 
 // Phase-gated Learn tab routes (wireframe Section 1.3)
 const learn_foundations = learn_page + "/foundations";
+// The dense reference index — a sibling surface of the Blueprint wizard, never
+// a sub-route of it (rework-proposal §3): one is the guided task, the other is
+// the lookup. Both are first-class; neither is a dead end.
+const learn_foundations_reference = learn_foundations + "/reference";
 const learn_radicals = learn_page + "/radicals";
 const learn_grammar = learn_page + "/grammar";
 const learn_phonetic_clusters = learn_page + "/phonetic-clusters";
 const learn_readers = learn_page + "/readers";
 const learn_chengyu = learn_page + "/chengyu";
-
-/**
- * Lexical entity detail — the routed Focus surface that hosts a learning
- * session (character / word / radical / chengyu / grammar detail).
- * "Session = route, not modal" (design-revalidation-guide.md §4): the hub is a
- * `detail` route, never an overlay. `learn_lexical_hub` is the route base the
- * pageChrome table and the page ledger both key off; `lexical_entity_route` is
- * the relative pattern the Learn router registers.
- */
-const learn_lexical_hub = learn_page + "/hub";
-const lexical_entity_route = "hub/:entityType/:entityId";
 
 // Practice routes (wireframe Section 1.3)
 const practices_page = "/practices";
@@ -57,13 +50,12 @@ export {
   dashboard_route,
   learn_page,
   learn_foundations,
+  learn_foundations_reference,
   learn_radicals,
   learn_grammar,
   learn_phonetic_clusters,
   learn_readers,
   learn_chengyu,
-  learn_lexical_hub,
-  lexical_entity_route,
   practices_page,
   practices_review,
   practices_quiz,

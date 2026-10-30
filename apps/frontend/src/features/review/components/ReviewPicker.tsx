@@ -6,14 +6,14 @@ import React from "react";
 import type { ReviewSource } from "../types";
 import { useReviewSources } from "../hooks/useReviewSources";
 import { Button, Icon, RadioGroup, Spinner } from "shared/components";
-import { isIconName } from "shared/components";
+import type { IconName } from "shared/components";
 import "./ReviewPicker.css";
 
 type ContentTypeOption = {
   type: string;
   label: string;
-  /** Mapped IconName where available; unmapped emoji (e.g. 🎵) kept as-is. */
-  icon: string;
+  /** Only sanctioned `Icon` names — emoji is not an icon (ADR-010 / Q8). */
+  icon: IconName;
   description: string;
 };
 
@@ -27,7 +27,7 @@ const CONTENT_TYPES: ContentTypeOption[] = [
   {
     type: "tones",
     label: "Tones",
-    icon: "🎵",
+    icon: "audio",
     description: "Tone identification, pairs, and rules",
   },
   {
@@ -45,13 +45,13 @@ const CONTENT_TYPES: ContentTypeOption[] = [
 ];
 
 const SOURCES: { value: ReviewSource; label: string; description: string }[] = [
-  { value: "due", label: "📅 Due for review", description: "Items scheduled for review today" },
+  { value: "due", label: "Due for review", description: "Items scheduled for review today" },
   {
     value: "recent",
-    label: "🕐 Recently studied",
+    label: "Recently studied",
     description: "Items reviewed in the last 7 days",
   },
-  { value: "all", label: "📚 All Foundations", description: "All Phase 1 content" },
+  { value: "all", label: "All Foundations", description: "All Phase 1 content" },
 ];
 
 type ReviewPickerProps = {
@@ -71,16 +71,6 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
 
   return (
     <div className="review-picker flex-col gap-xl mx-auto">
-      <div className="flex-col gap-xs">
-        <h2 className="review-picker__title text-primary font-xl m-0 flex-center gap-xs">
-          <Icon name="review" size={20} aria-hidden />
-          <span>Review</span>
-        </h2>
-        <p className="review-picker__description text-muted font-sm m-0">
-          No timer, no scoring. Self-rated: Again / Good / Easy.
-        </p>
-      </div>
-
       {/* Step 1: Content Type */}
       <div className="flex-col gap-md">
         <label className="review-picker__step-label text-secondary fw-600 font-md">
@@ -98,7 +88,7 @@ function ReviewPickerComponent({ onStart, presetType }: ReviewPickerProps) {
                 aria-pressed={isSelected}
               >
                 <span className="review-picker__card-icon flex-center" aria-hidden="true">
-                  {isIconName(ct.icon) ? <Icon name={ct.icon} size={24} /> : ct.icon}
+                  <Icon name={ct.icon} size={24} />
                 </span>
                 <span className="review-picker__card-label fw-700 font-md">{ct.label}</span>
                 <span className="review-picker__card-desc text-secondary font-sm">

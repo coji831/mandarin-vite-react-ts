@@ -68,6 +68,13 @@ Prevent "AI slop" UI — generic, cluttered, no-hierarchy layouts. These rules t
 
 **A card is a teaser. A detail panel is a reward.** The learner clicks the card because it promises value; the detail panel delivers value the card did NOT already show. (Folded in from the retired `preview-detail-separation.instructions.md`.)
 
+There are **three** tiers, not two: a **preview** row (the card — a teaser), a **peek** (a transient
+overlay that delivers the reward without leaving the surface you were reading), and a **detail page**
+(a routable surface with a URL, for "I arrived at this thing"). A peek is right when the surface has no
+task, no completion and no progress — the lexical hub is the reference
+(`features/lexical-hub/components/HubSheet/HubSheet.tsx`, ADR-014). A surface WITH a task is a session
+and goes straight to a routed `detail` page; a peek must never host one.
+
 1. **Identify the preview surface** — the card/list item and its purpose.
 2. **List all elements on it**, then classify each as preview (stays) or reward (moves to detail):
 

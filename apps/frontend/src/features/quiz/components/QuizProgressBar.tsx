@@ -50,10 +50,10 @@ export function QuizProgressBar({
           <span className="text-secondary fw-500">Score: {pct}%</span>
         ) : !passed ? (
           <span className="text-warning fw-500">
-            ⚠️ Need {needCorrect}/{total} to pass
+            Need {needCorrect}/{total} to pass
           </span>
         ) : (
-          <span className="text-success fw-600">✅ Passing</span>
+          <span className="text-success fw-600">Passing</span>
         )}
       </div>
     </Box>

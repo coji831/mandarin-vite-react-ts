@@ -1,21 +1,24 @@
 /**
  * DashboardPage
  *
- * Main landing page for authenticated users (Wireframe Sections 8.3/8.5).
- * Thin container: fetches phase gate state, owns the page anatomy (PageShell
- * overview measure), and delegates rendering to feature components that
- * own their own PageStack rhythm and PageGrid card homes.
+ * Main landing page (Wireframe Sections 8.3/8.5). Thin container: fetches phase
+ * gate state, owns the page anatomy (PageShell overview measure), and delegates
+ * rendering to feature components that own their own PageStack rhythm.
  *
  * Phase variants:
+ * - guest: DashboardGuest (the BM-2 wedge leads; registration is the outcome)
  * - Phase 1: DashboardWelcome
- * - Phase 2+: DashboardSections (CurrentPhase + QuickAccess + RecentActivity)
+ * - Phase 2+: DashboardSections
+ *
+ * Rework (§8): every variant now carries ONE primary CTA plus the tone-demo
+ * wedge. The wedge's CTA is not live yet (no grading engine), so it lands on the
+ * closest real surface — the four tones step of the Blueprint.
  */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePhaseGate } from "shared/hooks";
-import { PageGrid, PageShell, PageStack, Skeleton } from "shared/components";
-import type { IconName } from "shared/components";
-import { learn_page } from "shared/constants";
+import { PageShell, PageStack, Skeleton } from "shared/components";
+import { learn_foundations } from "shared/constants";
 import { DashboardWelcome, DashboardSections } from "features/dashboard";
 import { DashboardGuest } from "features/dashboard";
 import { useAuth } from "features/auth";
@@ -23,7 +26,7 @@ import { useAuth } from "features/auth";
 export { DashboardPage };
 
 type ActivityItem = {
-  icon: IconName;
+  icon: "review" | "quiz" | "book" | "progress" | "flame" | "star" | "zap";
   text: string;
 };
 
@@ -35,22 +38,18 @@ const PHASE_TITLES: Record<number, string> = {
   4: "Advanced Fluidity",
 };
 
-const PHASE_PCT: Record<number, number> = {
-  1: 0,
-  2: 45,
-  3: 0,
-  4: 100,
-};
-
 const PHASE_NEXT: Record<number, string> = {
-  1: "Master Pinyin, tones, and basic strokes",
-  2: "Learn radicals: 氵, 亻, 口 recommended",
-  3: "Explore phonetic clusters and graded readers",
-  4: "All content available — explore freely!",
+  1: "the four tones",
+  2: "your first radicals",
+  3: "graded readers",
+  4: "chengyu practice",
 };
 
 /** Fallback title for a phase number outside the 4-phase course. */
 const PHASE_FALLBACK_TITLE = "Self-Directed Study";
+
+/** The tone drill that stands in for the (not yet live) grading demo. */
+const TONE_DRILL_PATH = `${learn_foundations}/reference?tab=tones`;
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -61,16 +60,13 @@ function DashboardPage() {
 
   const currentPhase = phaseGate?.currentPhase ?? 1;
   const phaseTitle = PHASE_TITLES[currentPhase] ?? PHASE_FALLBACK_TITLE;
-  const phasePct = currentPhase < 4 ? (PHASE_PCT[currentPhase] ?? 0) : 100;
-  const nextStep =
-    currentPhase < 4 ? (PHASE_NEXT[currentPhase] ?? "") : "You've completed all phases!";
+  const nextStep = PHASE_NEXT[currentPhase] ?? PHASE_NEXT[1];
+
+  const openToneDrill = () => navigate(TONE_DRILL_PATH);
 
   if (phaseLoading || authLoading) {
     // Loading skeleton — dims equal final content (D.8: no CLS).
-    // A11y: keep exactly one <h1> per page even while loading (axe
-    // page-has-heading-one) via the visually-hidden title; the region is
-    // aria-busy with a descriptive label (Skeletons below stay aria-hidden
-    // placeholders / role=status live regions).
+    // A11y: exactly one <h1> even while loading (axe page-has-heading-one).
     return (
       <PageShell
         archetype="overview"
@@ -83,20 +79,7 @@ function DashboardPage() {
           <h1 className="sr-only">Dashboard</h1>
           <Skeleton variant="custom" width="100%" height="88px" />
           <Skeleton variant="card" height="180px" />
-          <section className="flex-col gap-sm">
-            <Skeleton variant="line" width="160px" height="20px" />
-            <PageGrid columns={4}>
-              {Array.from({ length: 4 }, (_, i) => (
-                <div key={i} role="listitem" className="flex min-w-0">
-                  <Skeleton variant="card" height="150px" className="flex-1" />
-                </div>
-              ))}
-            </PageGrid>
-          </section>
-          <section className="flex-col gap-sm">
-            <Skeleton variant="line" width="160px" height="20px" />
-            <Skeleton variant="card" height="72px" />
-          </section>
+          <Skeleton variant="card" height="120px" />
         </PageStack>
       </PageShell>
     );
@@ -107,16 +90,19 @@ function DashboardPage() {
       {!isAuthenticated ? (
         <DashboardGuest />
       ) : currentPhase === 1 ? (
-        <DashboardWelcome streakDays={streakDays} onStartLearning={() => navigate(learn_page)} />
+        <DashboardWelcome
+          streakDays={streakDays}
+          onStartLearning={() => navigate(learn_foundations)}
+          onTryToneDemo={openToneDrill}
+        />
       ) : (
         <DashboardSections
-          phaseNumber={currentPhase}
           phaseTitle={phaseTitle}
-          phasePct={phasePct}
           nextStep={nextStep}
           streakDays={streakDays}
-          activities={activities}
-          onContinueLearning={() => navigate(learn_page)}
+          lastActivity={activities[0] ?? null}
+          onContinueLearning={() => navigate(learn_foundations)}
+          onTryToneDemo={openToneDrill}
         />
       )}
     </PageShell>

@@ -14,7 +14,7 @@
 import React from "react";
 import { TONE_COLORS, extractToneNumber } from "../../utils/pinyinUtils";
 import type { TonePairDrill } from "../../types";
-import { Button, Box, Spinner } from "shared/components";
+import { Button, Box, Icon, Spinner } from "shared/components";
 import "./TonePairDrills.css";
 
 export interface TonePairDrillsProps {
@@ -105,7 +105,7 @@ export function TonePairDrills({ drills, onPlay, loadingPinyin }: TonePairDrills
               title={isLoading ? "Generating audio..." : `Play ${drill.chinese}`}
               aria-label={isLoading ? "Generating audio..." : `Play ${drill.chinese}`}
             >
-              {isLoading ? <Spinner size="xs" /> : "▶"}
+              {isLoading ? <Spinner size="xs" /> : <Icon name="play" size={16} aria-hidden />}
             </Button>
           </Box>
         );

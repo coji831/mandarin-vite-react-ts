@@ -43,20 +43,23 @@ function ReviewCardToneSelectComponent({
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-md p-xl w-full">
         <div className="review-card__character-display flex-col-center gap-sm">
-          <button
-            type="button"
-            className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
-            onClick={() =>
-              openHub({
-                entityType: "character",
-                entityId: displayChar,
-                label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
-              })
-            }
-            aria-label={`View details for ${displayChar}`}
-          >
-            {displayChar}
-          </button>
+          {/* The glyph is the session's <h1> (rework-proposal §4). */}
+          <h1 className="review-card__character-heading m-0">
+            <button
+              type="button"
+              className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
+              onClick={() =>
+                openHub({
+                  entityType: "character",
+                  entityId: displayChar,
+                  label: item.plainPinyin ?? item.pinyinPlain ?? item.front,
+                })
+              }
+              aria-label={`View details for ${displayChar}`}
+            >
+              {displayChar}
+            </button>
+          </h1>
           {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-md">
               ({item.meaning})

@@ -1,34 +1,34 @@
 /**
  * @file ReadersPage.tsx
- * @description Page-level container for Graded Readers feature.
- * Phase 2: Audio props wiring removed — AudioControlBar rendered inside ReadingView,
- *   SentenceDisplay reads audioStore directly.
- * Phase D1: Audio migrated onto the shared AudioManager — `useAudioManager`
- *   (sequence behavior + readers-owned passage audio behavior) replaces
- *   usePassageAudio + useAudioPlayer; AudioControlBar/SentenceDisplay read the
- *   shared presentational audio store; completion uses the manager's `completed`
- *   event (hasCompleted snapshot) instead of the one-shot hasJustCompleted flag.
- * Phase 0 (TTS detachment): the passage audio behavior is imported from the
- *   readers feature barrel (the behavior now lives in features/readers/audio);
- *   the shared/audio constants deep-import was replaced by the readers barrel.
- * Phase 2 (candidates-as-data): ReadersPage builds the passage `AudioBehavior`
- *   contract via `buildPassageAudioBehavior` and passes it to `useAudioManager`
- *   — the shared manager is a pure transport (no resolver concept).
- * Post-optionalAuth: `POST /v1/readers/passages/:id/audio` is optionalAuth —
- *   guests and users share ONE fetch path (no guest short-circuit; both get
- *   real signed URLs).
- * Story 21.7: Reading Progress — integrates readingStore progress state with
- *   ReaderLibrary and ReadingView.
+ * @description Page container for Graded Readers — TWO routes, two archetypes
+ * (rework-proposal §2):
  *
- * Uses a single code path: always fetches data via hooks, always writes to
- * readingStore. Storybook stories use MSW handlers + withReadingStore decorator
- * instead of prop overrides.
+ *   /learn/readers              → the library   (`list` / Browse)
+ *   /learn/readers/:passageId   → reading one   (`detail` / Focus, PAPER register)
  *
- * Decision: The `mode` prop sets initial mode; after that, readingStore.setMode
- * handles transitions (library ↔ reading). The prop is kept for SSR/mount parity.
+ * The reading session used to be a mode inside the library page, which meant it
+ * had no address, no Focus chrome and no end. A reading session now has a URL, a
+ * collapsed rail and a recessed top bar (pageChrome's `/learn/readers/` entry),
+ * and `PageShell surface="paper"` paints the reading register — the ADR-012
+ * declaration that until now had no call sites.
+ *
+ * Data flow is unchanged: hooks fetch, `readingStore` holds progress, the shared
+ * AudioManager plays (guests and users share ONE audio path — the audio route is
+ * optionalAuth).
+ *
+ * Access: OPEN for every visitor (Story 25-3 / A25 — BM-1 §3). Phase is
+ * sequencing metadata only, never a prerequisite.
  */
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import { Box, PageHeader, PageShell, PageStack } from "shared/components";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  Box,
+  ErrorScreen,
+  LoadingScreen,
+  PageHeader,
+  PageShell,
+  PageStack,
+} from "shared/components";
 import { useAudioManager } from "shared/hooks";
 import type { AudioBehavior, PlayableItem } from "shared/audio";
 import {
@@ -45,22 +45,17 @@ import {
 import type { PlaybackSpeed } from "../../../features/readers";
 import { useAuth } from "../../../features/auth";
 
-export type ReadersPageMode = "library" | "reading";
-
-export type ReadersPageProps = {
-  /** Initial mode. After mount, readingStore.setMode handles transitions. */
-  mode: ReadersPageMode;
-};
-
 /** Stable empty items reference for the non-reading (library) mount. */
 const EMPTY_ITEMS: PlayableItem[] = [];
 
-// ─── Component ────────────────────────────────────────────────────────────
+const LIBRARY_PATH = "/learn/readers";
 
-export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
+export function ReadersPage() {
+  const navigate = useNavigate();
+  const { passageId } = useParams<{ passageId?: string }>();
+  const isReadingRoute = Boolean(passageId);
+
   // Store selectors (reading session state)
-  const currentPassageId = useReadingStore((s) => s.currentPassageId);
-  const storeMode = useReadingStore((s) => s.mode);
   const popover = useReadingStore((s) => s.popover);
   const openPopover = useReadingStore((s) => s.openPopover);
   const setPassageId = useReadingStore((s) => s.setPassageId);
@@ -83,6 +78,13 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   // Story 21.7: Bookmark filter state
   const [bookmarkFilter, setBookmarkFilter] = useState<"all" | "bookmarked">("all");
 
+  // The ROUTE is the source of truth for the session (a session is a location,
+  // not a mode flag); the store mirrors it so progress and audio can read it.
+  useEffect(() => {
+    setPassageId(passageId ?? null);
+    setMode(isReadingRoute ? "reading" : "library");
+  }, [passageId, isReadingRoute, setPassageId, setMode]);
+
   // Sync auth state to readingStore
   useEffect(() => {
     setIsAuthenticated(isAuthenticated);
@@ -104,9 +106,6 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     reset: resetGenerate,
   } = useGeneratePassage();
 
-  // Mode: store takes precedence after user action, otherwise use prop for initial mount
-  const mode = storeMode === "reading" ? "reading" : modeProp;
-
   // Level: internal (from HSK chip click) takes precedence
   const selectedLevel = internalLevel;
 
@@ -124,29 +123,23 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     isLoading: readLoading,
     hasError: readError,
     retry: readRetry,
-  } = usePassageDetail(currentPassageId);
+  } = usePassageDetail(passageId ?? null);
 
   // Audio — shared AudioManager + readers-owned passage AUDIO BEHAVIOR (Phase D1 → 2)
-  // The readers surface builds an `AudioBehavior` contract (sequence strategy;
-  // sources = one PlayableItem per sentence; guests + users share ONE fetch path
-  // — `POST /v1/readers/passages/:id/audio` is optionalAuth, both get real URLs)
-  // and the shared manager plays it as a pure transport. Transport commands
-  // replace the old usePassageAudio + useAudioPlayer hooks and the
-  // pendingIndex / pendingSingleIndex store signals (play(index, mode)).
-  const isReading = mode === "reading" && !!currentPassageId && !!passage;
+  const isReading = isReadingRoute && !!passage;
 
   const audioBehavior = useMemo<AudioBehavior | undefined>(() => {
-    if (!isReading || !passage || !currentPassageId) return undefined;
+    if (!isReading || !passage || !passageId) return undefined;
     return buildPassageAudioBehavior({
-      passageId: currentPassageId,
+      passageId,
       sentences: passage.sentences,
     });
-  }, [isReading, passage, currentPassageId]);
+  }, [isReading, passage, passageId]);
 
   const audio = useAudioManager({
     behavior: audioBehavior,
     // Library mount → clear the manager's items (bumps playId → aborts any
-    // in-flight reading session). Behavior path handles the reading mount.
+    // in-flight reading session). The behavior path handles the reading mount.
     items: isReading ? undefined : EMPTY_ITEMS,
   });
 
@@ -155,29 +148,50 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   const { play, pause, restart, stop, setRate } = audio;
 
   // Merge store progress state into passage summaries
-  const passagesWithProgress = passages.map((p) => ({
-    ...p,
-    isCompleted: completedPassages.has(p.id),
-    isBookmarked: bookmarkedPassages.has(p.id),
-  }));
+  const passagesWithProgress = useMemo(
+    () =>
+      passages.map((p) => ({
+        ...p,
+        isCompleted: completedPassages.has(p.id),
+        isBookmarked: bookmarkedPassages.has(p.id),
+      })),
+    [passages, completedPassages, bookmarkedPassages],
+  );
+
+  /**
+   * The next passage is a real destination now that reading is a route: the
+   * completion CTA moves forward inside the same filtered list instead of
+   * dumping the learner back into the grid.
+   */
+  const nextPassage = useMemo(() => {
+    if (!passageId) return null;
+    const index = passagesWithProgress.findIndex((p) => p.id === passageId);
+    if (index < 0) return null;
+    return passagesWithProgress[index + 1] ?? null;
+  }, [passageId, passagesWithProgress]);
 
   // Handlers
   const handleLevelChange = (level: number | null) => {
     setInternalLevel(level);
   };
 
+  /** Opening a passage is a navigation — one URL per reading session. */
   const handleSelectPassage = (id: string) => {
-    setPassageId(id);
-    setMode("reading");
+    navigate(`${LIBRARY_PATH}/${id}`);
   };
 
   const handleBack = () => {
     setCurrentSentence(0);
-    setPassageId(null);
-    setMode("library");
+    navigate(LIBRARY_PATH);
   };
 
-  /** Transport: play/pause toggle via the shared manager (parity with old toggle). */
+  const handleNextPassage = () => {
+    if (!nextPassage) return;
+    setCurrentSentence(0);
+    navigate(`${LIBRARY_PATH}/${nextPassage.id}`);
+  };
+
+  /** Transport: play/pause toggle via the shared manager. */
   const handleTogglePlay = useCallback(() => {
     if (audioStatus === "playing") {
       pause();
@@ -195,7 +209,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     [setRate],
   );
 
-  /** Per-sentence 🔊 → single-sentence play through the manager (no auto-advance). */
+  /** Per-sentence audio → single-sentence play through the manager (no auto-advance). */
   const handleSentencePlay = useCallback(
     (index: number) => {
       play(index, "single");
@@ -204,22 +218,18 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
   );
 
   /**
-   * Completion detection: the old `hasJustCompleted` one-shot React state is
-   * replaced by the manager's `completed` event, mirrored into the shared
-   * audioStore `hasCompleted` snapshot. Idempotent (Set-based store dedupes).
+   * Completion detection: the manager's `completed` event, mirrored into the
+   * shared audioStore `hasCompleted` snapshot. Idempotent (Set-based store).
    */
   useEffect(() => {
-    if (hasCompleted && currentPassageId) {
-      markCompleted(currentPassageId);
+    if (hasCompleted && passageId) {
+      markCompleted(passageId);
     }
-  }, [hasCompleted, currentPassageId, markCompleted]);
+  }, [hasCompleted, passageId, markCompleted]);
 
   /**
-   * Popover pause/resume (parity with old useAudioPlayer): pause while the word
-   * popover is open, resume from the same sentence when it closes. The manager's
-   * `restart()` (exposed by the hook) restarts playback at the current index —
-   * the URL/TTS backends have no position-preserving resume, matching the old
-   * `play(currentIndex)` resume behavior.
+   * Popover pause/resume: pause while the word popover is open, resume from the
+   * same sentence when it closes.
    */
   const wasPlayingBeforePopover = useRef(false);
   useEffect(() => {
@@ -236,7 +246,7 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     }
   }, [popover.glyph, audioStatus, pause, restart, audioIndex]);
 
-  /** Page Visibility API (parity with old useAudioPlayer): pause when hidden. */
+  /** Page Visibility API: pause when hidden. */
   useEffect(() => {
     const handleVisibility = () => {
       if (document.hidden && audioStatus === "playing") {
@@ -263,22 +273,81 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
     generatePassage(selectedLevel ?? undefined);
   }, [generatePassage, selectedLevel]);
 
-  /** VisFix W6b: Mark completed when the final sentence is reached. Idempotent —
-   *  complements the audio hasJustCompleted path (Set-based store dedupes). */
+  /** Mark completed when the final sentence is reached. Idempotent. */
   const handleComplete = useCallback(() => {
-    if (currentPassageId) {
-      markCompleted(currentPassageId);
+    if (passageId) {
+      markCompleted(passageId);
     }
-  }, [currentPassageId, markCompleted]);
+  }, [passageId, markCompleted]);
 
   /** Story 21.7: Bookmark toggle handler. */
   const handleBookmarkToggle = useCallback(
-    (passageId: string) => {
-      toggleBookmark(passageId);
+    (id: string) => {
+      toggleBookmark(id);
     },
     [toggleBookmark],
   );
 
+  // ── Reading session: detail measure + the paper register ────────────────
+  if (isReadingRoute) {
+    // The paper register is the READING surface. A loading frame or an error
+    // frame is not reading, and the instrument components that render them
+    // (ErrorScreen / Skeleton) carry dark-register ink that fails contrast on
+    // paper — so those two states stay on the instrument plane.
+    const isReadingContent = Boolean(passage) && !readError;
+    return (
+      <PageShell archetype="detail" surface={isReadingContent ? "paper" : "instrument"}>
+        <PageStack size="default">
+          {readError ? (
+            <ErrorScreen
+              error="Failed to load this passage. Please try again."
+              onRetry={readRetry}
+              title="Unable to load passage"
+            />
+          ) : !passage ? (
+            <LoadingScreen message={readLoading ? "Loading passage…" : "Passage unavailable"} />
+          ) : (
+            <ReadingView
+              passage={passage}
+              surface="paper"
+              onBack={handleBack}
+              isLoading={false}
+              hasError={false}
+              onRetry={readRetry}
+              onTogglePlay={handleTogglePlay}
+              onStop={stop}
+              onSpeedChange={handleSpeedChange}
+              onComplete={handleComplete}
+              onFinish={handleComplete}
+              onSentenceVisible={setCurrentSentence}
+              onNextPassage={nextPassage ? handleNextPassage : undefined}
+              nextPassageTitle={nextPassage?.title}
+            >
+              {passage.sentences.map((sentence, index) => (
+                <div key={sentence.index} className="flex-col">
+                  <SentenceDisplay
+                    sentence={sentence}
+                    onPopoverOpen={handlePopoverOpen}
+                    onPlay={handleSentencePlay}
+                  />
+                  {/* Paper reads as prose: no hairline between sentences
+                      (the sheet's own rhythm carries the break). */}
+                  {index < passage.sentences.length - 1 && (
+                    <span className="reading-view__sentence-rule" aria-hidden="true" />
+                  )}
+                </div>
+              ))}
+            </ReadingView>
+          )}
+
+          {/* WordPopover — reads glyph and position from readingStore */}
+          {popover.glyph && <WordPopover />}
+        </PageStack>
+      </PageShell>
+    );
+  }
+
+  // ── Library: list measure, instrument register ─────────────────────────
   return (
     <PageShell archetype="list">
       <PageStack size="default">
@@ -287,58 +356,24 @@ export function ReadersPage({ mode: modeProp }: ReadersPageProps) {
           description="Read graded passages with sentence audio, word popovers, and saved progress."
         />
 
-        {mode === "library" && (
-          <ReaderLibrary
-            passages={passagesWithProgress}
-            selectedLevel={selectedLevel}
-            onLevelChange={handleLevelChange}
-            onSelectPassage={handleSelectPassage}
-            isLoading={libLoading}
-            isEmpty={libEmpty}
-            hasError={libError}
-            onRetry={libRetry}
-            onGeneratePassage={handleGeneratePassage}
-            isGenerating={isGenerating}
-            generateError={generateError}
-            onRetryGenerate={handleGeneratePassage}
-            bookmarkFilter={bookmarkFilter}
-            onBookmarkFilterChange={setBookmarkFilter}
-            onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
-            isGuest={!isAuthenticated}
-          />
-        )}
-
-        {mode === "reading" && passage && (
-          <ReadingView
-            passage={passage}
-            onBack={handleBack}
-            isLoading={readLoading}
-            hasError={readError}
-            onRetry={readRetry}
-            onTogglePlay={handleTogglePlay}
-            onStop={stop}
-            onSpeedChange={handleSpeedChange}
-            onComplete={handleComplete}
-          >
-            {passage.sentences.flatMap((sentence) => {
-              const items: React.ReactNode[] = [
-                <SentenceDisplay
-                  key={sentence.index}
-                  sentence={sentence}
-                  onPopoverOpen={handlePopoverOpen}
-                  onPlay={handleSentencePlay}
-                />,
-              ];
-              if (sentence.index < passage.sentences.length - 1) {
-                items.push(<Box key={`divider-${sentence.index}`} variant="divider" />);
-              }
-              return items;
-            })}
-          </ReadingView>
-        )}
-
-        {/* WordPopover — reads glyph and position from readingStore */}
-        {popover.glyph && <WordPopover />}
+        <ReaderLibrary
+          passages={passagesWithProgress}
+          selectedLevel={selectedLevel}
+          onLevelChange={handleLevelChange}
+          onSelectPassage={handleSelectPassage}
+          isLoading={libLoading}
+          isEmpty={libEmpty}
+          hasError={libError}
+          onRetry={libRetry}
+          onGeneratePassage={handleGeneratePassage}
+          isGenerating={isGenerating}
+          generateError={generateError}
+          onRetryGenerate={handleGeneratePassage}
+          bookmarkFilter={bookmarkFilter}
+          onBookmarkFilterChange={setBookmarkFilter}
+          onBookmarkToggle={isAuthenticated ? handleBookmarkToggle : undefined}
+          isGuest={!isAuthenticated}
+        />
       </PageStack>
     </PageShell>
   );

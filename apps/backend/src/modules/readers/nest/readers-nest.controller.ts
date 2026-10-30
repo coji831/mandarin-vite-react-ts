@@ -113,9 +113,16 @@ export class ReadersNestController {
 
   /**
    * GET /v1/readers/passages
-   * List passages, optionally filtered by ?hskLevel=N. optionalAuth (F5) — a
-   * guest lists shared passages; an authenticated user's own generated
-   * passages are excluded by the service.
+   * List passages, optionally filtered by ?hskLevel=N. optionalAuth (F5).
+   *
+   * Behaviour as shipped (Story 25-1 impl doc, "Adjacent finding"): the
+   * repository query has NO identity predicate —
+   * `ReadersRepository.findPassages(hskLevel?)` selects every passage — and
+   * `ReadersService.listPassages` only drops the CALLER's own generated rows
+   * (`p.generatedById !== userId`). A guest therefore lists EVERY user's
+   * generated passages, not just shared ones. The gap is recorded as a
+   * carry-forward (the fix belongs in the repository predicate); nothing here
+   * filters by identity beyond `hskLevel`.
    */
   @Get("passages")
   @UseGuards(OptionalAuthGuard)

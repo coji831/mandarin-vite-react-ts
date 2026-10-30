@@ -12,15 +12,9 @@ import { isAuthFailure } from "shared/api";
 import { ReviewPicker } from "./ReviewPicker";
 import { ReviewCard } from "./ReviewCard";
 import { ReviewComplete } from "./ReviewComplete";
-import {
-  Button,
-  ErrorScreen,
-  LoadingScreen,
-  ProgressBar,
-  GuestUpsell,
-  Icon,
-} from "shared/components";
+import { Button, ErrorScreen, LoadingScreen, ProgressBar, GuestUpsell } from "shared/components";
 import { login_page } from "shared/constants";
+import { useAuth } from "features/auth";
 
 type ReviewViewProps = {
   onBack: () => void;
@@ -50,6 +44,10 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
   } = useReview();
 
   const { play } = useAudioItemPlayback();
+  const { isAuthenticated } = useAuth();
+  // BM-1: a guest can DO the review (session-local queue) — only persistence is
+  // locked, so the one ask appears at completion.
+  const isGuest = !isAuthenticated;
 
   const handlePlayAudio = useCallback(
     (text: string) => {
@@ -112,19 +110,16 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
     case "result":
       return (
         <div className="flex-col gap-lg w-full min-w-0">
-          {/* Header — precision-minimal detail header (golden template C.2):
-              h1 font-lg fw-600 text-primary; progress count is font-sm text-muted meta
-              (Tier-0: 🀄 → shared Icon "book" — no Lucide mahjong tile exists). */}
+          {/* Session header (rework-proposal §4): the h1 is the GLYPH under test
+              and lives in the card — the chrome is a ghost eyebrow + the count,
+              so chrome never outranks the thing being learned. */}
           <header className="flex-between gap-lg">
-            <h1 className="text-primary fw-600 font-lg m-0 flex-center gap-xs">
-              <Icon name="book" size={16} aria-hidden />
-              <span>
-                Review
-                {contentType
-                  ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
-                  : ""}
-              </span>
-            </h1>
+            <span className="font-xs fw-500 text-muted tracking-wide">
+              Review
+              {contentType
+                ? ` · ${contentType.charAt(0).toUpperCase() + contentType.slice(1)}s`
+                : ""}
+            </span>
             <span className="font-sm text-muted">
               {progress.current} of {progress.total}
             </span>
@@ -156,6 +151,7 @@ export function ReviewView({ onBack, presetType, presetSource }: ReviewViewProps
           totalItems={totalItems}
           onReviewAgain={() => startReview(source, contentType)}
           onBack={onBack}
+          isGuest={isGuest}
         />
       );
   }

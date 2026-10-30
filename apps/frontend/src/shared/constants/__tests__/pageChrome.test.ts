@@ -48,19 +48,36 @@ describe("resolvePageMode", () => {
     expect(resolvePageMode("/dashboard")).toBe("browse");
     expect(resolvePageMode("/practices")).toBe("browse");
     expect(resolvePageMode("/library")).toBe("browse");
-    expect(resolvePageMode("/learn/foundations")).toBe("browse");
     expect(resolvePageMode("/progress")).toBe("browse");
   });
 
-  it("resolves the Focus exemplars", () => {
-    expect(resolvePageMode("/practices/review")).toBe("focus");
-    expect(resolvePageMode("/practices/quiz")).toBe("focus");
+  it("resolves the Focus exemplars (the sessions)", () => {
+    // A session is a route with a bounded start/end, so it is Focus. The two
+    // practice sessions live on a query (rework-proposal §4/§7), so the query
+    // is what decides the mode.
+    expect(resolvePageMode("/practices/review", "?type=pinyin&filter=due")).toBe("focus");
+    expect(resolvePageMode("/practices/quiz", "?type=audio-to-pinyin-tone")).toBe("focus");
+    expect(resolvePageMode("/learn/foundations")).toBe("focus"); // Blueprint = wizard
+    expect(resolvePageMode("/learn/readers/p_00001")).toBe("focus"); // reading = detail
   });
 
-  it("resolves a lexical session (routed detail) to focus — session = route, not modal", () => {
-    expect(resolvePageMode("/learn/hub")).toBe("focus");
-    expect(resolvePageMode("/learn/hub/character/%E5%A5%B3")).toBe("focus");
-    expect(resolvePageMode("/learn/hub/grammar/gr_0018")).toBe("focus");
+  it("keeps the entry surface of a session route in Browse until the session starts", () => {
+    // Choosing a deck (or landing on the quiz with no type) is not a change of
+    // intent — the picker stays Browse so the rail never collapses mid-choice.
+    expect(resolvePageMode("/practices/review")).toBe("browse");
+    expect(resolvePageMode("/practices/review", "?type=pinyin")).toBe("browse");
+    expect(resolvePageMode("/practices/quiz")).toBe("browse");
+  });
+
+  it("keeps every Learn surface in Browse — a lookup is not a change of intent", () => {
+    // The hub is a cross-page PEEK, not a route (rework-proposal §0.3): no
+    // `/learn/hub` path exists, so opening one never flips chrome to Focus.
+    expect(resolvePageMode("/learn")).toBe("browse");
+    expect(resolvePageMode("/learn/grammar")).toBe("browse");
+    expect(resolvePageMode("/learn/hub")).toBe("browse");
+    // The dense reference index is a Browse scan, not the sequential task.
+    expect(resolvePageMode("/learn/foundations/reference")).toBe("browse");
+    expect(resolvePageMode("/learn/readers")).toBe("browse");
   });
 
   it("resolves auth routes to auth (no rail)", () => {

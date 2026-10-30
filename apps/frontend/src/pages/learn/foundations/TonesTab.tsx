@@ -183,7 +183,6 @@ export function TonesTab() {
       {/* Pronunciation Tip Callout — full width */}
       <Box variant="dark" padding="md" className="tones-tab-tip">
         <div className="flex-center gap-xs tones-tab-tip-header">
-          <span className="font-lg">💡</span>
           <span className="font-sm fw-600 text-secondary">Tip:</span>
         </div>
         <p className="font-sm text-tertiary mt-xs">

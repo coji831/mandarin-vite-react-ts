@@ -10,12 +10,10 @@
  * `openHub({ entityType: "grammar", ... })` from `shared/hub-entry` — exactly
  * ONE dialog at a time (no local modal).
  *
- * Locked-card state derives from `usePhaseGate()`'s numeric currentPhase
- * (guests = 1 — calibrated guest identity, Story 24-7) — never from
- * `userStore`. If the phase-gate fetch fails (null gate), defaults to Phase 2
- * in prod and Phase 4 in dev so locked preview cards never hide content.
+ * Phase is SEQUENCING metadata only (BM-1 §3 / rework-proposal §9): every row
+ * is clickable and no row claims a lock, so this page reads no phase gate. The
+ * `?phase=` filter chips are the sequencing affordance.
  */
-import { usePhaseGate } from "shared/hooks";
 import { PageHeader, PageShell, PageStack } from "shared/components";
 import { openHub } from "shared/hub-entry";
 import {
@@ -27,11 +25,6 @@ import {
 
 export function GrammarPage() {
   const { patterns, filter, setFilter, resetFilter, isLoading, error, refetch } = useGrammar();
-  const { phaseGate } = usePhaseGate();
-
-  // If API fails (null phaseGate), default to Phase 2 in prod, Phase 4 in dev
-  const defaultPhase = import.meta.env.DEV ? 4 : 2;
-  const currentPhase = phaseGate?.currentPhase ?? defaultPhase;
 
   const handlePatternClick = (pattern: GrammarPatternData) => {
     openHub({
@@ -62,7 +55,6 @@ export function GrammarPage() {
           patterns={patterns}
           isLoading={isLoading}
           error={error}
-          currentPhase={currentPhase}
           onRetry={refetch}
           onPatternClick={handlePatternClick}
           onResetFilters={resetFilter}

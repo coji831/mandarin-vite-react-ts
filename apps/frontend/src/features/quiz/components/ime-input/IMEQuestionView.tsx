@@ -281,15 +281,15 @@ export function IMEQuestionView() {
         <Box variant="dark" padding="sm" className="ime-quiz-question__phonetic-hint w-full">
           {currentPhoneticHint.data ? (
             <p className="font-sm text-secondary m-0 lh-normal">
-              💡 <strong>Hint:</strong> This character contains phonetic component{" "}
+              <strong>Hint:</strong> This character contains phonetic component{" "}
               <strong>{currentPhoneticHint.data.glyph}</strong> (pinyin:{" "}
               <strong>{currentPhoneticHint.data.pinyin}</strong>, meaning:{" "}
               <strong>{currentPhoneticHint.data.meaning}</strong>). Try to connect the sound!
             </p>
           ) : (
             <p className="font-sm text-secondary m-0 lh-normal">
-              💡 This character doesn&apos;t have a phonetic component — try memorizing it by its
-              visual structure.
+              <strong>Hint:</strong> This character doesn&apos;t have a phonetic component — try
+              memorizing it by its visual structure.
             </p>
           )}
         </Box>
@@ -298,7 +298,7 @@ export function IMEQuestionView() {
       {/* Hint pool indicator + radical hint toggle */}
       <div className="ime-quiz-question__hint-toggle flex-between w-full gap-md">
         <span className="font-sm text-muted">
-          💡 x{hintsRemaining} hint{hintsRemaining !== 1 ? "s" : ""} remaining
+          x{hintsRemaining} hint{hintsRemaining !== 1 ? "s" : ""} remaining
         </span>
 
         {hintsRemaining > 0 && !showRadicalHint && (
@@ -308,7 +308,7 @@ export function IMEQuestionView() {
             type="button"
             aria-label="Show radical hint (consumes one hint, -5% penalty)"
           >
-            🔍 Show radical hint
+            Show radical hint
           </button>
         )}
       </div>
@@ -326,7 +326,7 @@ export function IMEQuestionView() {
             <>
               {radicalHintData ? (
                 <p className="font-sm text-secondary m-0 lh-normal">
-                  🔍 <strong>Radical:</strong> {radicalHintData.glyph} — {radicalHintData.meaning}
+                  <strong>Radical:</strong> {radicalHintData.glyph} — {radicalHintData.meaning}
                 </p>
               ) : (
                 <p className="font-sm text-muted m-0">

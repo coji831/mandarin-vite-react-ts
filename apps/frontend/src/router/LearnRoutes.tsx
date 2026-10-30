@@ -3,50 +3,44 @@
  *
  * Defines the routing for the Learn section (/learn/* routes):
  * - Uses LearnLayout (nav-less since Story 22.4 — Learn tabs live in the
- *   sidebar's phase-gated Learn group)
+ *   sidebar's Learn group)
  * - Index route redirects to /learn/foundations
  * - Each content type has its own route (dedicated page or placeholder)
  * - Old routes (flashcards, basic) redirect to /learn/foundations
  *
- * Story 18.1: Replaced ContentBrowser index with phase-gated route navigation.
+ * Story 18.1: Replaced ContentBrowser index with route navigation.
  * ContentBrowser still works at /library for freeroam browsing.
- * S2 (session = route, not modal): `hub/:entityType/:entityId` is the routed
- * Focus surface that hosts a lexical detail — a learning session is a route,
- * never an overlay (design-revalidation-guide.md §4).
+ * S2 (session = route, not modal): a learning session is a route, never an
+ * overlay (design-revalidation-guide.md §4).
+ *
+ * Story 25-3 / A25 (BM-1 §3, L6): EVERY Learn route renders for EVERY visitor
+ * — a guest gets "Learn — all content … browse/demo (no lock)". The local
+ * `PhaseGate` helper and its three wrappers (grammar / readers / chengyu) were
+ * deleted here; the aliases and the index redirect are unaffected. Phase is
+ * sequencing metadata only (`shared/constants/learnNav.ts`) and no route may
+ * turn it into a prerequisite again.
+ *
+ * Rework (epic-25) route splits — two archetypes each, deliberately:
+ * - `/learn/foundations` = the Blueprint (`wizard` / Focus, the sequential task)
+ *   and `/learn/foundations/reference` = the dense index (`reports` / Browse).
+ * - `/learn/readers` = the library (`list` / Browse) and
+ *   `/learn/readers/:passageId` = one reading session (`detail` / Focus, paper).
+ * There is no `/learn/hub/:entityType/:entityId` route: a lexical lookup is a
+ * PEEK, not a location (rework-proposal §0.6) — the sheet is mounted once in
+ * AppLayout and hops live in a store stack.
  */
 import { Navigate, Route, Routes } from "react-router-dom";
-import { lexical_entity_route, practices_quiz, practices_review } from "shared/constants";
+import { practices_quiz, practices_review } from "shared/constants";
 import { LearnLayout } from "../shared/layouts/LearnLayout";
-import { LexicalEntityPage } from "../pages/learn/hub/LexicalEntityPage";
 import {
   FoundationsPage,
+  FoundationsReferencePage,
   RadicalsPage,
   GrammarPage,
   ChengyuPage,
 } from "../pages/learn/foundations";
 import { PhoneticClustersPage } from "../pages/learn/phonetic-clusters/PhoneticClustersPage";
 import { ReadersPage } from "../features/readers";
-import { usePhaseGate } from "shared/hooks";
-import type { ReactNode } from "react";
-
-/**
- * Route-level phase gate: only renders children if the user's phase >= requiredPhase.
- * Redirects to foundations if the user hasn't unlocked this content yet.
- */
-function PhaseGate({ requiredPhase, children }: { requiredPhase: number; children: ReactNode }) {
-  const { phaseGate, isLoading } = usePhaseGate();
-
-  // During loading, render nothing (Layout's Skeleton handles the visual)
-  if (isLoading) return null;
-
-  const currentPhase = phaseGate?.currentPhase ?? 1;
-
-  if (currentPhase < requiredPhase) {
-    return <Navigate to="/learn/foundations" replace />;
-  }
-
-  return <>{children}</>;
-}
 
 export function LearnRoutes() {
   return (
@@ -54,36 +48,15 @@ export function LearnRoutes() {
       <Route element={<LearnLayout />}>
         <Route index element={<Navigate to="/learn/foundations" replace />} />
         <Route path="foundations" element={<FoundationsPage />} />
+        <Route path="foundations/reference" element={<FoundationsReferencePage />} />
         {/* Future content type placeholders */}
         <Route path="radicals" element={<RadicalsPage />} />
-        <Route
-          path="grammar"
-          element={
-            <PhaseGate requiredPhase={2}>
-              <GrammarPage />
-            </PhaseGate>
-          }
-        />
+        <Route path="grammar" element={<GrammarPage />} />
         <Route path="phonetic-clusters" element={<PhoneticClustersPage />} />
-        <Route
-          path="readers"
-          element={
-            <PhaseGate requiredPhase={3}>
-              <ReadersPage mode="library" />
-            </PhaseGate>
-          }
-        />
-        <Route
-          path="chengyu"
-          element={
-            <PhaseGate requiredPhase={4}>
-              <ChengyuPage />
-            </PhaseGate>
-          }
-        />
-        {/* Lexical session === routed detail surface (Focus). The entity bodies
-            render exactly as they did in the old overlay; the shell is a route. */}
-        <Route path={lexical_entity_route} element={<LexicalEntityPage />} />
+        <Route path="readers" element={<ReadersPage />} />
+        {/* One reading session = one addressable surface (detail / Focus). */}
+        <Route path="readers/:passageId" element={<ReadersPage />} />
+        <Route path="chengyu" element={<ChengyuPage />} />
         {/* Redirect old routes */}
         <Route path="flashcards/*" element={<Navigate to="/learn/foundations" replace />} />
         <Route path="quiz" element={<Navigate to={practices_quiz} replace />} />

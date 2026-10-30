@@ -1,0 +1,44 @@
+/**
+ * BlueprintStepper.css — Blueprint position indicator / jump menu
+ * (rework-proposal §3).
+ *
+ * The step's layout (inline-flex / items-center / gap-xs / cursor-pointer) is
+ * className utilities in the JSX. What is left here is the button reset and the
+ * focus ring, plus the hairline between steps. There is deliberately NO
+ * disabled state: a step is never locked (BM-1 L6), so no step is ever
+ * `:disabled` — steps ahead are toned down with ink utilities instead.
+ */
+.blueprint-stepper {
+  list-style: none;
+}
+
+.blueprint-stepper__step {
+  /* a step must read as text, not as a control — no utility resets UA chrome */
+  background: none;
+  /* bundled with the UA-chrome reset above */
+  border: none;
+  /* inherit the stepper row's type */
+  font: inherit;
+  /* WCAG 2.5.8 target floor — the token, not a literal */
+  min-height: var(--size-touch);
+  cursor: pointer;
+}
+
+.blueprint-stepper__step:focus-visible {
+  /* :focus-visible pseudo-class — utility class cannot express this state */
+  outline: 2px solid var(--focus-ring);
+  /* bundled with the ring above */
+  outline-offset: 2px;
+}
+
+.blueprint-stepper__count {
+  /* the ordinal bubble keeps steps 1–7 optically aligned */
+  min-width: var(--size-touch);
+}
+
+.blueprint-stepper__rule {
+  /* a 1px hairline connector — no utility carries a rule element */
+  inline-size: var(--space-lg);
+  block-size: 1px;
+  background-color: var(--hairline);
+}

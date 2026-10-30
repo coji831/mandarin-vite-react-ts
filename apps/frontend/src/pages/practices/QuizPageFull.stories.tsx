@@ -664,10 +664,11 @@ export const IMEResults: Story = {
 
 /**
  * NoQuizSelected — the routed QuizPage (not QuizSessionPage) with no ?type=
- * param, so it renders the "Select a quiz type from the practices page to
- * begin." fallback branch. No fetch occurs in this branch.
+ * param, so it renders the `empty` / Browse entry surface: one EmptyState with
+ * the single way back to Practices (rework-proposal §7). No fetch occurs here.
  */
 export const NoQuizSelected: Story = {
+  name: "No quiz selected (empty entry surface)",
   render: () => <QuizPage />,
   decorators: [withAppLayoutAt("/practices/quiz")],
 };

@@ -53,6 +53,7 @@ function ContentGrid({
   onPageChange,
   onPageSizeChange,
   onItemClick,
+  activeItemId,
   isLoading = false,
   onClearFilters,
   onTabSuggestion,
@@ -64,6 +65,8 @@ function ContentGrid({
   onPageChange: (page: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
   onItemClick?: (item: ContentItem) => void;
+  /** Item currently open in the hub — carries the non-colour "current" cue. */
+  activeItemId?: string | null;
   isLoading?: boolean;
   onClearFilters?: () => void;
   onTabSuggestion?: (tab: ContentType) => void;
@@ -125,7 +128,12 @@ function ContentGrid({
 
       <div className="content-grid__grid gap-md">
         {items.map((item) => (
-          <ContentCard key={item.id} item={item} onClick={onItemClick} />
+          <ContentCard
+            key={item.id}
+            item={item}
+            onClick={onItemClick}
+            isActive={activeItemId != null && activeItemId === item.id}
+          />
         ))}
       </div>
 

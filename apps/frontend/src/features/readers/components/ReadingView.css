@@ -1,3 +1,14 @@
+/**
+ * ReadingView.css — reader detail styles.
+ *
+ * Two registers live here (ADR-011 / ADR-012): the instrument view keeps its
+ * dark card, and `reading-view--paper` is the reading SHEET that sits on the
+ * paper plane PageShell has already painted. The sheet carries the paper ink
+ * tiers for the prose, its pinyin line, the title and the completion block —
+ * the transport bar above it keeps the instrument card so its controls stay
+ * legible. Nothing here re-points a global token: the paper family is read
+ * directly, which is what keeps this a register and not a theme.
+ */
 .reading-view__sentences {
   /* sentence list layout — bundled as part of component visual contract */
   display: flex;
@@ -5,5 +16,69 @@
   flex-direction: column;
   /* sentence gap */
   gap: var(--space-md);
-  padding: var(--space-md) 0;
+  padding-block: var(--space-md);
+}
+
+/* ─── Paper register (reading sheet) ─────────────────────── */
+
+/* The sheet's layout (p-lg / radius-md) is className in the JSX; the register's
+   ink and plane tokens are what the sheet itself must own. */
+.reading-view--paper {
+  background-color: var(--surface-paper-alt);
+  border: 1px solid var(--surface-paper-border);
+  color: var(--text-paper-primary);
+}
+
+.reading-view--paper .reading-view__title {
+  color: var(--text-paper-primary);
+}
+
+.reading-view--paper .reading-view__level {
+  /* plain meta ink — the shared Badge's dark surface fails contrast on paper */
+  color: var(--text-paper-secondary);
+}
+
+/* The paper body ink. Specificity is deliberately (0,2,0) or higher so the
+   instrument utilities (text-primary / text-secondary) inside SentenceDisplay
+   cannot re-paint dark ink onto the sheet. */
+.reading-view--paper .sentence-word--known,
+.reading-view--paper .sentence-word--punct,
+.reading-view--paper .sentence-display__text,
+.reading-view--paper .reading-view__completion p {
+  color: var(--text-paper-primary);
+}
+
+.reading-view--paper .sentence-display__pinyin {
+  color: var(--text-paper-secondary);
+}
+
+/* An unknown word is tappable: on paper it reads as underlined body text rather
+   than accent ink, so the affordance is not colour-only (SC 1.4.1). */
+.reading-view--paper .sentence-word.sentence-word--unknown {
+  color: var(--text-paper-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--text-paper-tertiary);
+  text-underline-offset: 0.15em;
+}
+
+.reading-view--paper .reading-view__back-btn {
+  color: var(--text-paper-primary);
+  border-color: var(--surface-paper-border);
+}
+
+.reading-view--paper .reading-view__completion {
+  border-top: 1px solid var(--surface-paper-border);
+}
+
+.reading-view--paper .sentence-display--active {
+  background-color: var(--surface-paper-track);
+  border-left-color: var(--text-paper-primary);
+}
+
+/* Sentence separator inside the sheet: a paper hairline, not the instrument
+   divider (which is a dark rule and would stripe the page). */
+.reading-view__sentence-rule {
+  display: block;
+  block-size: 1px;
+  background-color: var(--surface-paper-border);
 }

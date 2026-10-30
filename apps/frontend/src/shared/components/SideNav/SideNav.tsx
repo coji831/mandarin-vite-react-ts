@@ -6,8 +6,19 @@
  * Story 22.4: nav-only — the account surface (login/user-info/logout) moved
  * to the AppTopBar UserMenu, so SideNav renders no auth chrome in any mode.
  * Adds:
- *   - a phase-gated "Learn" group (nested `children`, locked items show 🔒),
+ *   - a collapsible "Learn" group (nested `children`),
  *   - a desktop collapsed rail (`collapsed`, icons only).
+ *
+ * Story 25-3 / A25 — NO USER-PHASE STATE (BM-1 §3, L6):
+ *   - The `phaseGate` / `requiredPhase` props are deleted (not renamed): the
+ *     sidebar holds no user phase and cannot compute a lock. Every Learn child
+ *     is an ordinary link for every visitor — no `preventDefault`, no
+ *     `aria-disabled`, no `tabIndex={-1}`, no lock icon, no dimming.
+ *   - `child.phase` is sequencing METADATA only; it surfaces as the tooltip
+ *     (`"Grammar · Phase 2 of 4"`). If a wall ever comes back, it comes back
+ *     here first — don't.
+ *   - The collapsed rail's Learn tooltip stays phase-free
+ *     (`"Learn — <active child>"`) so Focus chrome never advertises a gate.
  *
  * Story 22.5 (nav/URL sync):
  *   - Accepts a full `location` ({ pathname, search }) so it can apply the
@@ -45,7 +56,10 @@ type NavItem = {
   /** Sanctioned icon name (ADR-010 / Q8) — rendered via the shared Icon component. */
   icon: IconName;
   exact?: boolean;
-  /** Nested phase-gated group (the Learn section). When present, renders as an expandable group. */
+  /**
+   * Nested group (the Learn section). When present, renders as an expandable
+   * group. `child.phase` is sequencing metadata only — never a lock (A25).
+   */
   children?: LearnNavItem[];
 };
 
@@ -60,10 +74,6 @@ type SideNavProps = {
    * working).
    */
   location?: { pathname: string; search: string };
-  /** Current user phase for lock logic. Items with requiredPhase > this are locked. */
-  phaseGate?: number;
-  /** Maps a Learn child id to the phase required to unlock it. */
-  requiredPhase?: (id: string) => number;
   /** Desktop icon-rail mode (labels + Learn children hidden). */
   collapsed?: boolean;
   /** Toggle desktop collapse (rendered in the bottom footer slot). */
@@ -76,8 +86,6 @@ function SideNav({
   navItems,
   currentPath,
   location,
-  phaseGate = Infinity,
-  requiredPhase,
   collapsed = false,
   onToggleCollapse,
 }: SideNavProps) {
@@ -246,8 +254,6 @@ function SideNav({
                   className="side-nav__group-children flex flex-col"
                 >
                   {item.children.map((child) => {
-                    const required = requiredPhase?.(child.id) ?? child.requiredPhase;
-                    const isLocked = required > phaseGate;
                     // Canonical landing URL: bare path + any (future) default
                     // params. Today every item lands bare.
                     const childTo = withSearchParams(child.path, child.defaultParams);
@@ -256,22 +262,17 @@ function SideNav({
                         key={child.id}
                         to={childTo}
                         aria-label={child.label}
-                        onClick={(e) => {
-                          if (isLocked) {
-                            e.preventDefault();
-                            return;
-                          }
-                          // Same-path guard: preserve sub-state on a same-page
-                          // click (fixes the PUSH-drop bug).
-                          guardSamePath(e, childTo, child.defaultParams);
-                        }}
-                        tabIndex={isLocked ? -1 : undefined}
-                        aria-disabled={isLocked || undefined}
-                        title={isLocked ? `Complete Phase ${required} to unlock` : child.label}
+                        // Same-path guard: preserve sub-state on a same-page
+                        // click (fixes the PUSH-drop bug). A25: every item
+                        // navigates — there is no lock branch to short-circuit.
+                        onClick={(e) => guardSamePath(e, childTo, child.defaultParams)}
+                        // Phase is metadata, not permission (A25): the tooltip
+                        // names the recommended study order only.
+                        title={`${child.label} · Phase ${child.phase} of 4`}
                         className={({ isActive }) =>
                           `side-nav__child gap-sm radius-sm text-tertiary font-xs p-sm transition-all border-1 border-transparent ${
-                            isActive && !isLocked ? ACTIVE_LINK_CLASS : ""
-                          } ${isLocked ? "side-nav__child--locked" : ""}`
+                            isActive ? ACTIVE_LINK_CLASS : ""
+                          }`
                         }
                       >
                         <span
@@ -283,7 +284,6 @@ function SideNav({
                         <span className="side-nav__label whitespace-nowrap overflow-hidden">
                           {child.label}
                         </span>
-                        {isLocked && <Icon name="lock" size={16} label="locked" />}
                       </NavLink>
                     );
                   })}

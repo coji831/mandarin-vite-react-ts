@@ -108,7 +108,6 @@ export function StrokeReferenceContent() {
       {/* Tip callout — full width */}
       <Box variant="dark" padding="md" className="stroke-ref-tip">
         <div className="flex-center gap-xs stroke-ref-tip-header">
-          <span className="font-lg">💡</span>
           <span className="font-sm fw-600 text-secondary">Tip:</span>
         </div>
         <p className="font-sm text-tertiary mt-xs">

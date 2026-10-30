@@ -1,8 +1,9 @@
 /**
  * @file features/review/components/__tests__/ReviewView.test.tsx
- * @description Tests for ReviewView — session header is a real h1 (WCAG),
- * plus Bug 2 guest-fallback: auth-failure (session expiry) renders the
- * GuestUpsell instead of the generic ErrorScreen.
+ * @description Tests for ReviewView — the session chrome is a ghost eyebrow
+ * (§4: the h1 is the GLYPH under test, which lives in the card, so chrome must
+ * not outrank it), plus Bug 2 guest-fallback: auth-failure (session expiry)
+ * renders the GuestUpsell instead of the generic ErrorScreen.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -54,6 +55,12 @@ vi.mock("shared/hooks", () => ({
   useAudioItemPlayback: () => ({ play: vi.fn() }),
 }));
 
+// Guests are first-class here (§1): the view only reads `isAuthenticated` to
+// pick the completion CTA, so a stub auth context is enough.
+vi.mock("features/auth", () => ({
+  useAuth: () => ({ isAuthenticated: true, user: { id: "u1" }, isLoading: false }),
+}));
+
 vi.mock("../ReviewCard", () => ({
   ReviewCard: () => <div>review-card</div>,
 }));
@@ -77,14 +84,13 @@ describe("ReviewView", () => {
     mockUseReview.mockReturnValue(baseReviewState);
   });
 
-  it("renders the session header as an h1 with the content type", () => {
+  it("renders the mode name as a ghost eyebrow, not a chrome h1", () => {
     renderReviewView();
 
-    const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("Review");
-    expect(heading).toHaveTextContent("Radicals");
-    // Golden template C.2: progress count is a separate font-sm text-muted
-    // meta element beside the h1, not inside it.
+    // §4: the h1 is the glyph under test and lives inside the card, so the
+    // session chrome carries the mode name as an eyebrow + the count.
+    expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
+    expect(screen.getByText("Review · Radicals")).toBeInTheDocument();
     expect(screen.getByText("1 of 10")).toBeInTheDocument();
   });
 

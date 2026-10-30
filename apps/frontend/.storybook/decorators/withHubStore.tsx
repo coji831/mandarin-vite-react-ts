@@ -3,7 +3,7 @@ import type { Decorator } from "@storybook/react-vite";
 import { useHubStore } from "shared/store";
 
 type HubStoreOverrides = Partial<
-  Pick<ReturnType<typeof useHubStore.getState>, "isOpen" | "currentEntity">
+  Pick<ReturnType<typeof useHubStore.getState>, "isOpen" | "currentEntity" | "peek">
 >;
 
 export function withHubStore(overrides: HubStoreOverrides = {}): Decorator {
@@ -12,6 +12,7 @@ export function withHubStore(overrides: HubStoreOverrides = {}): Decorator {
       useHubStore.setState({
         isOpen: false,
         currentEntity: null,
+        peek: null,
         ...overrides,
       });
     }, []);

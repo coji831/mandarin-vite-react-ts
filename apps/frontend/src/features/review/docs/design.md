@@ -51,7 +51,7 @@ Review uses a **Strategy Pattern** similar to quiz:
 | `ReviewCardPinyinInput`  | Custom in `components/`          | Pinyin input step                            |
 | `ReviewCardToneSelect`   | Custom in `components/`          | Tone selection step                          |
 | `ReviewCardOptionSelect` | Custom in `components/`          | Multiple choice option step                  |
-| `ReviewCardResult`       | Custom in `components/`          | Result step with ✅/❌ + A/G/E rating        |
+| `ReviewCardResult`       | Custom in `components/`          | Result step with correct/incorrect mark (shared `Icon`) + A/G/E rating |
 | `ReviewComplete`         | Custom in `components/`          | Session complete summary                     |
 | `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        |     | `ReviewPromptCard` | Custom in `components/` | Launch/prompt card for review start |
 
@@ -138,7 +138,7 @@ ReviewCard
 - [ ] Pinyin step shows input field + submit + audio button
 - [ ] Tone step shows 1–5 tone buttons
 - [ ] Option step shows multiple choice options
-- [ ] Result step shows ✅/❌ + correct answer + A/G/E rating
+- [ ] Result step shows correct/incorrect mark + correct answer + A/G/E rating
 - [ ] Session complete shows summary stats
 - [ ] All colors reference CSS variables
 - [ ] WCAG AA contrast ratios

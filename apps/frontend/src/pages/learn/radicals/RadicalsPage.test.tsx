@@ -7,14 +7,20 @@
  * after opening the hub without re-opening.
  */
 
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { renderWithProviders } from "src/test-utils";
 import { RadicalsPage } from "./RadicalsPage";
 import { useHubStore } from "shared/store";
 
+/**
+ * Renders with the shared providers: `RadicalsPage` reads `useAuth()` to clamp
+ * the guest phase fallback (Story 25-2), so an AuthContext is required. The
+ * default provider is an authenticated learner, matching these smoke tests.
+ */
 function renderWithRouter(ui: ReactNode, initialRoute = "/learn/radicals") {
-  return render(<MemoryRouter initialEntries={[initialRoute]}>{ui}</MemoryRouter>);
+  return renderWithProviders(<>{ui}</>, { route: initialRoute });
 }
 
 /** Renders the current router search so tests can assert the ?radical param clears. */

@@ -72,7 +72,7 @@ Word detail panel — pinyin, definitions, HSK badge, constituent character chip
 
 ### Navigation & Account
 
-Persistent collapsible `SideNav` (phase-gated "Learn" group with locked children); single account surface via `AppTopBar` → `UserMenu` (Profile/Settings/Logout; guest Login/Register); thin `/profile` + `/settings` pages; shareable search-param deep links via `SEARCH_PARAMS`/`buildSearchParams`/`useSearchParamState`/`useSearchParamsBatch`.
+Persistent collapsible `SideNav` (Learn group where phase is sequencing metadata only — no locked or disabled children); single account surface via `AppTopBar` → `UserMenu` (Profile/Settings/Logout; guest Login/Register); thin `/profile` + `/settings` pages; shareable search-param deep links via `SEARCH_PARAMS`/`buildSearchParams`/`useSearchParamState`/`useSearchParamsBatch`.
 
 ## Available Scripts
 

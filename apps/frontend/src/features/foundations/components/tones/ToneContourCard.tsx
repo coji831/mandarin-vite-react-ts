@@ -13,7 +13,7 @@
 
 import { TONE_COLORS } from "../../utils/pinyinUtils";
 import type { ToneDefinition } from "../../types";
-import { Box, Button, Spinner } from "shared/components";
+import { Box, Button, Icon, Spinner } from "shared/components";
 import "./ToneContourCard.css";
 
 export interface ToneContourCardProps {
@@ -143,7 +143,7 @@ export function ToneContourCard({ tone, onPlay, isLoading = false }: ToneContour
         title={isLoading ? "Generating audio..." : `Play ${tone.pinyinExample}`}
         aria-label={isLoading ? "Generating audio..." : `Play ${tone.pinyinExample}`}
       >
-        {isLoading ? <Spinner size="xs" /> : "▶"}
+        {isLoading ? <Spinner size="xs" /> : <Icon name="play" size={16} aria-hidden />}
       </Button>
     </Box>
   );

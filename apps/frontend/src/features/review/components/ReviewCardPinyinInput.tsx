@@ -28,8 +28,10 @@ function ReviewCardPinyinInputComponent({
   const [localPinyin, setLocalPinyin] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const displayChar = item.character ?? item.front;
-  const inputPlaceholder =
-    item.itemType === "radical" ? "Type the meaning..." : "Type pinyin without tone...";
+  // Short, unambiguous placeholders: the input is narrow (max-w-320 next to a
+  // Submit button) and the old "Type pinyin without tone..." was clipped by the
+  // input's letter-spacing (rework-proposal §4).
+  const inputPlaceholder = item.itemType === "radical" ? "Type meaning…" : "Type pinyin…";
 
   // Auto-focus pinyin input when item changes (new review card)
   useEffect(() => {
@@ -47,16 +49,20 @@ function ReviewCardPinyinInputComponent({
   return (
     <Box variant="dark" padding="md" className="review-card flex-col w-full">
       <div className="review-card__side flex-col-center gap-md p-xl w-full">
-        {/* Character + Meaning for exposure */}
+        {/* Character + Meaning for exposure. The glyph is the session's <h1>
+            (rework-proposal §4) — the heading wrapper inherits the glyph scale
+            so the semantic level and the visual hierarchy agree. */}
         <div className="review-card__character-display flex-col-center gap-md">
-          <button
-            type="button"
-            className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
-            onClick={handleOpenHub}
-            aria-label={`View details for ${displayChar}`}
-          >
-            {displayChar}
-          </button>
+          <h1 className="review-card__character-heading m-0">
+            <button
+              type="button"
+              className="review-card__character review-card__character-btn font-5xl lh-1 text-primary fw-700"
+              onClick={handleOpenHub}
+              aria-label={`View details for ${displayChar}`}
+            >
+              {displayChar}
+            </button>
+          </h1>
           {item.meaning && showMeaning !== false && (
             <span className="review-card__meaning text-secondary fw-500 font-lg text-center">
               ({item.meaning})

@@ -11,15 +11,17 @@
  */
 import { screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { server } from "src/mocks/server";
 import { renderWithProviders } from "src/test-utils";
 import { RadicalsPage } from "./RadicalsPage";
 
 const RADICALS_URL = "http://localhost:3001/api/v1/radicals";
 const PHASE_GATE_URL = "http://localhost:3001/api/v1/progression/phase-gate";
+const RADICAL_PROGRESS_URL = "http://localhost:3001/api/v1/progression/radical-progress";
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+beforeEach(() => localStorage.clear());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -82,5 +84,30 @@ describe("RadicalsPage (integration + MSW)", () => {
     // Grid populated from the MSW-mocked API data
     await waitFor(() => expect(screen.getByText("一")).toBeInTheDocument());
     expect(screen.getByText("口")).toBeInTheDocument();
+  });
+
+  it("clamps a guest to Phase 1 when the gate fetch fails (Story 25-2)", async () => {
+    server.use(
+      http.get(RADICALS_URL, () => HttpResponse.json(SAMPLE_RADICALS)),
+      http.get(RADICAL_PROGRESS_URL, () => HttpResponse.json([])),
+      http.get(PHASE_GATE_URL, () => HttpResponse.json({ error: "unavailable" }, { status: 500 })),
+    );
+
+    renderWithProviders(<RadicalsPage />, {
+      route: "/learn/radicals?view=trees",
+      auth: { isAuthenticated: false, user: null },
+    });
+
+    // `showTrees` is true, but the page only upgrades to the Phase-3 "Radical
+    // Trees" framing for a learner the server actually granted Phase 3. A
+    // guest with a failed fetch keeps the Phase-1 framing (business rule 3).
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Browse the building blocks of Chinese characters/i),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByText(/Explore mastered radicals as expandable tree views/i),
+    ).not.toBeInTheDocument();
   });
 });

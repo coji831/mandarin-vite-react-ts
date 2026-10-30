@@ -34,6 +34,16 @@
  * AGREES with `getPhaseGate` for the same guest identity. The guest `/gates`
  * test asserts the calibrated Phase-1-only shape.
  *
+ * ## ONE GUEST ANSWER, NO SERVER-SIDE GATE CACHE (25-2):
+ * both guest surfaces derive from `createGuestPhaseGate()` (`/gates` through
+ * `buildGuestGateStatus`), so one test requests BOTH endpoints for the same
+ * anonymous identity and inverts the gate payload back to the phase/isGuest it
+ * was built from. A second test reads `/phase-gate` for two registered users
+ * interleaved — each read must return that identity's own row — pinning "no
+ * gate is ever served to another identity" as an invariant. There is no gate
+ * cache anywhere server-side (the only gate cache is the frontend's
+ * localStorage, Story 25-2's frontend half).
+ *
  * ## Determinism notes
  *   - Quiz questions (`audio-to-pinyin-tone`) are shuffled (so the `id` —
  *     `q-${index+1}` — is SHUFFLE-POSITION-dependent) + `Math.random` category
@@ -635,6 +645,40 @@ describe.skipIf(!db.available)(
           });
         }
       });
+
+      it("GET /gates + /phase-gate — SAME anonymous identity → both payloads derive from one answer (25-2)", async () => {
+        // Both endpoints must answer from the same `createGuestPhaseGate()`
+        // value: request them for one guest and invert the gate payload back to
+        // the identity it was derived from (`details` carries the phase,
+        // `reason` the guest lock, `passed` is `currentPhase >= 2`).
+        const [gatesRes, phaseGateRes] = await Promise.all([
+          request(nestServer).get("/api/v1/progression/gates").set("X-Forwarded-For", nextIp()),
+          request(nestServer)
+            .get("/api/v1/progression/phase-gate")
+            .set("X-Forwarded-For", nextIp()),
+        ]);
+        expect(gatesRes.status).toBe(200);
+        expect(phaseGateRes.status).toBe(200);
+
+        const guest = phaseGateRes.body as { currentPhase: number; isGuest: boolean };
+        expect(guest.isGuest).toBe(true);
+
+        const gates = [
+          gatesRes.body.phase2Gate,
+          gatesRes.body.characterCountGate,
+          gatesRes.body.phase3To4Gate,
+        ] as Array<{ passed: boolean; reason?: string; details?: string }>;
+        expect(gates).toHaveLength(3);
+
+        for (const gate of gates) {
+          const derivedPhase = Number(/Phase (\d+) only/.exec(gate.details ?? "")?.[1]);
+          // /gates phase === /phase-gate currentPhase (nothing drifted) ...
+          expect(derivedPhase).toBe(guest.currentPhase);
+          // ... and the derived lock follows the same rule for both.
+          expect(gate.passed).toBe(guest.currentPhase >= 2);
+          expect(gate.reason === "GUEST").toBe(guest.isGuest);
+        }
+      });
     });
 
     describe("progression — guest 401 (calibrated requireAuth)", () => {
@@ -789,6 +833,48 @@ describe.skipIf(!db.available)(
           `Bearer ${tokenB}`,
         );
         expectParity4xx(res, 400, "VALIDATION_ERROR", "Failed to update radical progress");
+      });
+    });
+
+    // ════════════════════════════════════════════════════════════════════════
+    // TWO IDENTITIES, TWO GATES (25-2)
+    // ════════════════════════════════════════════════════════════════════════
+
+    describe("progression — two identities, two gates (25-2)", () => {
+      it("userA and userB read back THEIR OWN /phase-gate across interleaved requests", async () => {
+        // Pins "there is NO server-side gate cache" as an invariant: each read
+        // is recomputed for the authenticated identity, so one identity's gate
+        // is never served to another.
+        const readGate = (token: string) =>
+          request(nestServer)
+            .get("/api/v1/progression/phase-gate")
+            .set("X-Forwarded-For", nextIp())
+            .set("Authorization", `Bearer ${token}`);
+
+        // State chain (documented, so a broken chain fails loudly): userA's gate
+        // is the Phase-1 default from the authed GET block; userB's was advanced
+        // to Phase 3 (phase 1 then 2 passed) by the write block above.
+        const gateA1 = await readGate(tokenA as string);
+        const gateB = await readGate(tokenB as string);
+        const gateA2 = await readGate(tokenA as string);
+
+        expect(gateA1.status).toBe(200);
+        expect(gateB.status).toBe(200);
+        expect(gateA2.status).toBe(200);
+
+        // Each payload belongs to its own identity ...
+        expect(gateA1.body.userId).toBe(userIdA);
+        expect(gateB.body.userId).toBe(userIdB);
+        expect(gateA1.body.id).not.toBe(gateB.body.id);
+
+        // ... and the interleaved B read never replaced A's gate for A.
+        expect(gateA1.body.currentPhase).toBe(1);
+        expect(gateB.body.currentPhase).toBe(3);
+        expect(gateA2.body).toEqual(gateA1.body);
+
+        // Neither identity is reported as the guest identity.
+        expect(gateA1.body.isGuest).toBeUndefined();
+        expect(gateB.body.isGuest).toBeUndefined();
       });
     });
   },

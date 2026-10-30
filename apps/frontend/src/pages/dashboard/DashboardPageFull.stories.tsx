@@ -73,8 +73,10 @@ export const Error: Story = {
 };
 
 /**
- * Guest — unauthenticated user sees DashboardGuest (header CTA + hero + phase previews).
- * Uses withGuestAuth decorator to override global MockAuthProvider with isAuthenticated: false.
+ * Guest — unauthenticated user sees DashboardGuest: the BM-2 wedge card leads
+ * under the h1, the single primary CTA starts the Blueprint, and "Create an
+ * account" is a ghost (§8: prove the delta before asking for anything).
+ * Uses withGuestAuth decorator to override global MockAuthProvider.
  */
 export const Guest: Story = {
   decorators: [withGuestAuth],

@@ -26,6 +26,9 @@ export const audioToPinyinAndToneStrategy: QuizStrategy = {
   label: "Audio to Pinyin & Tone",
   icon: "🔊",
   phase: 1,
+  // The glyph IS the answer here — hearing the audio and typing the pinyin for
+  // a printed character would just be reading (rework-proposal §7).
+  promptGlyph: "hide",
 
   async generateQuestions(count?: number): Promise<QuizQuestion[]> {
     return quizService.fetchQuestions("audio-to-pinyin-tone", count ?? 10);

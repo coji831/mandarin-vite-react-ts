@@ -117,7 +117,6 @@ export function PinyinTab() {
       {/* Section C: Pronunciation tip callout */}
       <Box variant="dark" padding="md" className="pinyin-tab-tip">
         <div className="flex-center gap-xs pinyin-tab-tip-header">
-          <span className="font-lg">💡</span>
           <span className="font-sm fw-600 text-secondary">Tip:</span>
         </div>
         <p className="font-sm text-tertiary mt-xs">

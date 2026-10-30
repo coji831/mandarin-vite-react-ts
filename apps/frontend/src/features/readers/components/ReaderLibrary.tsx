@@ -19,7 +19,13 @@ export interface PassageSummary {
   id: string;
   title: string;
   hskLevel: number;
-  knownWordRatio: number;
+  /** Words in the passage — shown on the card (real and per-passage). */
+  wordCount?: number;
+  /**
+   * API-provided 0–1 ratio captured when the passage was generated. Not shown
+   * on the card: it cannot vary per learner (rework-proposal §2).
+   */
+  knownWordRatio?: number;
   isBookmarked?: boolean;
   isCompleted?: boolean;
 }
@@ -272,7 +278,7 @@ export function ReaderLibrary({
             key={passage.id}
             title={passage.title}
             hskLevel={passage.hskLevel}
-            knownWordRatio={passage.knownWordRatio}
+            wordCount={passage.wordCount}
             isBookmarked={passage.isBookmarked}
             isCompleted={passage.isCompleted}
             onClick={() => onSelectPassage(passage.id)}

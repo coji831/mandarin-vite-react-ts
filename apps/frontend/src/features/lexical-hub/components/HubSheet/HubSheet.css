@@ -1,0 +1,111 @@
+/* HubSheet.css — the lexical hub peek: a right-edge sheet in the popover layer.
+   Geometry and layering are the design (rework-proposal §0.4): above the top bar
+   and over the rail, no shadow (borders before shadows), and a single motion
+   source so `prefers-reduced-motion` is honoured in one place. Everything that a
+   global utility already expresses is a className in HubSheet.tsx, not a
+   declaration here. */
+
+.hub-sheet {
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: var(--size-hub-sheet);
+  max-inline-size: 100vw;
+  border-inline-start: 1px solid var(--hairline);
+  z-index: var(--z-modal);
+  animation: hub-sheet-enter var(--transition-normal) ease-out;
+}
+
+@keyframes hub-sheet-enter {
+  from {
+    /* a keyframe needs the animated value; .op-0/.op-100 are static utilities */
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    /* a keyframe needs the animated value; .op-0/.op-100 are static utilities */
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .hub-sheet {
+    inline-size: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-sheet {
+    animation: none;
+  }
+}
+
+.hub-sheet__scrim {
+  background: var(--scrim);
+  z-index: var(--z-modal);
+}
+
+.hub-sheet__header {
+  block-size: 48px;
+  padding-inline: var(--space-md);
+  border-block-end: 1px solid var(--hairline);
+}
+
+.hub-sheet__title {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  text-overflow: ellipsis;
+}
+
+/* The invisible ≥44px hit area around a 28px visual control (Apple HIG). The
+   header carries three controls in 420px, so the visible box stays small. */
+.hub-sheet__hit {
+  min-inline-size: var(--size-touch);
+  min-block-size: var(--size-touch);
+}
+
+.hub-sheet__hit::after {
+  content: "";
+  /* deliberately absolute — the target overflows its 28px visual box */
+  position: absolute;
+  inset: -8px;
+}
+
+/* A11y floor: a disabled control keeps its ratio — it steps down to the quiet
+   ink tier instead of losing contrast (WCAG 1.4.3 / 1.4.11). */
+.hub-sheet__hit:disabled {
+  /* the quiet ink tier, not a fade */
+  color: var(--ink-3);
+  /* same reason: neutralise the built-in disabled fade, do not add .op-100 */
+  opacity: 1;
+}
+
+.hub-sheet__trail {
+  padding-inline: var(--space-md);
+  padding-block: var(--space-xs);
+  border-block-end: 1px solid var(--hairline);
+  overflow-x: auto;
+}
+
+.hub-sheet__body {
+  padding-inline: var(--space-md);
+  padding-block: var(--space-md);
+}
+
+/* The entity bodies were designed for a 670px page; inside the 420px peek the
+   cardinal grid must stack rather than overflow sideways (the sheet is a new,
+   narrower host for unchanged bodies — rework-proposal §0.8). */
+.hub-sheet .hub-cardinal__middle {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: min-content;
+}
+
+/* Same reason, vertically: the cardinal NORTH zone is a fixed 110px box with its
+   own scrollbar so the 670px page never jumps. Inside the peek that box becomes a
+   second scroll region nested in the body's — the double scrollbar — and it cuts
+   the gloss mid-word. In this host the identity card is non-clipping: the body is
+   the ONE scroller and the card grows to its content. */
+.hub-sheet .hub-cardinal__identity {
+  block-size: auto;
+  overflow-y: visible;
+}

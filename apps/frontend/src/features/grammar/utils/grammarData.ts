@@ -5,7 +5,6 @@
  *
  * All functions here are side-effect free and unit-tested:
  *   - `mapGrammarApiToData`  — API summary → display model for list cards.
- *   - `isPatternLocked`      — phase-lock derivation (pattern phase vs current phase).
  *   - `segmentToEntityRef`   — example segment → hub EntityRef (linked vs plain text).
  */
 import type { EntityRef } from "shared/types";
@@ -26,22 +25,6 @@ export function mapGrammarApiToData(item: GrammarPatternSummary): GrammarPattern
     exampleCount: item.exampleCount,
     previewExample: item.previewExample ?? undefined,
   };
-}
-
-/**
- * Derive whether a pattern is locked for the current learner phase.
- *
- * Phase source: `usePhaseGate()` → currentPhase (numeric 2|3|4; guests = 1 —
- * calibrated guest identity, Story 24-7).
- * NEVER sourced from userStore. A pattern is locked when its own phase is
- * HIGHER than the learner's current phase (Phase 3/4 patterns → locked/preview
- * cards for Phase-2 users — the platform's "discovery, not gate" stance).
- *
- * @param patternPhase - the pattern's phase (2 | 3 | 4)
- * @param currentPhase - the learner's current phase (from the phase gate)
- */
-export function isPatternLocked(patternPhase: number, currentPhase: number): boolean {
-  return patternPhase > currentPhase;
 }
 
 /**

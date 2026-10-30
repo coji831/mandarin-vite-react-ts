@@ -1,105 +1,136 @@
 /**
- * @file FoundationsPage.tsx
- * @description Main Foundations page with 4 sub-tabs (Pinyin, Tones, Strokes, Animations)
- * + local PictographGallery tab (Story 21.21)
- * Uses <Tabs> for the tab bar with panel wrapper.
+ * @file pages/learn/foundations/FoundationsPage.tsx
+ * @description The Blueprint — week 1 as ONE sequential task (rework-proposal §3),
+ * made re-enterable so the walk is a first-run guide, not a treadmill.
+ *
+ * `/learn/foundations` is a `wizard` / Focus surface: one step per screen, one
+ * primary `Continue` at the bottom of the step, `Back` as the ghost, and a
+ * stepper showing where the learner is in the seven-step sequence (initials →
+ * finals → 4 tones → tone pairs → stroke order → first radicals → first 20
+ * characters).
+ *
+ * ENTRY (correction to §3 — the walk used to restart at step 1 on every mount,
+ * and the stepper refused every step ahead of the current one, so a returning
+ * learner had to press Continue six times to reach "radicals"):
+ *   - the step on screen resolves `?step=` → the persisted cursor → step 1;
+ *   - every step in the stepper is operable, so any section is one click away;
+ *   - `Finish the Blueprint` records `completedAt`, which changes this page's
+ *     copy and its last-step CTA and nothing else — BM-1 L2/L6 make the order a
+ *     suggestion, so completion never gates a step or a section.
+ * The signal lives in `useBlueprintPosition` (one device-local key).
+ *
+ * The dense 409-cell reference is NOT here — it is its own route,
+ * `/learn/foundations/reference` (`reports` / Browse), linked from the header of
+ * every step and back again from its own header. A tab bar of five sibling
+ * references was the original bug: it read as a lookup surface, so nobody
+ * finished it.
+ *
  * Story 18.1: Foundations Page Structure
- * Story 21.21: Pictograph Warmup (Gallery + Mini-game)
- * Story 22.4 follow-up (Issue 4): active tab is now URL-driven via
- * useSearchParamState — `?tab=` seeds the tab (URL wins over the `initialTab`
- * default), writes use replace so Back exits the page, and the param is
- * omitted when it matches the default (canonical URL).
+ * Story 21.21: Pictograph Warmup (now in the reference index)
+ * Rework §1: the old Pictographs tab lock is gone with the tabs — phase is
+ * sequencing metadata only.
  */
-import {
-  FOUNDATION_SECTIONS,
-  FOUNDATION_SECTION_LABELS,
-  type FoundationSectionId,
-} from "@mandarin/shared-constants";
-import { PageShell, Tabs } from "shared/components";
-import type { TabConfig } from "shared/components";
-import { SEARCH_PARAMS } from "shared/constants";
+import { useNavigate } from "react-router-dom";
+import { Button, PageHeader, PageShell, PageStack } from "shared/components";
+import { learn_foundations_reference, SEARCH_PARAMS } from "shared/constants";
 import { useSearchParamState } from "shared/hooks";
 import {
+  BLUEPRINT_STEPS,
+  BlueprintStepBody,
+  BlueprintStepper,
   FoundationsProgressBar,
-  PictographGallery,
-  useFoundationsProgress,
+  isBlueprintStepId,
+  useBlueprintPosition,
+  type BlueprintStepId,
 } from "features/foundations";
-import { PinyinTab } from "./PinyinTab";
-import { TonesTab } from "./TonesTab";
-import { StrokeReferenceTab } from "./StrokeReferenceTab";
-import { StrokeAnimationTab } from "./StrokeAnimationTab";
-import "./FoundationsPage.css";
 
-const SECTION_ICONS: Record<FoundationSectionId, string> = {
-  pinyin: "📗",
-  tones: "🎵",
-  strokes: "✏️",
-  animations: "🎬",
-};
+const FIRST_STEP_ID = BLUEPRINT_STEPS[0].id;
 
-const PICTOGRAPH_TAB: TabConfig = {
-  id: "pictographs",
-  label: "Pictographs",
-  icon: "🖼️",
-};
+function indexOfStep(id: BlueprintStepId): number {
+  return BLUEPRINT_STEPS.findIndex((step) => step.id === id);
+}
 
-const TABS_CONFIG: TabConfig[] = [
-  ...FOUNDATION_SECTIONS.map((id) => ({
-    id,
-    label: FOUNDATION_SECTION_LABELS[id],
-    icon: SECTION_ICONS[id],
-  })),
-  PICTOGRAPH_TAB,
-];
+export function FoundationsPage() {
+  const navigate = useNavigate();
+  const { position, recordStep, complete } = useBlueprintPosition();
 
-/** Whitelist of valid tab ids — anything else (or absent) falls back to the default. */
-const TAB_IDS = new Set<string>(TABS_CONFIG.map((tab) => tab.id));
-
-export function FoundationsPage({
-  initialTab = "pinyin",
-}: {
-  initialTab?: FoundationSectionId | "pictographs";
-}) {
-  // URL wins in prod (`?tab=tones`); `initialTab` is the story/default fallback.
-  const [activeTab, setActiveTab] = useSearchParamState<string>(SEARCH_PARAMS.tab, {
-    defaultValue: initialTab,
-    parse: (raw) => (raw && TAB_IDS.has(raw) ? raw : null),
+  // `?step=` is sub-state (replace, never push): Back still exits the page.
+  // An unknown value degrades to the default rather than crashing the step body.
+  const [stepParam, setStepParam] = useSearchParamState<string>(SEARCH_PARAMS.step, {
+    defaultValue: "",
+    parse: (raw) => (isBlueprintStepId(raw) ? raw : null),
   });
-  const { progress } = useFoundationsProgress();
-  const tonesCompleted = progress?.find((p) => p.sectionId === "tones")?.completed ?? false;
 
-  const lockedTabs = tonesCompleted ? [] : ["pictographs"];
+  // URL wins (shareable / deep-linked step), then the stored cursor, then the top.
+  const activeId = isBlueprintStepId(stepParam)
+    ? stepParam
+    : (position.lastStepId ?? FIRST_STEP_ID);
+  const index = Math.max(indexOfStep(activeId), 0);
 
-  // Pictographs are a Phase 2 gate requirement (see PictographMatchGame) —
-  // locked until Tones (Phase 1 content) is completed. The <Tabs> component
-  // renders this as a tooltip: "Complete Phase 2 to unlock".
-  const getLockPhase = (id: string): number | null => (id === "pictographs" ? 2 : null);
+  const step = BLUEPRINT_STEPS[index];
+  const isLast = index === BLUEPRINT_STEPS.length - 1;
+  const isComplete = position.completedAt !== null;
 
-  const handleTabChange = (tabId: string) => {
-    if (lockedTabs.includes(tabId)) return; // Do nothing for locked tabs
-    setActiveTab(tabId);
+  const goTo = (nextIndex: number) => {
+    const target = BLUEPRINT_STEPS[Math.min(Math.max(nextIndex, 0), BLUEPRINT_STEPS.length - 1)];
+    recordStep(target.id);
+    setStepParam(target.id);
+  };
+
+  const handleJump = (id: BlueprintStepId) => goTo(indexOfStep(id));
+
+  const finishBlueprint = () => {
+    // Finishing is also a position: record the step the CTA was pressed on so a
+    // later bare `/learn/foundations` resumes there instead of jumping back.
+    recordStep(step.id);
+    complete();
+    navigate(learn_foundations_reference);
   };
 
   return (
-    <PageShell archetype="overview">
-      <div className="foundations-page flex-col">
-        <Tabs
-          tabs={TABS_CONFIG}
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          lockedTabs={lockedTabs}
-          getLockPhase={getLockPhase}
-          align="center"
-        >
-          {activeTab === "pinyin" && <PinyinTab />}
-          {activeTab === "tones" && <TonesTab />}
-          {activeTab === "strokes" && <StrokeReferenceTab />}
-          {activeTab === "animations" && <StrokeAnimationTab />}
-          {activeTab === "pictographs" && <PictographGallery />}
-        </Tabs>
+    <PageShell archetype="wizard">
+      <PageStack size="default">
+        {/* Wayfinding block: where you are in the walk, then the one way out of
+            it into the reference. The exit sits under the sequence rather than
+            beside the step's h1 so the step keeps the full measure at 320px and
+            the task keeps its single focal point. */}
+        <div className="flex items-center gap-sm flex-wrap">
+          <BlueprintStepper currentId={step.id} onJump={handleJump} />
+          <Button variant="ghost" size="sm" onClick={() => navigate(learn_foundations_reference)}>
+            Reference
+          </Button>
+        </div>
+
+        {/* The step's own header: one task, named as a task. */}
+        <PageHeader
+          eyebrow={`Step ${index + 1} of ${BLUEPRINT_STEPS.length}${
+            isComplete ? " · Blueprint complete" : ""
+          }`}
+          title={step.title}
+          description={step.description}
+        />
+
+        <BlueprintStepBody stepId={step.id} />
+
+        <div className="flex items-center gap-sm flex-wrap">
+          {index > 0 && (
+            <Button variant="ghost" onClick={() => goTo(index - 1)}>
+              Back
+            </Button>
+          )}
+          {isLast ? (
+            <Button variant="primary" onClick={finishBlueprint}>
+              {isComplete ? "Open the reference" : "Finish the Blueprint"}
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={() => goTo(index + 1)}>
+              Continue
+            </Button>
+          )}
+        </div>
 
         <FoundationsProgressBar />
-      </div>
+      </PageStack>
     </PageShell>
   );
 }

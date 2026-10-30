@@ -6,6 +6,7 @@
  * - Routes: / (Dashboard), /dashboard (Dashboard alias), /learn/* (LearnRoutes),
  *           /practices/* (PracticesRoutes), /library (LibraryPage),
  *           /progress (ProgressPage), /auth (login/register)
+ * - `*` → NotFoundPage (one catch-all, inside AppLayout — rework-proposal §10)
  *
  * Story 17.7: Added /practices/* and /library routes.
  * VisFix W6b: Added /dashboard as an alias for the dashboard (index stays at /).
@@ -31,6 +32,7 @@ import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { SettingsPage } from "../pages/SettingsPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
 
 function MainRoutes() {
   return (
@@ -46,6 +48,9 @@ function MainRoutes() {
         <Route path={settings_page} element={<SettingsPage />} />
         <Route path={login_page} element={<LoginPage />} />
         <Route path={register_page} element={<RegisterPage />} />
+        {/* One catch-all, INSIDE AppLayout so the chrome stays (rework-proposal
+            §10: never render a blank frame). No per-feature 404 fallbacks. */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

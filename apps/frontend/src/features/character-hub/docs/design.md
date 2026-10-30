@@ -7,15 +7,20 @@ type: design
 
 # Character Hub — Design Spec
 
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-10-29
 
 ## Layout
 
 ```
 NORTH: HubIdentityCard (glyph, pinyin, meaning, badges, etymology)
 MIDDLE: West (HubRadicalSection) | Center (HubCharacterCard) | East (HubReadings)
-SOUTH: Tabs (📖 Common Words | 📝 Mnemonic Story) → HubActions (bottom, always visible)
+SOUTH: Tabs (Common Words | Mnemonic Story, shared `Icon` glyphs) → HubActions (bottom, always visible)
 ```
+
+Hosting note: the same body renders inside the lexical-hub peek (`HubSheet`, 420px). There the
+cardinal grid stacks (`.hub-sheet .hub-cardinal__middle`) and the NORTH identity card is
+non-clipping (`.hub-sheet .hub-cardinal__identity` → `block-size: auto; overflow-y: visible`), so the
+sheet body stays the ONE scroll region instead of nesting a second scrollbar inside it.
 
 ## Storybook References
 
@@ -43,7 +48,7 @@ SOUTH: Tabs (📖 Common Words | 📝 Mnemonic Story) → HubActions (bottom, al
 | HubRadicalSection  | WEST   | Phase-gated radical decomposition with navigation             | Loading, loaded, empty, error with retry                                                   |
 | HubCharacterCard   | CENTER | Stroke animation player (mini mode)                           | Loading (skeleton), loaded                                                                 |
 | HubReadings        | EAST   | All readings with pinyin, tone, audio, frequency              | Loading, loaded, empty                                                                     |
-| HubActions         | SOUTH  | Save to Review / Mark Learned / 📖 Mnemonic Story buttons     | Default, loading, saved/marked, error with retry                                           |
+| HubActions         | SOUTH  | Save to Review / Mark Learned / Mnemonic Story buttons        | Default, loading, saved/marked, error with retry                                           |
 | HubCommonWords     | SOUTH  | Common compound word chips                                    | Loading, loaded, empty                                                                     |
 | HubMnemonicSection | SOUTH  | Mnemonic story display, generation, editing                   | 9 states: Loading, Cached, Empty, Generating, Display, Editing, Error, Timeout, Pictograph |
 

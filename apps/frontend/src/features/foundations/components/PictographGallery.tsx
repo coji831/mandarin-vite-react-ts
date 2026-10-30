@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-import { Button, MnemonicCard, ClassificationBadge } from "shared/components";
+import { Button, Icon, MnemonicCard, ClassificationBadge } from "shared/components";
 import { PICTOGRAPH_SET } from "../services/pictographGalleryService";
 import type { PictographData } from "../services/pictographGalleryService";
 import { PictographMatchGame } from "./PictographMatchGame";
@@ -32,7 +32,9 @@ export function PictographGallery() {
       return (
         <div className="pictograph-gallery">
           <div className="pictograph-gallery__empty">
-            <div className="pictograph-gallery__empty-icon">🖼️</div>
+            <div className="pictograph-gallery__empty-icon text-tertiary">
+              <Icon name="image" size={24} aria-hidden />
+            </div>
             <p>No pictographs available yet. Check back soon!</p>
           </div>
         </div>
@@ -42,7 +44,10 @@ export function PictographGallery() {
     return (
       <div className="pictograph-gallery">
         <div className="pictograph-gallery__header">
-          <h2 className="pictograph-gallery__title">🖼️ Pictograph Gallery</h2>
+          <h2 className="pictograph-gallery__title flex-align-center gap-xs">
+            <Icon name="image" size={24} aria-hidden />
+            Pictograph Gallery
+          </h2>
           <p className="pictograph-gallery__subtitle">
             Discover the ancient origins of Chinese characters — tap any card to learn more
           </p>
@@ -77,7 +82,7 @@ export function PictographGallery() {
 
         <div className="flex-center mt-md">
           <Button onClick={() => setView("game")} variant="primary">
-            🎮 Play Pictograph Match
+            Play Pictograph Match
           </Button>
         </div>
       </div>
