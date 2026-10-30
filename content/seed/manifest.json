@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T17:36:46.088Z",
+  "generatedAt": "2026-10-30T15:49:30.234Z",
   "phase1": {
     "cc-cedict-entries.json": {
       "entries": 124457,
@@ -86,6 +86,10 @@
     "pinyin-syllables.json": {
       "entries": 2045,
       "sha256": "1bf0b8dc8b339c6fc82549e617e87499432eaa5b54160162b6c67f1490306886"
+    },
+    "quiz-formats.json": {
+      "entries": 40,
+      "sha256": "7244e453ae3a0d596ec4c1005e21a2ace88a6c54ac61581b544ff9d3429e30cb"
     },
     "radicals.json": {
       "entries": 20,
