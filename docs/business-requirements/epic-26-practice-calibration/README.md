@@ -36,7 +36,7 @@ type: epic
 (epic 28); Q8 comprehension and the P3→4 gate (epic 28); demo-quota server counters (epic 29);
 `srs-core`/ts-fsrs (epic 34).
 
-**PR:** none yet — the epic branch `epic-26-practice-calibration` is not merged at the time of writing; the eight story commits are listed in the [epic implementation](../../issue-implementation/epic-26-practice-calibration/README.md) · **Branch:** `epic-26-practice-calibration`
+**PR:** [#62](https://github.com/coji831/mandarin-vite-react-ts/pull/62) (single epic PR, open) · **Branch:** `epic-26-practice-calibration` — the nine story commits are listed in the [epic implementation](../../issue-implementation/epic-26-practice-calibration/README.md)
 
 **Last Update:** October 31, 2026
 
