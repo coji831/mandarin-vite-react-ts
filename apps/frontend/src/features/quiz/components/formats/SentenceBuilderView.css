@@ -1,0 +1,21 @@
+/**
+ * SentenceBuilderView.css - what utilities cannot express.
+ *
+ * The answer row and the canonical order row are semantic lists whose markers
+ * are removed here (a component class, never a raw element selector); the
+ * position is stated in words ("2 of 5") instead, which survives screen readers
+ * and 320px reflow.
+ */
+
+.quiz-sentence {
+  min-height: 360px;
+}
+
+.quiz-sentence__answer,
+.quiz-sentence__answer-item {
+  list-style: none;
+}
+
+.quiz-sentence__answer-item {
+  min-height: var(--size-touch);
+}

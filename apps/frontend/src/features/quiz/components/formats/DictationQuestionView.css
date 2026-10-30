@@ -1,0 +1,10 @@
+/**
+ * DictationQuestionView.css - the fixed shell height and nothing else.
+ *
+ * The field's stacking is `flex-col` + `gap-xs` in the view; the field itself
+ * stretches through `w-full` on the shared Input.
+ */
+
+.quiz-dictation {
+  min-height: 300px;
+}

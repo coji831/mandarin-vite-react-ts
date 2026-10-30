@@ -9,6 +9,7 @@ export type {
   StrategyType,
   QuizQuestion,
   QuizOption,
+  QuizSegment,
   AnswerResult,
   QuizPhase,
   PhoneticHint,

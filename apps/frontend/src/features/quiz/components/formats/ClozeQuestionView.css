@@ -1,0 +1,21 @@
+/**
+ * ClozeQuestionView.css - structural rules only.
+ *
+ * Everything a global utility can express (direction, alignment, type scale,
+ * letter spacing) is a className in the view itself. What is left is what a
+ * utility cannot say: the fixed shell height, and the inline blank's wrapping
+ * behaviour inside a sentence.
+ */
+
+.quiz-cloze {
+  min-height: 320px;
+}
+
+.quiz-cloze__sentence {
+  overflow-wrap: anywhere;
+}
+
+.quiz-cloze__blank {
+  min-width: var(--space-2xl);
+  vertical-align: middle;
+}

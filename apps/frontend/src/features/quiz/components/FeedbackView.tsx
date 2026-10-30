@@ -20,6 +20,7 @@
 import { useEffect, useRef } from "react";
 import { useQuizSessionStore } from "../stores/quizSessionStore";
 import { AudioPlayer } from "./AudioPlayer";
+import { AUTHORED_ANNOUNCEMENT_STRATEGIES, SELECT_ONE_STRATEGIES } from "../engine/constants";
 import { Box, Button, Icon } from "shared/components";
 
 /** Tone descriptions for feedback text */
@@ -31,8 +32,12 @@ const TONE_DESCS: Record<number, string> = {
   0: "neutral",
 };
 
-/** Strategies that use multiple-choice (selection-based) feedback */
-const MULTIPLE_CHOICE_STRATEGIES = new Set(["radical-gate"]);
+/**
+ * Formats whose answer is not a pinyin+tone pair are named by the two shared
+ * sets in `engine/constants.ts` (`AUTHORED_ANNOUNCEMENT_STRATEGIES` for the
+ * Epic 26 practice formats, `SELECT_ONE_STRATEGIES` for the choose-one ones), so
+ * there is no second list here to drift.
+ */
 
 /** Shared card wrapper with correct/incorrect badge */
 function FeedbackCard({ correct, children }: { correct: boolean; children: React.ReactNode }) {
@@ -121,8 +126,41 @@ export function FeedbackView() {
     );
   }
 
-  // ── Multiple-choice feedback (radical gate) ──
-  if (MULTIPLE_CHOICE_STRATEGIES.has(strategyType)) {
+  // ── Practice formats (Epic 26) ──
+  // A token, an ordered sentence or a typed line is not a pinyin+tone pair, so
+  // the comparison below would be nonsense. The badge states the verdict once;
+  // these lines state only the facts, and the strategy's `feedback` sentence is
+  // what the session announces.
+  if (AUTHORED_ANNOUNCEMENT_STRATEGIES.has(strategyType)) {
+    const detail =
+      strategyType === "tone-judgment"
+        ? `It is a ${TONE_DESCS[lastAnswer.correctTone] ?? "unknown"} tone.`
+        : lastAnswer.correct
+          ? null
+          : strategyType === "cloze"
+            ? `The answer is ${lastAnswer.correctPinyin}.`
+            : strategyType === "sentence-building"
+              ? `The correct order is ${lastAnswer.correctPinyin}.`
+              : `It was ${lastAnswer.correctPinyin}.`;
+
+    return (
+      <FeedbackCard correct={lastAnswer.correct}>
+        <p className="text-secondary font-md m-0">
+          You answered: {lastAnswer.userPinyin || "(nothing)"}
+          {strategyType === "tone-judgment"
+            ? ` (${TONE_DESCS[lastAnswer.userTone] ?? "unknown"} tone)`
+            : ""}
+        </p>
+        {detail && <p className="font-md text-success fw-600 m-0">{detail}</p>}
+        <Button variant="primary" className="quiz-feedback__next-btn" onClick={nextQuestion}>
+          Next Question →
+        </Button>
+      </FeedbackCard>
+    );
+  }
+
+  // ── Choose-one feedback (radical gate) ──
+  if (SELECT_ONE_STRATEGIES.has(strategyType)) {
     return (
       <FeedbackCard correct={lastAnswer.correct}>
         <p className="text-secondary font-md m-0">{lastAnswer.feedback}</p>
