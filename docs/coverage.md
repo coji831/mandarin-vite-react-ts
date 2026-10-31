@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 37 | 11 | 0 | 48 | 48 |
+| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | 48 |
 
 
 <a id="a1"></a>
@@ -175,7 +175,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (48)  ·  score 37/48 documented · 11 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (48)  ·  score 38/48 documented · 10 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
@@ -225,7 +225,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | conventions/security | ✅ | docs/guides/conventions/security.md | **partial** ⚠️ review (last-verified 2026-06-07 > 6 weeks) | — | check:system-map |
 | conventions/state-management | ✅ | docs/guides/conventions/state-management.md | **partial** ⚠️ review (last-verified 2026-06-03 > 6 weeks) | — | check:system-map |
 | AGENTS.md | ✅ | .github/AGENTS.md | **partial** ⚠️ review (last-verified 2026-09-06 > 6 weeks) | — | check:system-map |
-| copilot-instructions.md | ✅ | .github/copilot-instructions.md | **partial** ⚠️ review (last-verified August 24, 2026 > 6 weeks) | — | check:system-map |
+| copilot-instructions.md | ✅ | .github/copilot-instructions.md | documented | — | check:system-map |
 | gate table (project-workflow) | ✅ | .github/instructions/project-workflow.instructions.md | documented | — | check:system-map |
 | dev-flow-visualization.html | ✅ | docs/guides/dev-flow-visualization.html | **partial** ⚠️ review (last-verified 2026-08-18 > 6 weeks) | — | check:system-map |
 
@@ -303,10 +303,9 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 66 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
 | 67 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
 | 68 | AGENTS.md | A10 | .github/AGENTS.md | — | — |
-| 69 | copilot-instructions.md | A10 | .github/copilot-instructions.md | — | — |
-| 70 | dev-flow-visualization.html | A10 | docs/guides/dev-flow-visualization.html | — | — |
-| 71 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
-| 72 | /learn/basic | A2 | — | — | — |
+| 69 | dev-flow-visualization.html | A10 | docs/guides/dev-flow-visualization.html | — | — |
+| 70 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
+| 71 | /learn/basic | A2 | — | — | — |
 
 ## Flags
 
@@ -336,7 +335,6 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
 - ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
-- ⚠️ A10 copilot-instructions.md: review (August 24, 2026 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
 - ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
 - ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)

@@ -68,7 +68,7 @@
   },
   "docs-writer": {
     "role": "Docs Writer",
-    "system": "Owns the documentation lifecycle: BR/impl docs, KB articles, guides, technical challenges, verification artifacts, and doc<->code truth-checks. Never writes production code; derives every claim from code (no invented endpoints/names/counts); bumps Last Updated in the same commit as content edits.",
+    "system": "Owns the documentation lifecycle: BR/impl docs, KB articles, guides, technical challenges, verification artifacts, and doc<->code truth-checks. Never writes production code; derives every claim from code (no invented endpoints/names/counts); bumps Last Updated in the same commit as content edits. At epic close, drive Phase 5 of the Epic & Story Lifecycle (.github/copilot-instructions.md): re-open every surface the Phase 5 table enumerates (docs/architecture.md, README.md, apps/*/README.md, docs/knowledge-base, docs/guides, the generated map, the epic + story records) — a self-audit of touched files cannot see a stale doc you never opened, so never infer the surface set from the diff.",
     "tools": ["workspace", "exec"],
     "next_edges": ["code-reviewer"],
     "model": "deepseek-flash",

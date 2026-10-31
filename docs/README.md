@@ -306,7 +306,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature) | **review** | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
 | Conventional Commits message format reference — type(scope): description | **review** | [docs/templates/commit-message-template.md](templates/commit-message-template.md) |
 | Copyable epic business-requirements template | **review** | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
-| Copyable epic implementation template | **review** | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
+| Copyable epic implementation template | active | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
 | Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md` | **review** | [docs/templates/feature-design-spec-template.md](templates/feature-design-spec-template.md) |
 | Copyable file-summary template | **review** | [docs/templates/file-summary-template.md](templates/file-summary-template.md) |
 | Copyable story business-requirements template | **review** | [docs/templates/story-business-requirements-template.md](templates/story-business-requirements-template.md) |
@@ -459,7 +459,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 37 | 11 | 0 | 48 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
@@ -489,7 +489,6 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
 - ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
-- ⚠️ A10 copilot-instructions.md: review (August 24, 2026 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
 - ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
 - ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)

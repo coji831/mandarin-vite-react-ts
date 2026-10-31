@@ -72,19 +72,15 @@ over every file in the Scope list above; every hit must satisfy an Exception abo
 
 ### Extracting Knowledge Base Articles
 
-After resolving struggles >3h or discovering reusable patterns:
-
-1. Create file in `docs/knowledge-base/` (actionable patterns → `docs/guides/`)
-2. Use format: Problem → Root Cause → Solution → Impact → Alternatives
-3. Cross-link between story docs, guides, and KB articles
-4. Remove verbose postmortems from story implementation docs after extraction
-5. Verify story/epic docs still match templates exactly after removal
+Rule and format: **§Knowledge Base Extraction** below is the single canonical statement — this heading stays
+only as the anchor for the authoring sequence above it.
 
 ## Strict Template Compliance
 
 - All documentation must strictly match the structure and sections of the corresponding template
 - Do NOT add extra, duplicate, or non-template sections
 - When updating, always cross-check with the latest template
+- **A recurring new section is promoted to the template, not added ad hoc** — the change that first needs it adds it to `docs/templates/` in the same commit (see `copilot-instructions.md` §Epic & Story Lifecycle, Phase 5)
 
 ## Doc Truth-Check (Verify Docs Against Code)
 

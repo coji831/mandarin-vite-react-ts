@@ -9,7 +9,7 @@ roles:
   - "Documentation writer (Docs Writer agent — BR/impl docs, KB, guides, verification artifacts, truth-check)"
 instructions:
   - file: ".github/copilot-instructions.md"
-    description: "Quick start, architecture overview, rule index"
+    description: "Quick start, architecture overview, rule index, and the seven-phase Epic & Story Lifecycle (scope → BR → design → build → story close → epic close → ship → archive) — read this first when running or closing an epic"
   - file: ".github/instructions/project-workflow.instructions.md"
     description: "Development workflow, epic/story closing, quality gates"
   - file: ".github/instructions/frontend-css-styling.instructions.md"
@@ -100,7 +100,7 @@ shell/measure/gutter/header, verified by `check:page-inventory`).
   rhythm, and the card grid. `design-audit` errors: `missing-layout-token`,
   `page-scoped-layout-css`, `page-scoped-grid` (S0a-3). Retrofit drift leaders in the S2 wave
   order - never add new UI on an un-converged shell (D5).
-- **Foundation gate:** `npm run design-audit:foundation` runs *spine's* design-audit and fails on
+- **Foundation gate:** `npm run design-audit:foundation` runs _spine's_ design-audit and fails on
   those three rules only (`.github/workflows/spine-foundation.yml`; `SPINE_ROOT`, default = the
   local spine checkout).
 

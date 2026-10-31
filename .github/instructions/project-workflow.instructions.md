@@ -161,9 +161,13 @@ Before writing any code, the implementing agent MUST investigate these 4 areas t
 
 ## Closing Epics & Stories
 
+> **Phase authority:** the ordered lifecycle (which phase closes a story, which closes an epic, and what each
+> must produce) is [`.github/copilot-instructions.md`](../copilot-instructions.md) §Epic & Story Lifecycle.
+> This section is the item list for Phases 4–5; it does not re-order them.
+
 1. Confirm all AC items checked in BR — split remaining into new story OR defer with explicit "Deferred" subsection if not
-2. Verify and update high-level docs (`docs/architecture.md`, `README.md`, `docs/README.md`, `apps/*/README.md`) using descriptive feature names (NOT story/epic numbers)
-3. Check for knowledge base and guideline updates — review "Technical Challenges & Solutions" section for reusable patterns; extract to `docs/knowledge-base/` or `docs/guides/` as appropriate
+2. Verify and update high-level docs — use the **Phase 5 surface table** in `copilot-instructions.md` (it enumerates the files); write claims by descriptive feature name, never by story/epic number
+3. Check for knowledge base and guideline updates — extract per `documentation-standards.instructions.md` §Knowledge Base Extraction (the single canonical statement of the rule)
 4. Run full test suite before closing — `npm run test:full`; for a specific feature: `vitest run src/features/<feature>/` or `vitest run src/modules/<module>/` — 100% pass rate
 5. Update `Status: Completed` in BR + implementation docs
 6. Update `Last Update` date in both
