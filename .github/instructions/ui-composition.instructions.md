@@ -1,6 +1,6 @@
 ---
-description: "Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing new UI."
-applyTo: "apps/frontend/src/**/*.tsx"
+description: "Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface."
+applyTo: "apps/frontend/src/pages/**/*.tsx,apps/frontend/src/shared/layouts/*.tsx"
 ---
 
 # UI composition
