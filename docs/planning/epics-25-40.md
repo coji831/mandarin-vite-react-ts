@@ -9,7 +9,7 @@ type: planning
 
 **Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
 
-**Last Updated:** 2026-10-27 (Epic 25 close: A25 supersession pointers added to §Epic 25; 2026 PO × Designer audit amendments — see §2026 Audit Amendments)
+**Last Updated:** 2026-10-31 (Epic 26 close: as-shipped pointer added to §Epic 26, carrying the corrected A26 premise; Epic 25 close 2026-10-27: A25 supersession pointers added to §Epic 25; 2026 PO × Designer audit amendments — see §2026 Audit Amendments)
 
 **Provenance:** Built from the Architect re-slice (epics 25–40, all blocks + sequencing + re-slice notes) + the OI-1…OI-10 decision record; anchored to the RATIFIED business model BM-1 + tech-mapping D1/D7 DECIDED. Promoted to `docs/planning/` as the committed source of record (2026-08-17); BRs for epics 25+ build against this plan. **2026-08-21 re-ratification:** the D7 execution model is **serial**, not parallel-with-25–28 (decision-log **D10**); this supersedes the earlier "D7 ∥ 25–28, P0-1 first gate" framing (see the Context Summary reversal note + OI-1).
 
@@ -201,6 +201,34 @@ bar, PR #56) is the baseline each epic consumes, and the pre-26 spine epic (A0) 
 ---
 
 ## Epic 26 — Practice Calibration: Engine Fixes + Guest Lane + Phase-B Formats _(Phase B, part 1)_
+
+> **As shipped 2026-10-31 (branch `epic-26-practice-calibration`, PR #62). A26's premise was two-thirds
+> stale.** The audit named three defects at `/practices/quiz` — rail open, completion CTA outside a completion
+> slot, and a `window.location.href` escape hatch. Measured against the code at epic open, the **rail collapse
+> and the escape hatch no longer existed**: both landed with PR #61, which is where the archetype-driven
+> mode-aware chrome began enforcing the Focus law. What remained unbuilt, and what this epic actually
+> rebuilt, was the **completion slot**. The per-surface Step 0 revalidation verdict is in
+> `apps/frontend/src/features/quiz/docs/design.md` §26.0.
+>
+> The body below is the original plan and stands, with these as-shipped deltas:
+>
+> - **M1** — `PHASE_CONFIGS[3]` added (cloze + sentence-building); Phase 4 distinguished by a `tier: 2`
+>   field rather than removed, so its payload is no longer a duplicate of Phase 2's; `useQuizCard`
+>   aggregates every quiz for `phase <= currentPhase` through `getQuizzesUpToPhase()`, so a passed phase
+>   keeps its assessments as optional practice; `QuizCard` offers one labelled CTA per assessment and
+>   states the timeline in text. `MULTIPLE_CHOICE_STRATEGIES` was replaced by an exhaustive
+>   `QUESTION_VIEWS: Record<StrategyType, ComponentType>` dispatch map, which is what makes the format set
+>   closed.
+> - **M2** — all four formats ship, Q10 as a distinct Phase-1 format (written sandhi, no audio); the
+>   registered strategy set goes 5 → 9 on the backend and 3 → 7 on the frontend. Persistence needed **no
+>   migration**: the formats encode onto the existing answer columns. The curated banks are a **selection
+>   layer** — 40 pinned anchors seeded into the anchor row's `metadata.quizFormats[]`, no new table — and
+>   dictation is character-level (word-level needs a `Word.metadata` column, deferred).
+> - **AC2** — a guest attempt still writes **zero** server rows; the guest's score is computed locally,
+>   which fixed a live defect where the server stub made a 9/10 guest read `0/0 (0%) - not passed`.
+> - **Carried forward** — a per-format category breakdown (the existing `CategoryBreakdown` models only
+>   `pinyin`/`tones`/`pairs`/`rules`, so it is gated to the formats it understands), and a runtime
+>   counterpart for `QuizAttemptType`.
 
 **Goal:** Make the Practices lane correct, guest-accessible, and 10-format complete — fixing `PHASE_CONFIGS[3]`/aggregation, shipping the guest practice lane with value-moment CTAs, and adding Q6/Q7/Q9/Q10 on curated content.
 
