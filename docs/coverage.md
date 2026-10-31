@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-10-29 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-10-31 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 
@@ -11,8 +11,8 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Area | Documented | Partial | Undocumented | Active | Total |
 | --- | --- | --- | --- | --- | --- |
-| A1 Frontend Features | 2 | 6 | 5 | 13 | 13 |
-| A2 Frontend Pages | 16 | 0 | 0 | 16 | 18 |
+| A1 Frontend Features | 3 | 5 | 7 | 15 | 15 |
+| A2 Frontend Pages | 18 | 0 | 0 | 18 | 20 |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | 11 |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | 15 |
 | A5 Backend Shared / Infra | 0 | 8 | 0 | 8 | 8 |
@@ -20,12 +20,12 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 37 | 11 | 0 | 48 | 48 |
+| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | 48 |
 
 
 <a id="a1"></a>
 
-## A1 — Frontend Features (13)  ·  score 2/13 documented · 6 partial · 5 undocumented
+## A1 — Frontend Features (15)  ·  score 3/15 documented · 5 partial · 7 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
@@ -36,8 +36,10 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | foundations | ✅ | apps/frontend/src/features/foundations/docs/design.md | documented | — | module-boundaries |
 | grammar | ✅ | — | **undocumented** | **write features/grammar/docs/design.md** | module-boundaries |
 | lexical-hub | ✅ | — | **undocumented** | **write features/lexical-hub/docs/design.md** | module-boundaries |
+| library | ✅ | — | **undocumented** | **write features/library/docs/design.md** | module-boundaries |
 | phonetic-clusters | ✅ | — | **undocumented** | **write features/phonetic-clusters/docs/design.md** | module-boundaries |
-| quiz | ✅ | apps/frontend/src/features/quiz/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-01 > 6 weeks) | — | module-boundaries |
+| progress | ✅ | — | **undocumented** | **write features/progress/docs/design.md** | module-boundaries |
+| quiz | ✅ | apps/frontend/src/features/quiz/docs/design.md | documented | — | module-boundaries |
 | radicals | ✅ | apps/frontend/src/features/radicals/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-08 > 6 weeks) | — | module-boundaries |
 | readers | ✅ | apps/frontend/src/features/readers/docs/design.md | documented | — | module-boundaries |
 | review | ✅ | apps/frontend/src/features/review/docs/design.md | **partial** ⚠️ review (last-verified 2026-07-20 > 6 weeks) | — | module-boundaries |
@@ -45,7 +47,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a2"></a>
 
-## A2 — Frontend Pages (18)  ·  score 16/16 documented · 0 partial · 0 undocumented
+## A2 — Frontend Pages (20)  ·  score 18/18 documented · 0 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
@@ -65,8 +67,10 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | /settings | ✅ | apps/frontend/src/pages/SettingsPageFull.stories.tsx | documented | — | page-inventory |
 | /profile | ✅ | apps/frontend/src/pages/ProfilePageFull.stories.tsx | documented | — | page-inventory |
 | /learn/foundations | ✅ | apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx | documented | — | page-inventory |
+| /learn/foundations/reference | ✅ | apps/frontend/src/pages/learn/foundations/FoundationsReferencePageFull.stories.tsx | documented | — | page-inventory |
 | /learn/phonetic-clusters | ✅ | apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx | documented | — | page-inventory |
 | /learn/basic | — | — | doc-only (route without page container (redirect/planned)) | — | page-inventory |
+| * | ✅ | apps/frontend/src/pages/NotFoundPageFull.stories.tsx | documented | — | page-inventory |
 
 <a id="a3"></a>
 
@@ -171,7 +175,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (48)  ·  score 37/48 documented · 11 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (48)  ·  score 38/48 documented · 10 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
@@ -221,7 +225,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | conventions/security | ✅ | docs/guides/conventions/security.md | **partial** ⚠️ review (last-verified 2026-06-07 > 6 weeks) | — | check:system-map |
 | conventions/state-management | ✅ | docs/guides/conventions/state-management.md | **partial** ⚠️ review (last-verified 2026-06-03 > 6 weeks) | — | check:system-map |
 | AGENTS.md | ✅ | .github/AGENTS.md | **partial** ⚠️ review (last-verified 2026-09-06 > 6 weeks) | — | check:system-map |
-| copilot-instructions.md | ✅ | .github/copilot-instructions.md | **partial** ⚠️ review (last-verified August 24, 2026 > 6 weeks) | — | check:system-map |
+| copilot-instructions.md | ✅ | .github/copilot-instructions.md | documented | — | check:system-map |
 | gate table (project-workflow) | ✅ | .github/instructions/project-workflow.instructions.md | documented | — | check:system-map |
 | dev-flow-visualization.html | ✅ | docs/guides/dev-flow-visualization.html | **partial** ⚠️ review (last-verified 2026-08-18 > 6 weeks) | — | check:system-map |
 
@@ -234,82 +238,81 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 1 | chengyu | A1 | — | **write features/chengyu/docs/design.md** | — |
 | 2 | grammar | A1 | — | **write features/grammar/docs/design.md** | — |
 | 3 | lexical-hub | A1 | — | **write features/lexical-hub/docs/design.md** | — |
-| 4 | phonetic-clusters | A1 | — | **write features/phonetic-clusters/docs/design.md** | — |
-| 5 | word-hub | A1 | — | **write features/word-hub/docs/design.md** | — |
-| 6 | api | A3 | — | **write doc for api** | — |
-| 7 | audio | A3 | — | **write doc for audio** | — |
-| 8 | config | A3 | — | **write doc for config** | — |
-| 9 | constants | A3 | — | **write doc for constants** | — |
-| 10 | hooks | A3 | — | **write doc for hooks** | — |
-| 11 | hub-entry | A3 | — | **write doc for hub-entry** | — |
-| 12 | layouts | A3 | — | **write doc for layouts** | — |
-| 13 | services | A3 | — | **write doc for services** | — |
-| 14 | store | A3 | — | **write doc for store** | — |
-| 15 | types | A3 | — | **write doc for types** | — |
-| 16 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
-| 17 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
-| 18 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
-| 19 | auth | A1 | apps/frontend/src/features/auth/docs/design.md | — | — |
-| 20 | character-hub | A1 | apps/frontend/src/features/character-hub/docs/design.md | — | — |
-| 21 | dashboard | A1 | apps/frontend/src/features/dashboard/docs/design.md | — | — |
-| 22 | quiz | A1 | apps/frontend/src/features/quiz/docs/design.md | — | — |
-| 23 | radicals | A1 | apps/frontend/src/features/radicals/docs/design.md | — | — |
-| 24 | review | A1 | apps/frontend/src/features/review/docs/design.md | — | — |
-| 25 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
-| 26 | characters | A4 | apps/backend/docs/design.md | — | — |
-| 27 | chengyu | A4 | apps/backend/docs/design.md | — | — |
-| 28 | foundations | A4 | apps/backend/docs/design.md | — | — |
-| 29 | grammar | A4 | apps/backend/docs/design.md | — | — |
-| 30 | mnemonics | A4 | apps/backend/docs/design.md | — | — |
-| 31 | phonetic-clusters | A4 | apps/backend/docs/design.md | — | — |
-| 32 | progression | A4 | apps/backend/docs/design.md | — | — |
-| 33 | quiz | A4 | apps/backend/docs/design.md | — | — |
-| 34 | radicals | A4 | apps/backend/docs/design.md | — | — |
-| 35 | readers | A4 | apps/backend/docs/design.md | — | — |
-| 36 | review | A4 | apps/backend/docs/design.md | — | — |
-| 37 | words | A4 | apps/backend/docs/design.md | — | — |
-| 38 | app | A5 | apps/backend/docs/design.md | — | — |
-| 39 | shared/config | A5 | apps/backend/docs/design.md | — | — |
-| 40 | shared/docs | A5 | apps/backend/docs/design.md | — | — |
-| 41 | shared/errors | A5 | apps/backend/docs/design.md | — | — |
-| 42 | shared/infrastructure | A5 | apps/backend/docs/design.md | — | — |
-| 43 | shared/middleware | A5 | apps/backend/docs/design.md | — | — |
-| 44 | shared/types | A5 | apps/backend/docs/design.md | — | — |
-| 45 | shared/utils | A5 | apps/backend/docs/design.md | — | — |
-| 46 | characters | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 47 | pinyin | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 48 | radicals | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 49 | references | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 50 | seed | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 51 | strokes | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 52 | tones | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 53 | words | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 54 | manifest.json | A7 | docs/guides/data/seed-pipeline.md | — | — |
-| 55 | terraform/ | A8 | terraform/README.md | — | — |
-| 56 | .github/workflows/ | A8 | docs/guides/operations/infrastructure.md | — | — |
-| 57 | scripts/ | A9 | project-workflow gate table | — | — |
-| 58 | tools/ | A9 | — | — | — |
-| 59 | conventions/api-client | A10 | docs/guides/conventions/api-client.md | — | — |
-| 60 | conventions/backend | A10 | docs/guides/conventions/backend.md | — | — |
-| 61 | conventions/data-import-scripts | A10 | docs/guides/conventions/data-import-scripts.md | — | — |
-| 62 | conventions/frontend | A10 | docs/guides/conventions/frontend.md | — | — |
-| 63 | conventions/git | A10 | docs/guides/conventions/git.md | — | — |
-| 64 | conventions/naming-standards | A10 | docs/guides/conventions/naming-standards.md | — | — |
-| 65 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
-| 66 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
-| 67 | AGENTS.md | A10 | .github/AGENTS.md | — | — |
-| 68 | copilot-instructions.md | A10 | .github/copilot-instructions.md | — | — |
+| 4 | library | A1 | — | **write features/library/docs/design.md** | — |
+| 5 | phonetic-clusters | A1 | — | **write features/phonetic-clusters/docs/design.md** | — |
+| 6 | progress | A1 | — | **write features/progress/docs/design.md** | — |
+| 7 | word-hub | A1 | — | **write features/word-hub/docs/design.md** | — |
+| 8 | api | A3 | — | **write doc for api** | — |
+| 9 | audio | A3 | — | **write doc for audio** | — |
+| 10 | config | A3 | — | **write doc for config** | — |
+| 11 | constants | A3 | — | **write doc for constants** | — |
+| 12 | hooks | A3 | — | **write doc for hooks** | — |
+| 13 | hub-entry | A3 | — | **write doc for hub-entry** | — |
+| 14 | layouts | A3 | — | **write doc for layouts** | — |
+| 15 | services | A3 | — | **write doc for services** | — |
+| 16 | store | A3 | — | **write doc for store** | — |
+| 17 | types | A3 | — | **write doc for types** | — |
+| 18 | shared-constants | A6 | — | **write packages/shared-constants/README.md** | — |
+| 19 | shared-types | A6 | — | **write packages/shared-types/README.md** | — |
+| 20 | shared-utils | A6 | — | **write packages/shared-utils/README.md** | — |
+| 21 | auth | A1 | apps/frontend/src/features/auth/docs/design.md | — | — |
+| 22 | character-hub | A1 | apps/frontend/src/features/character-hub/docs/design.md | — | — |
+| 23 | dashboard | A1 | apps/frontend/src/features/dashboard/docs/design.md | — | — |
+| 24 | radicals | A1 | apps/frontend/src/features/radicals/docs/design.md | — | — |
+| 25 | review | A1 | apps/frontend/src/features/review/docs/design.md | — | — |
+| 26 | components | A3 | apps/frontend/src/shared/components/README.md | — | — |
+| 27 | characters | A4 | apps/backend/docs/design.md | — | — |
+| 28 | chengyu | A4 | apps/backend/docs/design.md | — | — |
+| 29 | foundations | A4 | apps/backend/docs/design.md | — | — |
+| 30 | grammar | A4 | apps/backend/docs/design.md | — | — |
+| 31 | mnemonics | A4 | apps/backend/docs/design.md | — | — |
+| 32 | phonetic-clusters | A4 | apps/backend/docs/design.md | — | — |
+| 33 | progression | A4 | apps/backend/docs/design.md | — | — |
+| 34 | quiz | A4 | apps/backend/docs/design.md | — | — |
+| 35 | radicals | A4 | apps/backend/docs/design.md | — | — |
+| 36 | readers | A4 | apps/backend/docs/design.md | — | — |
+| 37 | review | A4 | apps/backend/docs/design.md | — | — |
+| 38 | words | A4 | apps/backend/docs/design.md | — | — |
+| 39 | app | A5 | apps/backend/docs/design.md | — | — |
+| 40 | shared/config | A5 | apps/backend/docs/design.md | — | — |
+| 41 | shared/docs | A5 | apps/backend/docs/design.md | — | — |
+| 42 | shared/errors | A5 | apps/backend/docs/design.md | — | — |
+| 43 | shared/infrastructure | A5 | apps/backend/docs/design.md | — | — |
+| 44 | shared/middleware | A5 | apps/backend/docs/design.md | — | — |
+| 45 | shared/types | A5 | apps/backend/docs/design.md | — | — |
+| 46 | shared/utils | A5 | apps/backend/docs/design.md | — | — |
+| 47 | characters | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 48 | pinyin | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 49 | radicals | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 50 | references | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 51 | seed | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 52 | strokes | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 53 | tones | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 54 | words | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 55 | manifest.json | A7 | docs/guides/data/seed-pipeline.md | — | — |
+| 56 | terraform/ | A8 | terraform/README.md | — | — |
+| 57 | .github/workflows/ | A8 | docs/guides/operations/infrastructure.md | — | — |
+| 58 | scripts/ | A9 | project-workflow gate table | — | — |
+| 59 | tools/ | A9 | — | — | — |
+| 60 | conventions/api-client | A10 | docs/guides/conventions/api-client.md | — | — |
+| 61 | conventions/backend | A10 | docs/guides/conventions/backend.md | — | — |
+| 62 | conventions/data-import-scripts | A10 | docs/guides/conventions/data-import-scripts.md | — | — |
+| 63 | conventions/frontend | A10 | docs/guides/conventions/frontend.md | — | — |
+| 64 | conventions/git | A10 | docs/guides/conventions/git.md | — | — |
+| 65 | conventions/naming-standards | A10 | docs/guides/conventions/naming-standards.md | — | — |
+| 66 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
+| 67 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
+| 68 | AGENTS.md | A10 | .github/AGENTS.md | — | — |
 | 69 | dev-flow-visualization.html | A10 | docs/guides/dev-flow-visualization.html | — | — |
 | 70 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
 | 71 | /learn/basic | A2 | — | — | — |
 
 ## Flags
 
-- ⚠️ shared/components/README.md lists 7 of 38 shared components — stale
+- ⚠️ shared/components/README.md lists 7 of 39 shared components — stale
 - ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
 - ⚠️ A1 dashboard: review (2026-08-18 > 6 weeks)
-- ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
 - ⚠️ A1 review: review (2026-07-20 > 6 weeks)
 - ⚠️ A3 components: review (2026-08-18 > 6 weeks)
@@ -332,8 +335,7 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
 - ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
-- ⚠️ A10 copilot-instructions.md: review (August 24, 2026 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
 - ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
-- ⚠️ features/README.md declares a docs/ per-feature convention; 5 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, phonetic-clusters, word-hub)
+- ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)
 <!-- /coverage:generated -->

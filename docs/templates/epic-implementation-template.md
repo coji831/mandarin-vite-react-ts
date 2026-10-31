@@ -1,13 +1,13 @@
 ---
 purpose: Copyable epic implementation template
 status: active
-last-verified: 2026-06-02
+last-verified: 2026-10-31
 type: template
 ---
 
 # Template For Epic Implementation
 
-**Last Updated:** June 2, 2026
+**Last Updated:** October 31, 2026
 
 # Epic [EPIC-NUMBER]: [Epic-Title]
 
@@ -73,3 +73,28 @@ GET /api/<endpoint>
 - <detailed response structure with example>
 
 ### Component Relationships
+
+## Code Review Outcome
+
+<Reviewer verdict (`APPROVED` / `CHANGES-REQUESTED`), then a table of findings ordered by severity with the resolution for each. "No separate reviewer pass was run" is only acceptable when no review link ran — say so explicitly rather than omitting the section.>
+
+| #   | Severity              | Finding                            | Resolution                           |
+| --- | --------------------- | ---------------------------------- | ------------------------------------ |
+| 1   | <blocker/major/minor> | <what was wrong, with `file:line`> | <what changed, or "carried forward"> |
+
+### Carry-forward (recorded, deliberately not fixed here)
+
+- <A known gap this epic exposed and chose not to close, with why and where it belongs instead>
+
+## Epic Close — Documentation Duty
+
+<The Phase 5 surface table in `.github/copilot-instructions.md` §Epic & Story Lifecycle enumerates what must be
+re-verified. State each surface's outcome; a surface that needed no change is still recorded as checked.>
+
+| Surface                                | Outcome                                                        |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `docs/architecture.md`                 | <updated: what changed / verified current / n/a with reason>   |
+| `README.md`, `apps/*/README.md`        | <...>                                                          |
+| `docs/knowledge-base/`, `docs/guides/` | <extracted: which article / none needed, because ...>          |
+| `docs/coverage.md`, `docs/README.md`   | <`npm run generate:system-map` run; `check:system-map` result> |
+| Epic + story docs                      | <status / dates / AC boxes / PR number>                        |

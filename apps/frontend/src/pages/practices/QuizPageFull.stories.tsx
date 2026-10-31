@@ -212,6 +212,103 @@ const QUIZ_ATTEMPT_HANDLER = http.post(`${API_BASE}/quiz/attempts`, () =>
   HttpResponse.json({ id: "storybook-attempt" }, { status: 200 }),
 );
 
+/**
+ * The completion the server returns for a GUEST attempt (§26.4.5): the
+ * OptionalAuthGuard answers with a mock and writes no row, so every field is a
+ * zero/false stub. A story that seeds this is showing the DEFECT state — the
+ * local session values must still be what renders.
+ */
+const GUEST_STUB_COMPLETION = {
+  totalScore: 0,
+  maxScore: 0,
+  passed: false,
+  accuracy: 0,
+  categoryBreakdown: { pinyin: 0, tones: 0, pairs: 0, rules: 0 },
+};
+
+const STRATEGY_CONFIG = {
+  type: "audio-to-pinyin-tone",
+  questionCount: 5,
+  passThreshold: 0.6,
+  timeLimitMinutes: 2.5,
+  tierRules: null,
+};
+
+// ── Epic 26 practice-format questions (wire shapes, §26.4.2) ────────
+
+const CLOZE_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "cloze-1",
+    audioKey: "",
+    correctPinyin: "把",
+    correctTone: 0,
+    category: "cloze",
+    displayPinyin: "wǒ bǎ rén dǎ le",
+    chinese: "我把人打了。",
+    english: "I hit someone.",
+    patternName: "把-construction",
+    patternStructure: "Subj + 把 + Obj + Verb",
+    explanation: "把 moves the object before the verb.",
+    blankIndex: 1,
+    segments: [
+      { text: "我", pinyin: "wǒ", blank: false },
+      { text: "把", pinyin: "bǎ", blank: true },
+      { text: "人打了。", pinyin: "rén dǎ le", blank: false },
+    ],
+    options: [
+      { id: "opt-0", glyph: "把", meaning: "object marker" },
+      { id: "opt-1", glyph: "被", meaning: "passive marker" },
+      { id: "opt-2", glyph: "了", meaning: "completed action" },
+      { id: "opt-3", glyph: "的", meaning: "possessive" },
+    ],
+  },
+];
+
+const SENTENCE_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "sbo-1",
+    audioKey: "",
+    correctPinyin: "我 打 人",
+    correctTone: 0,
+    category: "sentence-building",
+    english: "I hit someone.",
+    patternName: "simple sentence",
+    tokens: ["人", "我", "打"],
+    answerLength: 3,
+  },
+];
+
+const DICTATION_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "dct-1",
+    audioKey: "你好",
+    character: "你好",
+    correctPinyin: "nǐ hǎo",
+    correctTone: 0,
+    category: "dictation",
+    displayPinyin: "nǐ hǎo",
+    meaning: "hello",
+  },
+];
+
+const TONE_JUDGMENT_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "tsj-1",
+    audioKey: "",
+    correctPinyin: "nǐ",
+    correctTone: 2,
+    category: "tone-judgment",
+    chinese: "你好",
+    dictionaryPinyin: "nǐ hǎo",
+    targetIndex: 0,
+    targetGlyph: "你",
+    targetSyllable: "nǐ",
+    baseTone: 3,
+    ruleId: "rule-3rd-sandhi",
+    ruleTitle: "Third-tone sandhi",
+  },
+];
+
 // ── Meta ───────────────────────────────────────────────────────────
 
 const meta: Meta<typeof QuizSessionPage> = {
@@ -490,6 +587,195 @@ export const GuestResultsFailed: Story = {
       },
     }),
     withGuestAuth,
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Completion slot + guest lane (Epic 26 §26.2 / §26.4.5)
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * ResultsWithSlot — registered learner, 2 misses. The results column is
+ * value → slot → review, and the slot's ONE primary is "Review what you missed"
+ * with "Back to Practices" as the ghost passed into the slot (§26.2.3).
+ */
+export const ResultsWithSlot: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: [
+        makeCorrectAnswer(MOCK_QUESTIONS[0]),
+        makeCorrectAnswer(MOCK_QUESTIONS[1]),
+        makeWrongAnswer(MOCK_QUESTIONS[2]),
+        makeCorrectAnswer(MOCK_QUESTIONS[3]),
+        makeWrongAnswer(MOCK_QUESTIONS[4]),
+      ],
+      score: 3,
+      timer: 90,
+      announcement: "Quiz complete. 3 of 5, 60 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * ResultsZeroMisses — registered learner, perfect score. There is nothing to
+ * review, so the slot holds a single primary ("Back to Practices") and no ghost:
+ * the one-CTA law forbids inventing a second action.
+ */
+export const ResultsZeroMisses: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: MOCK_QUESTIONS.map(makeCorrectAnswer),
+      score: 5,
+      timer: 90,
+      announcement: "Quiz complete. 5 of 5, 100 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * GuestResultsPassedCompleted — the guest DEFECT state, after a real
+ * `completeAttempt`: the server stub is `{totalScore: 0, maxScore: 0,
+ * passed: false}` while the local session scored 5/5. The score card must read
+ * 5/5 (100%) and Passed, and the slot's primary is the persistence ask.
+ */
+export const GuestResultsPassedCompleted: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: MOCK_QUESTIONS.map(makeCorrectAnswer),
+      score: 5,
+      timer: 90,
+      attemptId: "guest-mock-attempt",
+      completionResult: GUEST_STUB_COMPLETION,
+      announcement: "Quiz complete. 5 of 5, 100 percent. Passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withGuestAuth,
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * GuestResultsFailedCompleted — the same stub with a 2/5 local score. Not passed
+ * is the learner's real result, not the stub's; the slot still owns the primary.
+ */
+export const GuestResultsFailedCompleted: Story = {
+  args: { strategyType: "audio-to-pinyin-tone" },
+  decorators: [
+    withQuizState({
+      strategyType: "audio-to-pinyin-tone",
+      phase: "RESULTS",
+      questions: MOCK_QUESTIONS,
+      currentIndex: 4,
+      answers: [
+        makeCorrectAnswer(MOCK_QUESTIONS[0]),
+        makeWrongAnswer(MOCK_QUESTIONS[1]),
+        makeWrongAnswer(MOCK_QUESTIONS[2]),
+        makeCorrectAnswer(MOCK_QUESTIONS[3]),
+        makeWrongAnswer(MOCK_QUESTIONS[4]),
+      ],
+      score: 2,
+      timer: 90,
+      attemptId: "guest-mock-attempt",
+      completionResult: GUEST_STUB_COMPLETION,
+      announcement: "Quiz complete. 2 of 5, 40 percent. Not passed.",
+      strategyConfig: STRATEGY_CONFIG,
+    }),
+    withGuestAuth,
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Epic 26 practice formats — the wired surfaces (§26.3)
+// ─────────────────────────────────────────────────────────────────
+
+/** Cloze — the sentence with its blank, four tokens, one commit. */
+export const ClozeFormat: Story = {
+  args: { strategyType: "cloze" },
+  decorators: [
+    withQuizState({
+      strategyType: "cloze",
+      phase: "INPUT",
+      questions: CLOZE_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 150,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/** Sentence building — tap-to-place, no drag; each add is announced. */
+export const SentenceBuildingFormat: Story = {
+  args: { strategyType: "sentence-building" },
+  decorators: [
+    withQuizState({
+      strategyType: "sentence-building",
+      phase: "INPUT",
+      questions: SENTENCE_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 150,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/** Listening dictation — audio on demand, a typed transcription, no glyph. */
+export const DictationFormat: Story = {
+  args: { strategyType: "listening-dictation" },
+  decorators: [
+    withQuizState({
+      strategyType: "listening-dictation",
+      phase: "INPUT",
+      questions: DICTATION_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 150,
+    }),
+    withAppLayoutAt("/practices/quiz"),
+  ],
+};
+
+/**
+ * Tone judgment — the WRITTEN phrase and its dictionary tones, no audio at all.
+ * This is the visible difference from `audio-to-tone`, not a sub-mode of it.
+ */
+export const ToneJudgmentFormat: Story = {
+  args: { strategyType: "tone-judgment" },
+  decorators: [
+    withQuizState({
+      strategyType: "tone-judgment",
+      phase: "INPUT",
+      questions: TONE_JUDGMENT_QUESTIONS,
+      currentIndex: 0,
+      answers: [],
+      score: 0,
+      timer: 150,
+    }),
     withAppLayoutAt("/practices/quiz"),
   ],
 };

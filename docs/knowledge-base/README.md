@@ -21,20 +21,21 @@ Central repository for deep-dive concepts, patterns, and reference materials.
 
 ## Frontend
 
-| Article                                                                               | Description                                                           |
-| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [React Patterns](./frontend/frontend-react-patterns.md)                               | Context API, Router, component patterns                               |
-| [State Management](./frontend/frontend-state-management.md)                           | Normalized state, reducer composition                                 |
-| [UI & Component Patterns](./frontend/frontend-ui-patterns.md)                         | Card grids, search/filter, responsive design, external library canvas |
-| [Advanced Patterns](./frontend/frontend-advanced-patterns.md)                         | HTTP client interceptors, error boundaries, performance               |
-| [Data Migration](./frontend/frontend-data-migration.md)                               | State migration strategies                                            |
-| [Development Server](./frontend/frontend-development-server.md)                       | Vite proxy, HMR, HTTPS setup                                          |
-| [Modular Monolith](./frontend/frontend-modular-monolith.md)                           | Frontend architecture patterns                                        |
-| [Strategy Pattern (Frontend)](./frontend/strategy-pattern-frontend.md)                | Quiz/review strategy implementations                                  |
-| [Discriminated Union State Machines](./frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                         |
-| [Storybook MSW Handlers](./frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                       |
-| [URL Search-Param Persistence Rule](./frontend/frontend-url-search-params.md)         | Route-scoped URL sub-state, replace/push, shareable deep links        |
-| [Hub Entity-ID Contract](./frontend/hub-entity-id-contract.md)                        | content_id vs glyph-keyed hub/API entity identifiers                  |
+| Article                                                                               | Description                                                            |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [React Patterns](./frontend/frontend-react-patterns.md)                               | Context API, Router, component patterns                                |
+| [State Management](./frontend/frontend-state-management.md)                           | Normalized state, reducer composition                                  |
+| [UI & Component Patterns](./frontend/frontend-ui-patterns.md)                         | Card grids, search/filter, responsive design, external library canvas  |
+| [Advanced Patterns](./frontend/frontend-advanced-patterns.md)                         | HTTP client interceptors, error boundaries, performance                |
+| [Data Migration](./frontend/frontend-data-migration.md)                               | State migration strategies                                             |
+| [Development Server](./frontend/frontend-development-server.md)                       | Vite proxy, HMR, HTTPS setup                                           |
+| [Modular Monolith](./frontend/frontend-modular-monolith.md)                           | Frontend architecture patterns                                         |
+| [Strategy Pattern (Frontend)](./frontend/strategy-pattern-frontend.md)                | Quiz/review strategy implementations                                   |
+| [Focus Rings With a Hidden Input](./frontend/focus-ring-hidden-input.md)              | `:has()` rings, the design-audit duplicate-utility rule, forced-colors |
+| [Discriminated Union State Machines](./frontend/discriminated-union-state-machine.md) | Type-safe UI state machines with `useReducer`                          |
+| [Storybook MSW Handlers](./frontend/storybook-msw-handlers.md)                        | DRY MSW handler factories for every story state                        |
+| [URL Search-Param Persistence Rule](./frontend/frontend-url-search-params.md)         | Route-scoped URL sub-state, replace/push, shareable deep links         |
+| [Hub Entity-ID Contract](./frontend/hub-entity-id-contract.md)                        | content_id vs glyph-keyed hub/API entity identifiers                   |
 
 ## Backend
 

@@ -351,16 +351,36 @@ describe.skipIf(!db.available)(
         const res = await getBoth("/api/v1/quiz/config");
         expectParity2xx(res, 200);
         expect(Array.isArray(res.nestRes.body)).toBe(true);
-        // 5 registered strategies, deterministic order from the registry.
-        expect(res.nestRes.body).toHaveLength(5);
+        // 9 registered strategies, deterministic order from the registry
+        // (Epic 26 added the four practice formats after the original five).
+        expect(res.nestRes.body).toHaveLength(9);
         expect(res.nestRes.body.map((c: { type: string }) => c.type)).toEqual([
           "audio-to-pinyin-tone",
           "ime-simulator",
           "radical-gate",
           "comprehension",
           "qualification",
+          "cloze",
+          "sentence-building",
+          "listening-dictation",
+          "tone-judgment",
         ]);
       });
+
+      it.each(["cloze", "sentence-building", "listening-dictation", "tone-judgment"])(
+        "GET /api/v1/quiz/config?type=%s — Epic 26 practice format is registered",
+        async (quizType) => {
+          const res = await getBoth(`/api/v1/quiz/config?type=${quizType}`);
+          expectParity2xx(res, 200);
+          expect(res.nestRes.body).toEqual({
+            type: quizType,
+            questionCount: 5,
+            passThreshold: 0.6,
+            timeLimitMinutes: 10,
+            tierRules: null,
+          });
+        },
+      );
 
       it("GET /api/v1/quiz/config?type=ime-simulator — single config", async () => {
         const res = await getBoth("/api/v1/quiz/config?type=ime-simulator");
@@ -566,6 +586,110 @@ describe.skipIf(!db.available)(
         // The pass fires updatePhaseGate on the shared service — userA's gate
         // now exists (created once).
       });
+
+      /**
+       * Epic 26 AC4 (§26.4.2): each practice format persists through the three
+       * EXISTING routes with no migration — the answer is a value convention on
+       * the existing `QuizAttemptAnswer` columns, and `correct` stays
+       * server-derived.
+       */
+      it.each([
+        {
+          quizType: "cloze",
+          answer: {
+            pinyinInput: "人",
+            selectedTone: 0,
+            correctPinyin: "人",
+            correctTone: 0,
+            category: "cloze",
+          },
+          expectedCorrect: true,
+        },
+        {
+          quizType: "sentence-building",
+          answer: {
+            pinyinInput: "我 打 人",
+            selectedTone: 0,
+            correctPinyin: "我 打 人",
+            correctTone: 0,
+            category: "sentence-building",
+          },
+          expectedCorrect: true,
+        },
+        {
+          quizType: "listening-dictation",
+          answer: {
+            pinyinInput: "hao3",
+            selectedTone: 0,
+            correctPinyin: "hǎo",
+            correctTone: 0,
+            category: "dictation",
+          },
+          expectedCorrect: true,
+        },
+        {
+          quizType: "tone-judgment",
+          answer: {
+            pinyinInput: "nǐ",
+            selectedTone: 2,
+            correctPinyin: "nǐ",
+            correctTone: 2,
+            category: "tone-judgment",
+          },
+          expectedCorrect: true,
+        },
+      ])(
+        "Epic 26 — $quizType: create → answer → complete persists the §26.4.2 columns (authed)",
+        async ({ quizType, answer, expectedCorrect }) => {
+          const createRes = await postBoth(
+            "/api/v1/quiz/attempts",
+            { quizType, phase: 3, metadata: { format: quizType, bankVersion: "epic26-test" } },
+            `Bearer ${tokenA}`,
+          );
+          expect(createRes.nestRes.status).toBe(201);
+          expect(createRes.nestRes.body.quizType).toBe(quizType);
+          expect(createRes.nestRes.body.userId).toBe(userIdA);
+          const attemptId = createRes.nestRes.body.id as string;
+
+          const answerRes = await postBoth(
+            `/api/v1/quiz/attempts/${attemptId}/answers`,
+            { questionIndex: 0, ...answer },
+            `Bearer ${tokenA}`,
+          );
+          expect(answerRes.nestRes.status).toBe(200);
+          expect(answerRes.nestRes.body.correct).toBe(expectedCorrect);
+          expect(answerRes.nestRes.body.category).toBe(answer.category);
+
+          const completeRes = await putBoth(
+            `/api/v1/quiz/attempts/${attemptId}/complete`,
+            {},
+            `Bearer ${tokenA}`,
+          );
+          expectParity2xx(completeRes, 200);
+          expect(completeRes.nestRes.body).toMatchObject({
+            totalScore: 1,
+            maxScore: 1,
+            passed: true,
+            accuracy: 1,
+          });
+
+          const stored = await prisma.quizAttemptAnswer.findFirst({
+            where: { attemptId },
+            orderBy: { questionIndex: "asc" },
+          });
+          expect(stored).not.toBeNull();
+          expect(stored).toMatchObject({
+            attemptId,
+            questionIndex: 0,
+            ...answer,
+            correct: expectedCorrect,
+          });
+
+          const storedAttempt = await prisma.quizAttempt.findUnique({ where: { id: attemptId } });
+          expect(storedAttempt?.quizType).toBe(quizType);
+          expect(storedAttempt?.passed).toBe(true);
+        },
+      );
 
       it("GET /api/v1/quiz/attempts — authed 200 (shared DB rows, sorted by id)", async () => {
         const res = await getBoth("/api/v1/quiz/attempts", `Bearer ${tokenA}`);

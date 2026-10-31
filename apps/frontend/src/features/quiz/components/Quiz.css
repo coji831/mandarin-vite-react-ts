@@ -58,6 +58,47 @@
 }
 
 /* ═══════════════════════════════════════════════
+   Quiz: single-select option group
+   ═══════════════════════════════════════════════ */
+/**
+ * Shared by every single-select quiz format (cloze §26.3.2, tone-judgment
+ * §26.3.5). Scoped to the quiz's own wrapper class on purpose: the shared
+ * RadioGroup keeps its default look for every other consumer, and these two
+ * rules exist for measured accessibility reasons only —
+ *   - the visible ring has to land on the row the learner is on, and the native
+ *     input is opacity:0 inside the label, so `:has(:focus-visible)` is the only
+ *     honest target;
+ *   - the row must be at least --size-touch (28px) to satisfy WCAG 2.5.8.
+ */
+.quiz-select__options .radio-group__option {
+  min-height: var(--size-touch);
+}
+
+/* The focus ring cannot be the `focus-ring-primary` utility here: the ring has
+   to land on the option ROW, while focus lands on the opacity:0 input inside
+   it, so only a `:has(:focus-visible)` descendant selector can express it.
+   A utility class on the row would never match. Values are the utility's own
+   (2px solid var(--focus-ring), offset 2px), so the two cannot drift apart. */
+.quiz-select__options .radio-group__option:has(.radio-group__input:focus-visible) {
+  /* The ring must land on the option ROW, while focus lands on the opacity:0,
+     0x0 input inside it — so the `focus-ring-primary` utility (which targets the
+     focused element itself) can never match here. A token-coloured box-shadow
+     draws the same 2px ring without re-declaring the utility's properties. */
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* forced-colors drops box-shadow, and the RadioGroup input is 0x0, so without
+   this the two single-select formats would have NO focus indicator in High
+   Contrast (WCAG 2.2 2.4.7). `Highlight` is the system colour reserved for
+   exactly this; the pattern matches Spinner/Skeleton/ProgressBar. */
+@media (forced-colors: active) {
+  .quiz-select__options .radio-group__option:has(.radio-group__input:focus-visible) {
+    outline-color: Highlight;
+    outline-style: solid;
+  }
+}
+
+/* ═══════════════════════════════════════════════
    Quiz: Audio Button
    ═══════════════════════════════════════════════ */
 .quiz-audio-btn {

@@ -8,7 +8,17 @@
 
 /** Supported quiz strategy types */
 export type StrategyType =
-  "audio-to-pinyin" | "audio-to-tone" | "audio-to-pinyin-tone" | "ime-simulator" | "radical-gate";
+  | "audio-to-pinyin"
+  | "audio-to-tone"
+  | "audio-to-pinyin-tone"
+  | "ime-simulator"
+  | "radical-gate"
+  // Epic 26 practice formats (§26.4.1). The backend union is the superset and
+  // records both sides in `modules/quiz/types/quiz.ts` — keep the two in step.
+  | "cloze"
+  | "sentence-building"
+  | "listening-dictation"
+  | "tone-judgment";
 
 /** Phase machine: LOADING → QUESTION → INPUT → FEEDBACK → RESULTS */
 export type QuizPhase = "LOADING" | "QUESTION" | "INPUT" | "FEEDBACK" | "RESULTS" | "ERROR";
@@ -47,6 +57,46 @@ export interface QuizQuestion {
   correctOptionId?: string;
   /** IME-simulator: the expected Hanzi glyph. */
   correctGlyph?: string;
+
+  // ── Epic 26 practice formats (§26.4.2) — flat optional wire fields ──
+  /** cloze / sentence-building: the anchored grammar pattern's name. */
+  patternName?: string;
+  /** cloze: the pattern's structure line. */
+  patternStructure?: string;
+  /** cloze: the pattern's authored explanation. */
+  explanation?: string;
+  /** cloze / sentence-building / tone-judgment: the anchored example sentence. */
+  chinese?: string;
+  /** cloze / sentence-building: the English gloss of the sentence. */
+  english?: string;
+  /** cloze: the sentence split into segments; exactly one carries `blank`. */
+  segments?: QuizSegment[];
+  /** cloze: index of the blanked segment. */
+  blankIndex?: number;
+  /** sentence-building: the shuffled word bank (a permutation of the answer). */
+  tokens?: string[];
+  /** sentence-building: token count of the canonical answer. */
+  answerLength?: number;
+  /** tone-judgment: dictionary pinyin of the whole written phrase. */
+  dictionaryPinyin?: string;
+  /** tone-judgment: index of the judged syllable inside `dictionaryPinyin`. */
+  targetIndex?: number;
+  /** tone-judgment: the glyph carrying the judged syllable. */
+  targetGlyph?: string;
+  /** tone-judgment: the judged syllable, tone-marked as written. */
+  targetSyllable?: string;
+  /** tone-judgment: dictionary tone of the judged syllable. */
+  baseTone?: number;
+  /** tone-judgment: the sandhi rule that applies, when one does. */
+  ruleId?: string | null;
+  ruleTitle?: string | null;
+}
+
+/** One segment of a cloze sentence (Epic 26 §26.3.2). */
+export interface QuizSegment {
+  text: string;
+  pinyin: string;
+  blank: boolean;
 }
 
 /** Phonetic component data for a character — used for wrong-answer hints in IME simulator */

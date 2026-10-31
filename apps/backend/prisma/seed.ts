@@ -42,6 +42,9 @@
  *   30. Chengyu                 ← no FK deps (50+ CC-CEDICT-extracted + curated idioms; unique content_id "cy_XXXX")
  *   31. ChengyuExample          ← FK → Chengyu.content_id ("cy_XXXX_exN")
  *   32. ChengyuRelation         ← FK → Chengyu.content_id (both ends)
+ *   33. QuizFormat banks        ← metadata.quizFormats[] on GrammarExample / Character
+ *                                  anchors (selection layer; no table, no migration,
+ *                                  fails loudly on a dangling anchor id)
  *
  *   Post-seed: VALIDATE "CharacterRadical_radicalId_fkey" (created NOT VALID by
  *   migration 20260731045648_add_reference_tables — see docs/guides/data/seed-pipeline.md §2).
@@ -49,6 +52,8 @@
  *   + FK-orphan check) — see the SQL block near the end of main().
  *   Post-seed: Chengyu verification (idioms ≥ 50 / examples ≥ 50 / relations ≥ 0
  *   + FK-orphan check) — see the SQL block near the end of main().
+ *   Post-seed: quiz-format bank verification (each format's stored anchor count
+ *   equals its authored item count) — see the block near the end of main().
  */
 
 import path from "path";
@@ -62,6 +67,7 @@ import {
   syncCharacter,
   syncGrammar,
   syncChengyu,
+  syncQuizFormats,
   mapWordHskLevels,
   mapWordRows,
   wordCfg,
@@ -83,6 +89,10 @@ import {
   tonePairCfg,
   toneRuleCfg,
 } from "./sync-helpers.js";
+import {
+  quizFormatFilter,
+  type QuizFormatBankFile,
+} from "../src/modules/quiz/strategies/quizFormatBank.js";
 
 // ── Paths ──────────────────────────────────────────────────────────────────
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -535,6 +545,27 @@ async function main() {
     console.log("  ⏭️  chengyu.json not found — skipping chengyu sync\n");
   }
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // 33. Curated quiz banks (Epic 26 — Story 26-7) — selection layer over the
+  //     corpus, persisted into the anchor row's existing `metadata.quizFormats`
+  //     Json column. No new table, no migration, no answer text: each item names
+  //     a GrammarExample / Character that must already exist, and syncQuizFormats
+  //     FAILS LOUDLY on a dangling id before writing anything. Idempotent —
+  //     canonical-JSON diff, so a steady-state re-run writes 0 rows. Runs after
+  //     grammar/characters so every anchor is present.
+  // ──────────────────────────────────────────────────────────────────────────
+  const quizFormats = loadJsonObject<QuizFormatBankFile>("quiz-formats.json");
+
+  if (quizFormats) {
+    console.log("🎯 Step 33: Seeding curated quiz banks (metadata.quizFormats)...");
+    const quizBankResult = await syncQuizFormats(prisma, quizFormats);
+    console.log(
+      `  ✅ Quiz banks seeded: ${quizBankResult.writes} metadata write(s) across ${Object.keys(quizBankResult.itemsPerFormat).length} format(s)\n`,
+    );
+  } else {
+    console.log("  ⏭️  quiz-formats.json not found — skipping quiz bank seed\n");
+  }
+
   // ── Post-seed chengyu verification (counts + FK integrity) ──
   // Counts are informational — the seed stays safe to re-run regardless. The
   // FK-orphan check must return 0 rows or the seed data has a referential bug.
@@ -620,6 +651,36 @@ async function main() {
     );
   } else {
     console.log("  ✅ Grammar FK integrity OK: 0 orphan examples\n");
+  }
+
+  // ── Post-seed quiz-format bank verification (anchor resolution + counts) ──
+  // The items live ON the anchor row, so an orphan is structurally impossible —
+  // the check that CAN fail is a count mismatch: a bank item whose anchor lost
+  // its `quizFormats` entry (or a stale entry the file no longer authors). Each
+  // format's stored anchor count must equal the authored item count.
+  if (quizFormats) {
+    console.log("📊 Post-seed: quiz-format banks (stored vs authored anchors)...");
+    const mismatches: string[] = [];
+    for (const [format, items] of Object.entries(quizFormats.banks ?? {})) {
+      const authored = Array.isArray(items) ? items.length : 0;
+      const stored =
+        format === "listening-dictation"
+          ? await prisma.character.count({ where: quizFormatFilter(format) })
+          : await prisma.grammarExample.count({ where: quizFormatFilter(format) });
+      if (stored !== authored) {
+        mismatches.push(`${format} stored=${stored} authored=${authored}`);
+      }
+    }
+    if (mismatches.length > 0) {
+      console.warn(
+        `  ⚠️  quiz-format bank count mismatch (${mismatches.join("; ")}) — re-run the seed; ` +
+          "a mismatch means an anchor lost its metadata.quizFormats entry",
+      );
+    } else {
+      console.log(
+        `  ✅ Quiz-format banks OK: ${Object.keys(quizFormats.banks ?? {}).length} format(s), every anchored item stored\n`,
+      );
+    }
   }
 
   // ── Post-seed FK validation (part of step 26 / post-seed verification) ──

@@ -14,6 +14,11 @@ user-invocable: true
 - When code renames a feature/component/method/endpoint (rename hygiene)
 - When reviewing verification artifacts
 
+> **Scope limit, learned the hard way:** this skill audits the docs you _open_. It cannot see a stale doc you
+> never touched — check #7 named the exact failure and still did not fire, because the writer never opened
+> `docs/architecture.md`. At epic close, drive the audit from the **Phase 5 surface table** in
+> `copilot-instructions.md` (it enumerates the files) rather than from the diff.
+
 ## Always Check (in order of priority)
 
 1. **Template compliance** — does the doc match the corresponding template's structure exactly (`docs/templates/`)? No extra, duplicate, or non-template sections. Severity HIGH if sections were added or dropped.

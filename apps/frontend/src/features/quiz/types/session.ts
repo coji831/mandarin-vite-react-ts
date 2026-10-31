@@ -24,6 +24,13 @@ export interface QuizSession {
   completionResult: GateQuizResult | null; // Backend completion result after finalizing
   strategyConfig: QuizStrategyConfig | null; // Config fetched from backend at init
 
+  /**
+   * The single session-level live-region message (§26.2.4). Composed by the
+   * store on start / submit / advance / timer threshold / completion, so the
+   * one `role="status"` node in QuizSessionPage has exactly one source.
+   */
+  announcement: string;
+
   // ─── Hint system (Story 21.18) ─────────────────────────────────────
   /** Number of hints remaining for the session (starts at 3) */
   hintsRemaining: number;
@@ -63,6 +70,7 @@ export function createInitialSession(strategyType: StrategyType): QuizSession {
     attemptId: null,
     completionResult: null,
     strategyConfig: null,
+    announcement: "",
     hintsRemaining: 3,
     currentPhoneticHint: null,
     showRadicalHint: false,

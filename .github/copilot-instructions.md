@@ -1,6 +1,6 @@
 ﻿# Copilot Instructions for AI Coding Agents
 
-**Last Updated:** August 24, 2026
+**Last Updated:** October 31, 2026
 
 Operational playbook for AI agents contributing to `mandarin-vite-react-ts`.
 
@@ -45,7 +45,7 @@ Story BR: use `docs/templates/story-business-requirements-template.md`
 Epic Implementation: `docs/templates/epic-implementation-template.md`
 Story Implementation: `docs/templates/story-implementation-template.md`
 Code change: follow `docs/guides/conventions/frontend.md` (frontend) or `docs/guides/conventions/backend.md` (backend) + `docs/knowledge-base/practices/solid-principles.md`
-Close epic/story: verify all AC done → update Status & Last Update in BR + implementation → check all AC boxes → commit together.
+Close epic/story: follow the seven-phase lifecycle above (§Epic & Story Lifecycle) — Phase 4 closes a story, Phase 5 closes an epic, and Phase 5's surface table is mandatory.
 Doc Truth-Check: before closing, verify docs match the shipped code (endpoints/names/data source/links/dates) — see `documentation-standards.instructions.md`.
 
 ## 🎨 Visual Design Protocol
@@ -79,15 +79,54 @@ See `.github/instructions/uiux-design-protocol.instructions.md` for the full pro
 - ✅ See [backend-audit skill](./skills/backend-audit/SKILL.md) for backend code audit checklist
 - ❌ NEVER reimplement Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser
 
-## 🔄 Development Workflow
+## 🔄 Epic & Story Lifecycle (the full cycle)
 
-Concise checklist: `Context → Review → Plan → Implement → Verify → Test → Run → Docs → Gates → Commit`
+Seven phases from plan entry to archive. **Every phase has an exit gate; a phase is not done because its artefacts exist.** Phases 0–2 happen before code, 3–4 per story, 5–6 once per epic, 7 is deferred. Gate _commands_ are not repeated here — `project-workflow.instructions.md` is the single source for the two-tier gate table.
 
-Where **Context** means: before writing code, read the relevant shared components, DESIGN.md tokens, and existing feature structure to understand what's available for reuse. If a Figma design URL is available, query the Framelink MCP to fetch structured design data.
+| #   | Phase                       | Produces                                                                                                                                                                   | Exit gate                                                                                                                                                                                                                                             | Lead                        |
+| --- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| 0   | **Scope**                   | the epic's binding text: `docs/planning/epics-25-40.md` §Epic N plus any `§2026 Audit Amendments` (A0, A25, A26 …)                                                         | An amendment **overrides** the epic body where they disagree — so **re-measure every premise it names against the code before scoping**. A26 named three defects and two were already fixed when its epic opened; record what you measured and where. | architect                   |
+| 1   | **BR**                      | `<epic>/README.md` (BR) + one `story-N-M-*.md` per story from `docs/templates/`; UI epics also get the per-epic design spec (`docs/guides/design/per-epic-design-spec.md`) | Every story carries AC + status. The design spec runs **Step 0 revalidation first** (`design-revalidation-guide.md`) and names its archetype, provenance and anatomy.                                                                                 | architect                   |
+| 2   | **Design** (UI epics)       | Step-1 Storybook shells covering every state, no logic                                                                                                                     | **Human User Preview Gate** — approval before any code conversion. The accessibility lead runs _before_ the first TSX/CSS edit.                                                                                                                       | uiux-designer               |
+| 3   | **Build** (per story)       | story commits (`story-N-M`), the story implementation doc, tests                                                                                                           | Tier 1 gates per story + the **commit gate** ("commit allowed", no exceptions)                                                                                                                                                                        | frontend / backend engineer |
+| 4   | **Story close** (per story) | the story BR + IMP pair: `status`, `Last Update`, AC boxed, Technical Challenges where required                                                                            | doc↔code truth-check on that pair                                                                                                                                                                                                                     | docs-writer                 |
+| 5   | **Epic close**              | epic IMP README close sections, **high-level docs**, **KB extraction**, verification artifact, regenerated system map                                                      | Tier 2 gates + code-review verdict + `docs-audit`                                                                                                                                                                                                     | docs-writer + code-reviewer |
+| 6   | **Ship**                    | one PR `epic-<n>-<slug>` → `main` via `.github/PULL_REQUEST_TEMPLATE.md`, merged with a merge commit                                                                       | CI green; both epic records name the PR number                                                                                                                                                                                                        | coordinator                 |
+| 7   | **Archive** (deferred)      | epic folders moved under `docs/**/archive/` + an outcome row in the archive README                                                                                         | A **batch** pass, not a per-epic step — closed epics stay live until then (epics 24–26 are live today)                                                                                                                                                | owner                       |
 
-Where **Verify** means: after implementation, use Playwright/Chrome DevTools MCP to open the page, take screenshots, and visually validate against the design spec. Document any discrepancies in `verification-artifacts/`.
+### Phase 5 is where epics silently fail
 
-See [project-workflow.instructions.md](./instructions/project-workflow.instructions.md) for the detailed story-level development workflow, epic/story closing procedures, quality gates, and code change checklist.
+Prose duties are not gates, and this repo has the scar. `docs-audit` check #7 ("high-level claims re-derived from code") named the exact failure and still did not fire — because **a self-audit of touched files cannot see an untouched file**. The docs writer never opened `docs/architecture.md`, so the check never ran on it, and it described the quiz engine as a single strategy long after seven shipped.
+
+So Phase 5 enumerates its surfaces **by name**. Each is opened, re-derived from code and bumped — never inferred from "did I happen to touch it":
+
+| Surface                                | Carries                                                                 | Invalidated by                                             |
+| -------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `docs/architecture.md`                 | feature inventory lines, module/registry/format counts, system sections | any new feature, module, registry entry or format          |
+| `README.md`, `apps/*/README.md`        | product and feature blurbs                                              | any change to a feature's scope                            |
+| `docs/knowledge-base/`, `docs/guides/` | how-to patterns, the id/count vocabulary they teach                     | a pattern that changed, or an id renamed, added or removed |
+| `docs/coverage.md`, `docs/README.md`   | the generated map                                                       | always — `npm run generate:system-map`, then gate it       |
+| `<epic>/README.md` + every story file  | the plan versus the as-built record                                     | every story                                                |
+
+Two hard rules for this phase:
+
+- **A brief quotes this table; it never summarises it.** A brief saying "write the story docs" is incomplete — that exact phrasing is what let Phase 5's doc duties drop on Epic 26.
+- **`verification-artifacts/` is gitignored.** Evidence lives there locally; the _committed_ record is its condensation in the story or epic IMP doc.
+
+And one rule that governs every handoff between epics:
+
+- **A carry-forward is written into the receiving epic's record, not only your own.** A row in your close-out table naming a future epic is a hope until that epic's own file lists it. Epic 25 delegated two items to Epic 26 by table row alone; neither was picked up, both survived that epic's close, and they were only found by re-reading Epic 25's table on 2026-10-31 (F12, F15 — now re-homed to epics 28 and 27).
+
+**Template compliance versus close-out sections.** `docs-audit` #1 permits no section the template lacks, so the epic IMP template carries `## Code Review Outcome` and `## Epic Close — Documentation Duty`. Write those sections instead of inventing new ones, and promote any genuinely recurring new section into `docs/templates/` in the same change that first uses it.
+
+### Inside Phase 3 — the story-level pipeline
+
+Unchanged: `Context → Review → Plan → Implement → Verify → Test → Run → Docs → Gates → Commit`.
+
+- **Context** — before writing code, read the shared components, DESIGN.md tokens and existing feature structure to see what is reusable. A Figma URL means querying the Framelink MCP for structured design data.
+- **Verify** — after implementation, open the page (Playwright / Chrome DevTools MCP), screenshot it and validate against the spec; record discrepancies in `verification-artifacts/`.
+
+The per-step sequence for each role — UIUX Step 1/Step 2, the backend modulith pipeline, story closing — is in [project-workflow.instructions.md](./instructions/project-workflow.instructions.md), visualised in `docs/guides/dev-flow-visualization.html`.
 
 ## 🧭 Frontend Development Landscape (4 pillars)
 
@@ -115,6 +154,7 @@ Run through `.github/instructions/frontend-pre-delivery-checklist.instructions.m
 | When you need to...                          | Read this file (`.github/instructions/`)                                                                                         |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Follow the full dev pipeline                 | `project-workflow.instructions.md` + `docs/guides/dev-flow-visualization.html`                                                   |
+| Run an epic end-to-end (scope → archive)     | §Epic & Story Lifecycle above — then `project-workflow.instructions.md` for role-level steps                                     |
 | Implement UI from spec                       | `uiux-design-protocol.instructions.md` → `ui-composition.instructions.md` → `docs/guides/design/uiux-fundamentals.md`            |
 | Write CSS / style a component                | `frontend-css-styling.instructions.md`                                                                                           |
 | Decompose components (state/logic/hierarchy) | `frontend-component-architecture.instructions.md`                                                                                |
@@ -173,7 +213,7 @@ Each pitfall category has a dedicated `.instructions.md` file with DO/DON'T exam
 | Storybook-Production drift     | [storybook-production-alignment.instructions.md](./instructions/storybook-production-alignment.instructions.md)                           |
 | Backend error messages         | [backend-error-messages.instructions.md](./instructions/backend-error-messages.instructions.md)                                           |
 | Design system drift            | [frontend-component-architecture.instructions.md](./instructions/frontend-component-architecture.instructions.md)                         |
-| Documentation drift            | [documentation-standards.instructions.md](./instructions/documentation-standards.instructions.md)                                         |
+| Documentation drift            | §Epic & Story Lifecycle → Phase 5 surface table (then `documentation-standards.instructions.md`)                                          |
 
 ## 📁 Key Files & Directories
 

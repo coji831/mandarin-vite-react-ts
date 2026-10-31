@@ -34,6 +34,19 @@
  * Status-code parity: `@HttpCode(201)` on `createQuizAttempt` (Express
  * `res.status(201)`), `@HttpCode(200)` on `submitAnswer` + `generateFeedback`
  * (Nest's POST default is 201 — Express returns 200).
+ *
+ * Epic 26 practice formats (§26.4.1, §26.4.2): `cloze`,
+ * `sentence-building`, `listening-dictation` and `tone-judgment` are created,
+ * answered and completed through these same three routes for a REGISTERED
+ * user. The answer payload the FE already sends — `{ questionIndex,
+ * pinyinInput, selectedTone, correctPinyin, correctTone, category }` — is a
+ * value convention on the existing `QuizAttemptAnswer` columns (no migration,
+ * no new column) and `correct` stays server-derived in
+ * `QuizService.submitAnswer`. `quizType` remains a pass-through string: the FE
+ * union carries aliases with no BE strategy (`audio-to-pinyin`,
+ * `audio-to-tone`), so the boundary cannot reject "unregistered" values
+ * without breaking the FE. The guest branch is unchanged: still
+ * `OptionalAuthGuard`, still mock shapes, still zero rows written.
  */
 
 import {

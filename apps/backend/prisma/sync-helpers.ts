@@ -37,6 +37,11 @@
 
 import { createHash } from "node:crypto";
 import { Prisma } from "@prisma/client";
+import {
+  QUIZ_FORMAT_METADATA_KEY,
+  type QuizFormatBankFile,
+  type QuizFormatBankItem,
+} from "../src/modules/quiz/strategies/quizFormatBank.js";
 
 // ── Tuning constants ──────────────────────────────────────────────────────
 // Single-point tuning for the hash-gated sync write paths (Architect-approved
@@ -820,6 +825,202 @@ export async function syncChengyu(
     { timeout: 120_000 },
   );
   return { idioms, examples, relations };
+}
+
+// ── Curated quiz banks (Epic 26 — Story 26-7, §26.4.3) ────────────────────
+
+/** Which anchor table a bank item pins (both already carry `metadata Json?`). */
+type QuizBankAnchor = "example" | "character";
+
+/** Narrow DB handle — the two anchor tables and one transaction. */
+export interface QuizBankDb {
+  grammarExample: {
+    findMany: (args: any) => Promise<any[]>;
+    update: (args: any) => Promise<any>;
+  };
+  character: {
+    findMany: (args: any) => Promise<any[]>;
+    update: (args: any) => Promise<any>;
+  };
+  $transaction: (actions: any[], opts?: { timeout?: number }) => Promise<unknown>;
+}
+
+export interface QuizFormatSeedResult {
+  /** Anchor rows whose `metadata.quizFormats` changed this run (0 when steady). */
+  writes: number;
+  /** Authored items per format, keyed by the bank name. */
+  itemsPerFormat: Record<string, number>;
+  /** Anchor rows carrying a bank item, per format. */
+  anchorsPerFormat: Record<string, number>;
+}
+
+/**
+ * Key-sorted canonical JSON. `jsonb` reorders object keys on write, so a stored
+ * item never round-trips byte-identically — equality has to be canonical or the
+ * seed would rewrite every row on every run.
+ */
+export function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, entry]) => entry !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${canonicalJson(entry)}`).join(",")}}`;
+  }
+  return JSON.stringify(value ?? null);
+}
+
+/** The `metadata.quizFormats` array already stored on an anchor (empty when none). */
+function storedQuizFormats(metadata: unknown): unknown[] {
+  if (!metadata || typeof metadata !== "object") return [];
+  const value = (metadata as Record<string, unknown>)[QUIZ_FORMAT_METADATA_KEY];
+  return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Seed the curated quiz banks (`content/seed/phase2/quiz-formats.json`).
+ *
+ * The bank is a SELECTION layer: each authored item names an anchor row that
+ * must already exist, and the item is persisted into that row's existing
+ * `metadata.quizFormats[]` Json column — no new table, no migration, and no
+ * answer text (the generators derive answers from the anchor at read time).
+ *
+ * Contract:
+ *   - every anchor id must resolve, or this THROWS before writing anything;
+ *   - a steady-state re-run writes 0 rows (canonical JSON comparison);
+ *   - an item dropped from the file is removed from the anchor's array.
+ */
+export async function syncQuizFormats(
+  db: QuizBankDb,
+  file: QuizFormatBankFile,
+  opts: SyncOptions = {},
+): Promise<QuizFormatSeedResult> {
+  const log = opts.log ?? defaultLog;
+  const banks = file?.banks ?? {};
+
+  const exampleItems = new Map<string, QuizFormatBankItem[]>();
+  const characterItems = new Map<string, QuizFormatBankItem[]>();
+  const itemsPerFormat: Record<string, number> = {};
+  const seenIds = new Set<string>();
+
+  for (const [format, items] of Object.entries(banks)) {
+    if (!Array.isArray(items)) {
+      throw new Error(`quiz-formats.json: bank "${format}" must be an array`);
+    }
+    itemsPerFormat[format] = items.length;
+    for (const item of items) {
+      if (!item || typeof item.id !== "string" || !item.id) {
+        throw new Error(`quiz-formats.json: bank "${format}" has an item without an id`);
+      }
+      if (seenIds.has(item.id)) {
+        throw new Error(`quiz-formats.json: duplicate item id "${item.id}"`);
+      }
+      seenIds.add(item.id);
+
+      const hasExample = typeof item.exampleContentId === "string";
+      const hasCharacter = typeof item.characterId === "string";
+      if (hasExample === hasCharacter) {
+        throw new Error(
+          `quiz-formats.json: item "${item.id}" must pin exactly one anchor (exampleContentId | characterId)`,
+        );
+      }
+
+      const normalized: QuizFormatBankItem = { ...item, format };
+      const target: QuizBankAnchor = hasExample ? "example" : "character";
+      const anchorId = hasExample ? item.exampleContentId! : item.characterId!;
+      const group = target === "example" ? exampleItems : characterItems;
+      group.set(anchorId, [...(group.get(anchorId) ?? []), normalized]);
+    }
+  }
+
+  // ── Resolve every anchor BEFORE any write (fail loudly on a dangling id) ──
+  const exampleIds = [...exampleItems.keys()];
+  const characterIds = [...characterItems.keys()];
+  const [exampleRows, characterRows] = await Promise.all([
+    exampleIds.length > 0
+      ? db.grammarExample.findMany({
+          where: { content_id: { in: exampleIds } },
+          select: { content_id: true, metadata: true },
+        })
+      : Promise.resolve([]),
+    characterIds.length > 0
+      ? db.character.findMany({
+          where: { id: { in: characterIds } },
+          select: { id: true, metadata: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const exampleMetadata = new Map<string, unknown>(
+    exampleRows.map((row: { content_id: string; metadata: unknown }) => [
+      row.content_id,
+      row.metadata,
+    ]),
+  );
+  const characterMetadata = new Map<string, unknown>(
+    characterRows.map((row: { id: string; metadata: unknown }) => [row.id, row.metadata]),
+  );
+
+  const missing = [
+    ...exampleIds.filter((id) => !exampleMetadata.has(id)).map((id) => `GrammarExample:${id}`),
+    ...characterIds.filter((id) => !characterMetadata.has(id)).map((id) => `Character:${id}`),
+  ];
+  if (missing.length > 0) {
+    throw new Error(
+      `quiz-formats.json: ${missing.length} dangling anchor id(s) — ${missing.join(", ")}. ` +
+        "The bank can never point at a row the corpus dropped; fix the file or restore the corpus row.",
+    );
+  }
+
+  // ── Diff + write (one transaction; 0 writes on a steady-state re-run) ─────
+  const updates: unknown[] = [];
+  const anchorsPerFormat: Record<string, number> = {};
+  for (const format of Object.keys(itemsPerFormat)) anchorsPerFormat[format] = 0;
+  let writes = 0;
+
+  const byId = (a: QuizFormatBankItem, b: QuizFormatBankItem): number =>
+    a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+
+  for (const [contentId, items] of exampleItems) {
+    const metadata = exampleMetadata.get(contentId);
+    const desired = [...items].sort(byId);
+    for (const item of desired) anchorsPerFormat[item.format] += 1;
+
+    if (canonicalJson(storedQuizFormats(metadata)) === canonicalJson(desired)) continue;
+    const base =
+      metadata && typeof metadata === "object" ? (metadata as Record<string, unknown>) : {};
+    updates.push(
+      db.grammarExample.update({
+        where: { content_id: contentId },
+        data: { metadata: { ...base, [QUIZ_FORMAT_METADATA_KEY]: desired } },
+      }),
+    );
+    writes += 1;
+  }
+
+  for (const [characterId, items] of characterItems) {
+    const metadata = characterMetadata.get(characterId);
+    const desired = [...items].sort(byId);
+    for (const item of desired) anchorsPerFormat[item.format] += 1;
+
+    if (canonicalJson(storedQuizFormats(metadata)) === canonicalJson(desired)) continue;
+    const base =
+      metadata && typeof metadata === "object" ? (metadata as Record<string, unknown>) : {};
+    updates.push(
+      db.character.update({
+        where: { id: characterId },
+        data: { metadata: { ...base, [QUIZ_FORMAT_METADATA_KEY]: desired } },
+      }),
+    );
+    writes += 1;
+  }
+
+  if (updates.length > 0) {
+    await db.$transaction(updates, { timeout: 60_000 });
+  }
+  log(`  🎯 Quiz banks: ${writes} anchor metadata write(s), ${seenIds.size} item(s)`);
+
+  return { writes, itemsPerFormat, anchorsPerFormat };
 }
 
 // ── Character orchestrator (bulk + deferred phonetic linking) ──────────────

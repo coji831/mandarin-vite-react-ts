@@ -1,0 +1,103 @@
+{
+  "_comment": "Epic 26 curated quiz banks — a SELECTION layer over the corpus. Each item names an anchor row that already exists; the answer is DERIVED from the anchor at read time (never duplicated here). Seeded into the anchor row's metadata.quizFormats[] by apps/backend/prisma/seed.ts (syncQuizFormats in sync-helpers.ts), which injects `format` from the bank key and FAILS LOUDLY on a dangling anchor id. Items are ordered by their anchor (pattern sortOrder → example sortOrder → content_id) at read time, not by array position. Authoring rule for Q8 comprehension (epic 28): >=1 typed answer per set (P2).",
+  "banks": {
+    "cloze": [
+      { "id": "clz_0001", "exampleContentId": "gr_0001_ex1", "blankSegmentIndex": 2 },
+      { "id": "clz_0002", "exampleContentId": "gr_0001_ex2", "blankSegmentIndex": 2 },
+      { "id": "clz_0003", "exampleContentId": "gr_0002_ex1", "blankSegmentIndex": 3 },
+      { "id": "clz_0004", "exampleContentId": "gr_0003_ex1", "blankSegmentIndex": 4 },
+      { "id": "clz_0005", "exampleContentId": "gr_0004_ex1", "blankSegmentIndex": 3 },
+      { "id": "clz_0006", "exampleContentId": "gr_0005_ex1", "blankSegmentIndex": 1 },
+      { "id": "clz_0007", "exampleContentId": "gr_0007_ex1", "blankSegmentIndex": 2 },
+      { "id": "clz_0008", "exampleContentId": "gr_0008_ex1", "blankSegmentIndex": 3 },
+      { "id": "clz_0009", "exampleContentId": "gr_0011_ex3", "blankSegmentIndex": 1 },
+      { "id": "clz_0010", "exampleContentId": "gr_0018_ex1", "blankSegmentIndex": 2 }
+    ],
+    "sentence-building": [
+      { "id": "sbo_0001", "exampleContentId": "gr_0001_ex2" },
+      { "id": "sbo_0002", "exampleContentId": "gr_0002_ex2" },
+      { "id": "sbo_0003", "exampleContentId": "gr_0003_ex3" },
+      { "id": "sbo_0004", "exampleContentId": "gr_0004_ex2" },
+      { "id": "sbo_0005", "exampleContentId": "gr_0006_ex1" },
+      { "id": "sbo_0006", "exampleContentId": "gr_0008_ex1" },
+      { "id": "sbo_0007", "exampleContentId": "gr_0013_ex2" },
+      { "id": "sbo_0008", "exampleContentId": "gr_0015_ex2" },
+      { "id": "sbo_0009", "exampleContentId": "gr_0019_ex2" },
+      { "id": "sbo_0010", "exampleContentId": "gr_0020_ex1" }
+    ],
+    "listening-dictation": [
+      { "id": "dct_0001", "characterId": "ch_19981", "phase": 2 },
+      { "id": "dct_0002", "characterId": "ch_20154", "phase": 2 },
+      { "id": "dct_0003", "characterId": "ch_23376", "phase": 2 },
+      { "id": "dct_0004", "characterId": "ch_19968", "phase": 2 },
+      { "id": "dct_0005", "characterId": "ch_22823", "phase": 2 },
+      { "id": "dct_0006", "characterId": "ch_20986", "phase": 2 },
+      { "id": "dct_0007", "characterId": "ch_19978", "phase": 2 },
+      { "id": "dct_0008", "characterId": "ch_21160", "phase": 2 },
+      { "id": "dct_0009", "characterId": "ch_19979", "phase": 2 },
+      { "id": "dct_0010", "characterId": "ch_25163", "phase": 2 }
+    ],
+    "tone-judgment": [
+      {
+        "id": "tsj_0001",
+        "exampleContentId": "gr_0001_ex1",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0002",
+        "exampleContentId": "gr_0003_ex2",
+        "targetSegmentIndex": 1,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0003",
+        "exampleContentId": "gr_0004_ex3",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0004",
+        "exampleContentId": "gr_0005_ex1",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0005",
+        "exampleContentId": "gr_0010_ex3",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0006",
+        "exampleContentId": "gr_0011_ex3",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0007",
+        "exampleContentId": "gr_0016_ex1",
+        "targetSegmentIndex": 2,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0008",
+        "exampleContentId": "gr_0017_ex2",
+        "targetSegmentIndex": 4,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0009",
+        "exampleContentId": "gr_0018_ex3",
+        "targetSegmentIndex": 0,
+        "ruleId": "rule-3rd-sandhi"
+      },
+      {
+        "id": "tsj_0010",
+        "exampleContentId": "gr_0021_ex3",
+        "targetSegmentIndex": 4,
+        "ruleId": "rule-3rd-sandhi"
+      }
+    ]
+  }
+}

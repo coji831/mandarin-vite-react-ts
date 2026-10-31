@@ -15,11 +15,57 @@ import type {
   QuizSession,
   GateQuizResult,
   QuizStrategyConfig,
+  AnswerResult,
+  QuizQuestion,
 } from "../types";
 import { createInitialSession } from "../types/session";
 import { quizService } from "../services/quizService";
 import { getStrategy } from "../engine/strategies";
+import { AUTHORED_ANNOUNCEMENT_STRATEGIES } from "../engine/constants";
 import { getPhoneticHint, getCharacterDetail } from "../services/hintService";
+
+/**
+ * The completion summary, composed ONCE at the RESULTS transition (§26.2.4) from
+ * local state. It is deliberately not derived in `QuizResults`: the backend
+ * result lands later and would announce the same fact a second time.
+ */
+function completionAnnouncement(correct: number, total: number): string {
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+  // Facts only. The verdict is left to the on-screen badge, which is driven by
+  // the server result: `tierRules` can raise a format's threshold (radical-gate
+  // requires 100%), so announcing a local "Passed." here could contradict the
+  // badge a moment later.
+  return `Quiz complete. ${correct} of ${total}, ${pct} percent.`;
+}
+
+/** The per-question verdict, announced before the FEEDBACK surface takes focus. */
+function verdictAnnouncement(correct: boolean, answer: string, correctTone: number): string {
+  return correct
+    ? `Correct. Tone ${correctTone}.`
+    : `Incorrect. The answer is ${answer}, tone ${correctTone}.`;
+}
+
+/**
+ * The announcement for a submitted answer (§26.3).
+ *
+ * The tone/option formats read a verdict from a tone number. An Epic 26 practice
+ * answer is a token, an ordered sentence or a typed transcription, so those
+ * strategies author the whole sentence in `AnswerResult.feedback` — the store
+ * announces it unsplit rather than inventing "Tone 0." for an answer that has no
+ * tone.
+ */
+function submittedAnnouncement(
+  strategyType: StrategyType,
+  verdict: AnswerResult,
+  question: QuizQuestion,
+): string {
+  if (AUTHORED_ANNOUNCEMENT_STRATEGIES.has(strategyType)) return verdict.feedback;
+  return verdictAnnouncement(
+    verdict.correct,
+    question.displayPinyin || question.correctPinyin,
+    verdict.correctTone,
+  );
+}
 
 type QuizSessionStore = QuizSession & {
   /** Initialize a new session with the given strategy */
@@ -42,6 +88,13 @@ type QuizSessionStore = QuizSession & {
 
   /** Decrement timer by 1 second */
   tick: () => void;
+
+  /**
+   * Set the session announcement directly. The practice-format surfaces own
+   * steps the store cannot see ("Added 我, position 1 of 4."), and the session
+   * still has exactly ONE region for them.
+   */
+  announce: (text: string) => void;
 
   // ─── Hint system actions (Story 21.18) ────────────────────────────
 
@@ -113,6 +166,10 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
         showRadicalHint: false,
         maxScorePenalty: 0,
         scoreByType: {},
+        announcement:
+          questions.length > 0
+            ? `Session started. Question 1 of ${questions.length}.`
+            : "No questions available.",
       });
     } catch (err) {
       set({
@@ -123,7 +180,7 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   submitAnswer: async (pinyin: string, tone: number) => {
-    const { questions, currentIndex, strategyType, attemptId } = get();
+    const { questions, currentIndex, strategyType, attemptId, score } = get();
     const question = questions[currentIndex];
     if (!question) return;
 
@@ -209,20 +266,24 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
     }
 
     const isLastQuestion = currentIndex + 1 >= questions.length;
+    const nextScore = score + (backendVerdict.correct ? 1 : 0);
 
     if (isLastQuestion) {
-      // Skip FEEDBACK for last question — go directly to RESULTS
+      // Skip FEEDBACK for last question — go directly to RESULTS, so the
+      // completion summary is the ONE announcement for this transition.
       get().completeAttempt();
       set((s) => ({
         answers: [...s.answers, backendVerdict],
-        score: s.score + (backendVerdict.correct ? 1 : 0),
+        score: nextScore,
         phase: "RESULTS" as QuizPhase,
+        announcement: completionAnnouncement(nextScore, questions.length),
       }));
     } else {
       set((s) => ({
         answers: [...s.answers, backendVerdict],
-        score: s.score + (backendVerdict.correct ? 1 : 0),
+        score: nextScore,
         phase: "FEEDBACK" as QuizPhase,
+        announcement: submittedAnnouncement(strategyType, backendVerdict, question),
       }));
     }
   },
@@ -242,15 +303,22 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   },
 
   nextQuestion: () => {
-    const { currentIndex, questions } = get();
+    const { currentIndex, questions, score } = get();
     // Clear per-question hint state
     set({ currentPhoneticHint: null, showRadicalHint: false });
     if (currentIndex + 1 < questions.length) {
-      set({ currentIndex: currentIndex + 1, phase: "QUESTION" });
+      set({
+        currentIndex: currentIndex + 1,
+        phase: "QUESTION",
+        announcement: `Question ${currentIndex + 2} of ${questions.length}.`,
+      });
     } else {
       // Finalize the backend attempt before showing results
       get().completeAttempt();
-      set({ phase: "RESULTS" });
+      set({
+        phase: "RESULTS",
+        announcement: completionAnnouncement(score, questions.length),
+      });
     }
   },
 
@@ -261,9 +329,21 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
       if (newTimer === 0) {
         // Time's up — auto-submit current answer if pending, then show results
         get().completeAttempt();
-        set({ timer: 0, phase: "RESULTS" });
+        set({
+          timer: 0,
+          phase: "RESULTS",
+          announcement: "Time is up. Showing your results.",
+        });
       } else {
-        set({ timer: newTimer });
+        // Thresholds, not a per-second counter: the live region must not carry
+        // the ticking value (the visible Timer states it instead).
+        const announcement =
+          timer > 10 && newTimer <= 10
+            ? "10 seconds left"
+            : timer > 30 && newTimer <= 30
+              ? "30 seconds left"
+              : null;
+        set({ timer: newTimer, ...(announcement ? { announcement } : {}) });
       }
     }
   },
@@ -271,6 +351,10 @@ export const useQuizSessionStore = create<QuizSessionStore>((set, get) => ({
   reset: () => {
     const { strategyType } = get();
     set(createInitialSession(strategyType));
+  },
+
+  announce: (text: string) => {
+    set({ announcement: text });
   },
 
   retry: async () => {

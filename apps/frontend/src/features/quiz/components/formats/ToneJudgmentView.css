@@ -1,0 +1,11 @@
+/**
+ * ToneJudgmentView.css - the fixed shell height and nothing else.
+ *
+ * The phrase is a wrapping row of syllables built from utilities in the view;
+ * each syllable stacks its tone-marked text over its base tone so the two are
+ * never confused at a glance.
+ */
+
+.quiz-tone {
+  min-height: 320px;
+}

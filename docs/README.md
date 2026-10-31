@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-10-29 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-10-31 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -65,7 +65,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 11 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
+- [Layer 5 · Docs / Guides — review · 130 leaves](#layer-5)
 - [Layer 6 · Agentic System — review · 40 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
@@ -101,7 +101,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for business requirements, epics, user stories, and planning docs | **review** | [docs/business-requirements/README.md](business-requirements/README.md) |
+| Area index for business requirements, epics, user stories, and planning docs | active | [docs/business-requirements/README.md](business-requirements/README.md) |
 | NestJS 11 shell-swap — full-scoped serial Epic 24 runs FIRST to completion (15 stories), then epics 25–28 land on NestJS; 24-16 BLOCKING pre-merge release gate | **review** | [docs/business-requirements/epic-24-nestjs-shell-migration/README.md](business-requirements/epic-24-nestjs-shell-migration/README.md) |
 | Global Simplified↔Traditional character toggle for Phase 4 learners | deferred | [docs/business-requirements/epic-41-traditional-characters/README.md](business-requirements/epic-41-traditional-characters/README.md) |
 
@@ -109,7 +109,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Area index for technical implementation docs (epics and stories) | **review** | [docs/issue-implementation/README.md](issue-implementation/README.md) |
+| Area index for technical implementation docs (epics and stories) | active | [docs/issue-implementation/README.md](issue-implementation/README.md) |
 | Epic 24 implementation — full-scoped serial NestJS 11 shell-swap (D7), runs first; 25–28 after on NestJS | **review** | [docs/issue-implementation/epic-24-nestjs-shell-migration/README.md](issue-implementation/epic-24-nestjs-shell-migration/README.md) |
 | Epic 41 implementation — 简体/繁體 global toggle (Phase 4, deferred) | **review** | [docs/issue-implementation/epic-41-traditional-characters/README.md](issue-implementation/epic-41-traditional-characters/README.md) |
 
@@ -151,11 +151,11 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Shared-component registry — the machine-checked catalog | green | [.github/component-registry.json](../.github/component-registry.json) |
-| Page route→archetype→story consistency ledger — 16/16 conform · 0/16 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
+| Page route→archetype→story consistency ledger — 18/18 conform · 0/18 diverges (2 doc-only) | diverges | [.github/page-inventory.json](../.github/page-inventory.json) |
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 129 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 130 leaves</summary>
 
 #### Getting started
 
@@ -260,6 +260,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | TypeScript error handling best practices | **review** | [docs/knowledge-base/backend/typescript-error-handling.md](knowledge-base/backend/typescript-error-handling.md) |
 | Shared data model across packages | **review** | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
 | Discriminated union state machines with useReducer | **review** | [docs/knowledge-base/frontend/discriminated-union-state-machine.md](knowledge-base/frontend/discriminated-union-state-machine.md) |
+| Focus rings on controls whose input is visually hidden — :has(), the design-audit duplicate-utility rule, and forced-colors survival | active | [docs/knowledge-base/frontend/focus-ring-hidden-input.md](knowledge-base/frontend/focus-ring-hidden-input.md) |
 | Advanced React patterns | **review** | [docs/knowledge-base/frontend/frontend-advanced-patterns.md](knowledge-base/frontend/frontend-advanced-patterns.md) |
 | Data migration & versioning on the frontend | **review** | [docs/knowledge-base/frontend/frontend-data-migration.md](knowledge-base/frontend/frontend-data-migration.md) |
 | Frontend development server concepts | **review** | [docs/knowledge-base/frontend/frontend-development-server.md](knowledge-base/frontend/frontend-development-server.md) |
@@ -270,7 +271,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | URL search-param persistence rule | **review** | [docs/knowledge-base/frontend/frontend-url-search-params.md](knowledge-base/frontend/frontend-url-search-params.md) |
 | Hub entity-ID contract | **review** | [docs/knowledge-base/frontend/hub-entity-id-contract.md](knowledge-base/frontend/hub-entity-id-contract.md) |
 | Storybook MSW handler factories | **review** | [docs/knowledge-base/frontend/storybook-msw-handlers.md](knowledge-base/frontend/storybook-msw-handlers.md) |
-| Strategy pattern on the frontend | **review** | [docs/knowledge-base/frontend/strategy-pattern-frontend.md](knowledge-base/frontend/strategy-pattern-frontend.md) |
+| Strategy pattern on the frontend | active | [docs/knowledge-base/frontend/strategy-pattern-frontend.md](knowledge-base/frontend/strategy-pattern-frontend.md) |
 | IaC migration — Phase 1 deployment runbook | **review** | [docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md](knowledge-base/infrastructure/iac-phase1-migration-runbook.md) |
 | Infrastructure configuration management | **review** | [docs/knowledge-base/infrastructure/infra-configuration-management.md](knowledge-base/infrastructure/infra-configuration-management.md) |
 | Deployment & infrastructure | **review** | [docs/knowledge-base/infrastructure/infra-deployment.md](knowledge-base/infrastructure/infra-deployment.md) |
@@ -305,7 +306,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Prompt templates for HSK-graded reading passage generation via Gemini (Graded Readers passage-generation feature) | **review** | [docs/guides/prompt-templates.md](guides/prompt-templates.md) |
 | Conventional Commits message format reference — type(scope): description | **review** | [docs/templates/commit-message-template.md](templates/commit-message-template.md) |
 | Copyable epic business-requirements template | **review** | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
-| Copyable epic implementation template | **review** | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
+| Copyable epic implementation template | active | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
 | Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md` | **review** | [docs/templates/feature-design-spec-template.md](templates/feature-design-spec-template.md) |
 | Copyable file-summary template | **review** | [docs/templates/file-summary-template.md](templates/file-summary-template.md) |
 | Copyable story business-requirements template | **review** | [docs/templates/story-business-requirements-template.md](templates/story-business-requirements-template.md) |
@@ -354,8 +355,8 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Design spec for login/register pages and JWT token-based authentication UI | **review** | [apps/frontend/src/features/auth/docs/design.md](../apps/frontend/src/features/auth/docs/design.md) |
 | Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words) | **review** | [apps/frontend/src/features/character-hub/docs/design.md](../apps/frontend/src/features/character-hub/docs/design.md) |
 | Design spec for the Dashboard demo (overview) — guest + authenticated landing | **review** | [apps/frontend/src/features/dashboard/docs/design.md](../apps/frontend/src/features/dashboard/docs/design.md) |
-| Design doc for the Phase-1 foundations learning path — pinyin, tones, strokes, animations, pictographs | active | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
-| Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes | **review** | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
+| Design doc for the Phase-1 foundations learning path — the Blueprint wizard plus the pinyin/tones/strokes/animations/pictographs reference index | active | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
+| Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes | active | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
 | Design spec for the radicals browser, trees, and detail views (phase 2/3) | **review** | [apps/frontend/src/features/radicals/docs/design.md](../apps/frontend/src/features/radicals/docs/design.md) |
 | Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave | active | [apps/frontend/src/features/readers/docs/design.md](../apps/frontend/src/features/readers/docs/design.md) |
 | Design spec for strategy-pattern SRS review sessions — flip-card practice across content types | **review** | [apps/frontend/src/features/review/docs/design.md](../apps/frontend/src/features/review/docs/design.md) |
@@ -449,8 +450,8 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 
 | Area | Documented | Partial | Undocumented | Active | Deep-link |
 | --- | --- | --- | --- | --- | --- |
-| A1 Frontend Features | 2 | 6 | 5 | 13 | [coverage.md](coverage.md#a1) |
-| A2 Frontend Pages | 16 | 0 | 0 | 16 | [coverage.md](coverage.md#a2) |
+| A1 Frontend Features | 3 | 5 | 7 | 15 | [coverage.md](coverage.md#a1) |
+| A2 Frontend Pages | 18 | 0 | 0 | 18 | [coverage.md](coverage.md#a2) |
 | A3 Frontend Shared | 0 | 1 | 10 | 11 | [coverage.md](coverage.md#a3) |
 | A4 Backend Modules | 3 | 12 | 0 | 15 | [coverage.md](coverage.md#a4) |
 | A5 Backend Shared / Infra | 0 | 8 | 0 | 8 | [coverage.md](coverage.md#a5) |
@@ -458,15 +459,14 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 37 | 11 | 0 | 48 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
-- ⚠️ shared/components/README.md lists 7 of 38 shared components — stale
+- ⚠️ shared/components/README.md lists 7 of 39 shared components — stale
 - ⚠️ A1 auth: review (2026-07-20 > 6 weeks)
 - ⚠️ A1 character-hub: review (2026-07-22 > 6 weeks)
 - ⚠️ A1 dashboard: review (2026-08-18 > 6 weeks)
-- ⚠️ A1 quiz: review (2026-07-01 > 6 weeks)
 - ⚠️ A1 radicals: review (2026-07-08 > 6 weeks)
 - ⚠️ A1 review: review (2026-07-20 > 6 weeks)
 - ⚠️ A3 components: review (2026-08-18 > 6 weeks)
@@ -489,8 +489,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
 - ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
-- ⚠️ A10 copilot-instructions.md: review (August 24, 2026 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
 - ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
-- ⚠️ features/README.md declares a docs/ per-feature convention; 5 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, phonetic-clusters, word-hub)
+- ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)
 <!-- /system-map:generated -->

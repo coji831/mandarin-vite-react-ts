@@ -1,0 +1,22 @@
+/**
+ * QuizCard.css - layout only.
+ *
+ * The assessment list and the phase timeline are semantic <ul>/<ol>s, so their
+ * markers are removed by a component class (never a raw element selector). The
+ * fixed minimum height keeps the card in the Practices grid the same size
+ * whether it lists one assessment or five.
+ */
+
+.quiz-card {
+  min-height: 260px;
+}
+
+.quiz-card__assessments,
+.quiz-card__timeline-list,
+.quiz-card__timeline-item {
+  list-style: none;
+}
+
+.quiz-card__timeline-item {
+  min-height: var(--space-lg);
+}
