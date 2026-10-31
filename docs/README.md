@@ -65,7 +65,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 2 · Planning — planned · 8 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 11 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 129 leaves](#layer-5)
+- [Layer 5 · Docs / Guides — review · 130 leaves](#layer-5)
 - [Layer 6 · Agentic System — review · 40 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
@@ -155,7 +155,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 129 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 130 leaves</summary>
 
 #### Getting started
 
@@ -260,6 +260,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | TypeScript error handling best practices | **review** | [docs/knowledge-base/backend/typescript-error-handling.md](knowledge-base/backend/typescript-error-handling.md) |
 | Shared data model across packages | **review** | [docs/knowledge-base/data/shared-data-model.md](knowledge-base/data/shared-data-model.md) |
 | Discriminated union state machines with useReducer | **review** | [docs/knowledge-base/frontend/discriminated-union-state-machine.md](knowledge-base/frontend/discriminated-union-state-machine.md) |
+| Focus rings on controls whose input is visually hidden — :has(), the design-audit duplicate-utility rule, and forced-colors survival | active | [docs/knowledge-base/frontend/focus-ring-hidden-input.md](knowledge-base/frontend/focus-ring-hidden-input.md) |
 | Advanced React patterns | **review** | [docs/knowledge-base/frontend/frontend-advanced-patterns.md](knowledge-base/frontend/frontend-advanced-patterns.md) |
 | Data migration & versioning on the frontend | **review** | [docs/knowledge-base/frontend/frontend-data-migration.md](knowledge-base/frontend/frontend-data-migration.md) |
 | Frontend development server concepts | **review** | [docs/knowledge-base/frontend/frontend-development-server.md](knowledge-base/frontend/frontend-development-server.md) |
@@ -270,7 +271,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | URL search-param persistence rule | **review** | [docs/knowledge-base/frontend/frontend-url-search-params.md](knowledge-base/frontend/frontend-url-search-params.md) |
 | Hub entity-ID contract | **review** | [docs/knowledge-base/frontend/hub-entity-id-contract.md](knowledge-base/frontend/hub-entity-id-contract.md) |
 | Storybook MSW handler factories | **review** | [docs/knowledge-base/frontend/storybook-msw-handlers.md](knowledge-base/frontend/storybook-msw-handlers.md) |
-| Strategy pattern on the frontend | **review** | [docs/knowledge-base/frontend/strategy-pattern-frontend.md](knowledge-base/frontend/strategy-pattern-frontend.md) |
+| Strategy pattern on the frontend | active | [docs/knowledge-base/frontend/strategy-pattern-frontend.md](knowledge-base/frontend/strategy-pattern-frontend.md) |
 | IaC migration — Phase 1 deployment runbook | **review** | [docs/knowledge-base/infrastructure/iac-phase1-migration-runbook.md](knowledge-base/infrastructure/iac-phase1-migration-runbook.md) |
 | Infrastructure configuration management | **review** | [docs/knowledge-base/infrastructure/infra-configuration-management.md](knowledge-base/infrastructure/infra-configuration-management.md) |
 | Deployment & infrastructure | **review** | [docs/knowledge-base/infrastructure/infra-deployment.md](knowledge-base/infrastructure/infra-deployment.md) |

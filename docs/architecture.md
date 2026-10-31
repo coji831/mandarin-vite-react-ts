@@ -1,7 +1,7 @@
 ---
 purpose: "High-level system design decisions, architectural patterns, and technology choices"
 status: active
-last-verified: 2026-10-27
+last-verified: 2026-10-31
 type: architecture
 ---
 
@@ -106,7 +106,7 @@ mandarin-vite-react-ts/
   - **Grammar** (`features/grammar`): searchable, HSK/phase-tagged grammar pattern reference — list/detail via `GET /v1/grammar/patterns` (+ `/patterns/:id`), detail panel in the LexicalHub `GrammarHub`, example-sentence audio, and word→Character Hub cross-linking
   - **Chengyu** (`features/chengyu`): searchable idiom (成语) reference — list/detail via `GET /v1/chengyu/idioms` (+ `/idioms/:id`), detail panel in the LexicalHub `ChengyuHub`, and the `/learn/chengyu` library page (open to every visitor — phase is sequencing metadata, never a route gate)
   - **PhoneticClusters** (`features/phonetic-clusters`): DB-driven phonetic family browsing — cluster membership from `GET /v1/phonetic-clusters` with HSK filtering
-  - **Quiz**: Strategy-pattern-based quiz engine (`QuizStrategy` interface with `AudioToPinyinAndToneStrategy`) for audio-to-pinyin-and-tone assessment with progress tracking
+  - **Quiz**: Strategy-pattern-based practice engine — seven registered frontend formats (`audio-to-pinyin-tone`, `ime-simulator`, `radical-gate`, `cloze`, `sentence-building`, `listening-dictation`, `tone-judgment`) dispatched through one exhaustive `QUESTION_VIEWS: Record<StrategyType, ComponentType>` map, so a new format cannot be added without naming its surface. Scored locally for guests, persisted for registered users; completion ends in a shared `CompletionSlot` (one position-locked primary).
   - **Review**: Strategy-driven SRS flip-card practice (`ReviewStrategy` interface with `PinyinReviewStrategy` + `ToneReviewStrategy`) for pinyin and tone identification with interval-doubling spaced repetition
   - **Radicals** (`features/radicals`): Radical browser, detail cards, and dual radical/phonetic trees (Phase 2 preview / Phase 3 full expansion)
   - **Character Hub**: Character detail panel with identity card, mnemonics, radicals, readings, common words, and stroke animation
@@ -329,6 +329,27 @@ See the canonical reference: [Seed Pipeline Guide](./guides/data/seed-pipeline.m
 
 The platform has two distinct assessment systems. **Quiz** is a timed, auto-scored assessment for phase gating — strategy-pattern-based with `QuizAttempt` records. **Review** is a self-paced, self-rated spaced repetition system using SM-2 with active recall (prompt → type pinyin → select tone → self-rate retention).
 
+### Practice Formats
+
+The quiz engine is strategy-based on both sides, and the two registries are deliberately different supersets of one id vocabulary:
+
+| Side     | Registered ids                                                                                                                                                       | Notes                                                                                                                                                       |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend  | 9 — `audio-to-pinyin-tone`, `ime-simulator`, `radical-gate`, `comprehension`, `qualification` + `cloze`, `sentence-building`, `listening-dictation`, `tone-judgment` | One module-level `STRATEGY_MAP` in `modules/quiz/strategies/registry.ts`; `comprehension`/`qualification` are backend-only (their UI ships in a later epic) |
+| Frontend | 7 — the gate formats plus the four practice formats                                                                                                                  | Frontend-only union members `audio-to-pinyin` / `audio-to-tone` are legacy aliases with no strategy                                                         |
+
+Phase assignment lives in the frontend's `PHASE_CONFIGS` (a config table, not a registry call): Phase 1 = audio-to-pinyin-tone + tone-judgment; Phase 2 = ime-simulator + radical-gate + listening-dictation; Phase 3 = cloze + sentence-building; Phase 4 = the Phase-2 formats again at `tier: 2`. The Practices card aggregates every quiz for `phase <= currentPhase` (`getQuizzesUpToPhase()`), so a passed phase's assessments remain available as optional practice — phases sequence content, they do not lock it.
+
+Three invariants hold this together:
+
+- **Exhaustive dispatch.** `QUESTION_VIEWS` is `Record<StrategyType, ComponentType>`, so adding a union member without its view is a type error. The same applies to the backend's single `STRATEGY_MAP` — the map used to be rebuilt as a function-local literal in two places, which is how the two lists drifted.
+- **No migration per format.** `QuizAttempt.quizType` is an unconstrained `String`, and each format encodes its answer onto the existing columns (`pinyinInput`, `selectedTone`, `correctPinyin`, `correctTone`, `category`). `correct` stays server-derived. A format needing a structured payload gets its own epic and ADR.
+- **Selection-layer banks.** Curated practice items are pinned anchors over the corpus (`content/seed/phase2/quiz-formats.json` → `metadata.quizFormats[]` on the anchor row), never duplicated question text, so there is one place for pinyin to drift.
+
+Completion is a single shared region: `CompletionSlot` owns the one position-locked primary action and takes every secondary action as a node, which is what makes "one CTA per view" structural rather than policed. The session also mounts one polite status region, fed from the store, so a verdict, a question advance, a timer threshold and the final score are all announced from one node that survives every view swap.
+
+A guest attempt writes **no** server row (`OptionalAuthGuard` returns a stub), so the results surface computes a guest's score from local state — the stub's `{totalScore: 0, maxScore: 0, passed: false}` must never be read as the score.
+
 ### Phase Gating
 
 Users progress through 4 learning phases (Blueprint → Core 300 → Network → Advanced Fluidity), each with gate quizzes to unlock the next. Phase gate state is stored server-side (persisted `PhaseGate` row, updated when a gate quiz is passed).
@@ -352,7 +373,7 @@ Items with repeated failures are flagged as "leeches" for targeted Pareto-based 
 ### Backend Modules
 
 - **Mnemonics module**: CRUD + AI generation of mnemonic stories per character via Gemini API, with 30-day caching and stampede prevention. Endpoints: `GET /api/v1/mnemonics/:glyph`, `POST /api/v1/mnemonics/:glyph`, `PUT /api/v1/mnemonics/:glyph`
-- **Quiz module**: Strategy-based quiz engine, generates questions from content data, evaluates answers, manages attempt lifecycle
+- **Quiz module**: Strategy-based quiz engine, generates questions from content data, evaluates answers, manages attempt lifecycle. Nine registered ids behind one `STRATEGY_MAP`; the four practice formats read anchored questions from `metadata.quizFormats` first and fall back to generating from the corpus when a bank is absent or thin (fail-open, never a 500 for thin content)
 - **Progression module**: Handles phase gating, foundation progress tracking, quiz attempt coordination with pass threshold evaluation
 - **Review module**: Builds review items from content files and SRS state, manages SM-2 scheduling
 - **Grammar module**: searchable, HSK/phase-tagged grammar pattern reference — `GET /v1/grammar/patterns` (list with additive `search`/`hskLevel`/`phase` filters + `page`/`pageSize`) and `GET /v1/grammar/patterns/:id` (detail by `content_id` `gr_XXXX`, with `examples[].segments[]` + `relatedPatterns[]`); `optionalAuth`. Seeded from `content/seed/phase2/grammar-patterns.json` (21 patterns, `gr_XXXX` business keys) via `syncGrammar`.
@@ -475,4 +496,4 @@ Personalized error explanations for incorrect quiz answers via Gemini API, with 
 
 ---
 
-**Last Updated:** October 27, 2026
+**Last Updated:** October 31, 2026

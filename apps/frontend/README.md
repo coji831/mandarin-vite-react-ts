@@ -32,7 +32,7 @@ SRS flip-card practice for pinyin syllables and tone identification. Strategy-dr
 
 ### Quiz
 
-Phase-gated audio-to-pinyin-and-tone assessment using the Strategy pattern. 10-question timed quiz evaluating both pinyin spelling and tone selection. Pass threshold (80%) unlocks Phase 2 content. Category breakdown and instant feedback with correct answer reveal.
+Strategy-pattern practice engine with seven registered formats: `audio-to-pinyin-tone` (Phase 1 gate), `tone-judgment` (Phase 1, written sandhi — no audio), `ime-simulator` + `radical-gate` (Phase 2 gate), `listening-dictation` (Phase 2), and `cloze` + `sentence-building` (Phase 3). One exhaustive `QUESTION_VIEWS` map dispatches every format, so a new format cannot ship without its surface. Each session is ten questions, ends in a shared `CompletionSlot` holding exactly one position-locked primary action, and announces its verdicts through one session-level status region. Guests are scored locally and write no server row.
 
 ### Auth
 
