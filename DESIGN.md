@@ -1,6 +1,6 @@
 ---
-name: "PinyinPal Design System — Amber Stone"
-description: "Design tokens and component specifications for the PinyinPal Mandarin learning platform. Amber primary on warm slate backgrounds."
+name: "PinyinPal Design System — Night Bench"
+description: "Design tokens and component specifications for the PinyinPal Mandarin learning platform. Warm gold accent (rgba(216,164,92)) on a near-black warm canvas (#17130f)."
 tokens:
   colors:
     primary:
