@@ -9,7 +9,7 @@ roles:
   - "Documentation writer (Docs Writer agent — BR/impl docs, KB, guides, verification artifacts, truth-check)"
 instructions:
   - file: ".github/copilot-instructions.md"
-    description: "Quick start, architecture overview, rule index, and the seven-phase Epic & Story Lifecycle (scope → BR → design → build → story close → epic close → ship → archive) — read this first when running or closing an epic"
+    description: "The always-on law: commit gate, the never-do list, spine ownership, the seven-phase lifecycle table, naming, commands, and a routing table to the scoped rules. This is the only rule file loaded on every task"
   - file: ".github/instructions/project-workflow.instructions.md"
     description: "Development workflow, epic/story closing, quality gates"
   - file: ".github/instructions/frontend-css-styling.instructions.md"
@@ -75,6 +75,25 @@ prohibitions:
   - 'NEVER stage, commit, or push without an explicit "commit allowed" from the user — default is review-before-commit (ambiguous words like "proceed" are NOT approval)'
   - "NEVER invent a generic design token, generic component, or page-archetype measure - spine (`C:\\CodeProjects\\Personal\\spine`, reachable through the spine MCP) is the source of truth for the generic layer; PinyinPal owns only its theme overlay + `domain.pinyinpal` support tokens"
 ---
+
+## How context loads (and its budget)
+
+Two mechanisms exist, and nothing else. A rule whose frontmatter carries `applyTo` arrives when you
+touch a matching path. A skill arrives when its `description` matches your task. Everything else in
+`docs/` costs nothing until you open it, which is why `docs/` is allowed to be large and this directory
+is not.
+
+Measured by `npm run check:load` against `.github/agent-surface.json`:
+
+- **always-on** = `copilot-instructions.md` + `a11y-floor` (`applyTo: **`) + the session's user-level
+  instructions (`~/.copilot/instructions`). Counted once per task, before any file is read.
+- **fan-in** = the rules one representative edit pulls in, summed with the always-on layer. This is the
+  number that bites: eight instructions carried an `apps/frontend/src/**/*.tsx` glob, so a single
+  component edit arrived behind 98,597 B of rules before any code was read.
+
+Both ceilings are a ratchet. When you earn headroom, lower the number in the same commit. If a new rule
+needs a broad glob, prefer a narrow one plus a pointer from the routing table in
+`copilot-instructions.md`.
 
 ## UI Codegen Protocol
 

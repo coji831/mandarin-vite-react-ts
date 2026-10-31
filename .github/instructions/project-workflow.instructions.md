@@ -40,9 +40,14 @@ its own gate set.
 | 14 | Design parity | `npm run check:design-parity` | `DESIGN.md` + `globals.css` |
 | 15 | Name discipline | `npm run check:spine-parity` | `globals.css` + spine snapshot |
 | 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets |
+| 17 | Rule surface budget | `npm run check:load` | `.github/instructions/**`, `copilot-instructions.md` |
 
 Notes that cost a run when missed:
 
+- **`check:load` is the one gate that also runs when you change a rule file, not code.** It fails when the
+  always-on layer or any representative path exceeds its ceiling in `.github/agent-surface.json`, and it
+  prints the full table either way. A new instruction with a broad `applyTo` is a finding on the next run.
+  The ceilings are a ratchet: lower one in the commit that earns it, never raise one to make room.
 - **`npm run build` IS the frontend type-check.** The frontend has no separate `typecheck` script by
   design; `tsc -b` covers the whole `src` graph.
 - **`npm test` is `vitest run --changed`** and can pass with zero tests. It is a changed-scope check

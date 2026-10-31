@@ -210,7 +210,9 @@ See [Infrastructure Setup Guide](../operations/infrastructure.md) for complete w
 
 For standardized AI workflow steps, automation protocol, and structured prompt format, see:
 
-- **Primary**: `.github/copilot-instructions.md` → sections: **Story-Level Development Workflow** and **Automation Protocol**
+- **Primary**: `.github/copilot-instructions.md` (always loaded) for the binding rules and the routing
+  table, then `.github/instructions/project-workflow.instructions.md` for the lifecycle steps and the
+  canonical gate table
 - **Prompt Catalog**: `docs/automation/structured-ai-prompts.md` for detailed prompt examples
 
 ---

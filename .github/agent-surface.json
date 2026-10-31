@@ -1,0 +1,35 @@
+{
+  "description": "The context budget for this repo, read by scripts/check-load.mjs. Every value is a CEILING: lowering one is a pass, raising one is a finding. Set a value where the tree is today, then lower it in the commit that earns it. A path may add its own `cap` to override scope_fan_in_cap_bytes.",
+  "always_on_cap_bytes": 28000,
+  "scope_fan_in_cap_bytes": 59000,
+  "representative_paths": [
+    {
+      "path": "apps/frontend/src/features/quiz/components/QuizCard.tsx",
+      "why": "the heaviest common edit: a feature component under a feature glob"
+    },
+    {
+      "path": "apps/frontend/src/pages/learn/readers/ReadersPage.tsx",
+      "why": "the largest real page, nested under a learn route: catches the page globs and the learn-layout ones"
+    },
+    {
+      "path": "apps/frontend/src/shared/components/Card/Card.stories.tsx",
+      "why": "a story, the widest fan-in of any single edit"
+    },
+    {
+      "path": "apps/frontend/src/styles/globals.css",
+      "why": "the token layer"
+    },
+    {
+      "path": "apps/backend/src/modules/review/services/ReviewService.ts",
+      "why": "a backend service: the control case, essentially the always-on layer"
+    },
+    {
+      "path": "apps/backend/prisma/schema.prisma",
+      "why": "the cheapest edit in the repo"
+    },
+    {
+      "path": "docs/guides/design/page-archetypes.md",
+      "why": "a docs edit"
+    }
+  ]
+}
