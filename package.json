@@ -43,6 +43,7 @@
     "generate:class-catalog": "node scripts/generate-class-catalog.mjs",
     "check:class-catalog": "node scripts/generate-class-catalog.mjs --check",
     "check:doc-links": "node scripts/check-doc-links.mjs",
+    "check:solar-parity": "node scripts/check-solar-parity.mjs",
     "check:load": "node scripts/check-load.mjs",
     "logs:capture": "node scripts/capture-log.mjs",
     "logs:prune": "node scripts/capture-log.mjs --prune"

@@ -41,6 +41,7 @@ its own gate set.
 | 15 | Name discipline | `npm run check:spine-parity` | `globals.css` + spine snapshot |
 | 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets |
 | 17 | Rule surface budget | `npm run check:load` | `.github/instructions/**`, `copilot-instructions.md` |
+| 18 | Solar parity | `npm run check:solar-parity` | `.solar/commands.json`, `.solar/registry.json`, `.github/agents/` |
 
 Notes that cost a run when missed:
 
@@ -56,6 +57,10 @@ Notes that cost a run when missed:
   findings**, never "exit 0".
 - **`check:doc-links` and `check:system-map`** are red at times on pre-existing debt. Compare against
   the base commit, do not chase zero.
+- **`check:solar-parity` is driven by the table above, not by a list of its own.** It reads every
+  `npm run` in a numbered row and fails when the script does not exist, when no command in
+  `.solar/commands.json` runs it, or when a solar command names a script nobody has. Adding a gate here
+  and forgetting the solar command is exactly the failure it catches, so it runs after every table edit.
 
 ## Before implementing
 

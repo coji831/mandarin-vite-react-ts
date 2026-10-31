@@ -7,5 +7,7 @@
   "model_tier": "",
   "human_approval": false,
   "reasoning_effort": "",
-  "runner": "agent-dispatch"
+  "runner": "agent-dispatch",
+  "runtime_agents": ["hermes", "governor-v5"],
+  "runtime_agents_reason": "Both are the SOLAR runtime itself - the intake classifier and the governor entry point - not workers it orchestrates."
 }

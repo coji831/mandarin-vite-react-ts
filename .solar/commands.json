@@ -11,6 +11,12 @@
     "timeout": 240,
     "describe": "ESLint across all workspaces."
   },
+  "lint_css": {
+    "argv": ["npm", "--silent", "run", "lint:css", "--workspace=@mandarin/frontend"],
+    "kind": "check",
+    "timeout": 240,
+    "describe": "stylelint over the frontend stylesheets: the CSS-only rules ESLint does not see."
+  },
   "test": {
     "argv": ["npm", "--silent", "run", "test"],
     "kind": "check",
@@ -23,12 +29,30 @@
     "timeout": 900,
     "describe": "The full workspace suites, including the slower tiers the default `test` skips."
   },
+  "test_storybook": {
+    "argv": ["npm", "--silent", "run", "test-storybook", "--workspace=@mandarin/frontend"],
+    "kind": "check",
+    "timeout": 600,
+    "describe": "The storybook Vitest project: every story's state set renders."
+  },
   "format_check": {
     "argv": ["npm", "--silent", "run", "format:check"],
     "kind": "check",
     "timeout": 180,
     "describe": "prettier --check. It prints one line per unformatted file, so only the final count is kept - and CRLF noise is not a defect.",
     "shape": { "summary_only": true }
+  },
+  "build": {
+    "argv": ["npm", "--silent", "run", "build"],
+    "kind": "check",
+    "timeout": 600,
+    "describe": "tsc -b plus the vite build across the workspaces. This IS the frontend type-check; the frontend has no separate typecheck script."
+  },
+  "format": {
+    "argv": ["npm", "--silent", "run", "format"],
+    "kind": "check",
+    "timeout": 240,
+    "describe": "prettier --write across the workspaces. The write form of format:check - it rewrites files rather than failing on them."
   },
   "design_lint": {
     "argv": ["npm", "--silent", "run", "design:lint"],
@@ -72,6 +96,18 @@
     "timeout": 120,
     "describe": "Design parity across the surfaces that must agree."
   },
+  "check_spine_parity": {
+    "argv": ["npm", "--silent", "run", "check:spine-parity"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Name discipline: the globals.css class names against the spine snapshot."
+  },
+  "check_class_catalog": {
+    "argv": ["npm", "--silent", "run", "check:class-catalog"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "The generated class catalog against the three stylesheets. A class added by hand is a finding."
+  },
   "check_module_boundaries": {
     "argv": ["npm", "--silent", "run", "check:module-boundaries"],
     "kind": "check",
@@ -89,6 +125,18 @@
     "kind": "check",
     "timeout": 120,
     "describe": "No broken links in the docs tree."
+  },
+  "check_load": {
+    "argv": ["npm", "--silent", "run", "check:load"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "The rule-surface budget: always-on bytes and per-path fan-in against the ceilings in .github/agent-surface.json."
+  },
+  "check_solar_parity": {
+    "argv": ["npm", "--silent", "run", "check:solar-parity"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Every gate in the workflow table resolves and has a solar command that runs it, and every registry agent has an agent file."
   },
   "validate_radical_content": {
     "argv": ["npm", "--silent", "run", "validate:radical-content"],
