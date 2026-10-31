@@ -2,23 +2,38 @@
   "architect": {
     "role": "Architect",
     "system": "Product & Architecture lead. Turns requirements (business model, epic ACs) into an architectural plan and per-epic design spec (archetype + provenance + sketch) handed to the UIUX Designer; the spec opens with the design-revalidation-guide.md check (revalidate the existing surface against the contract; rework-from-scratch when it fails) and records data-density-spec.md consumption for dense surfaces (36/37). Pure strategist: never writes code/docs/tests/UI, never runs shell, never delegates, never gathers data directly (routes via Investigator).",
-    "tools": ["workspace"],
-    "next_edges": ["uiux-designer", "frontend-engineer", "backend-engineer"],
+    "tools": [
+      "workspace"
+    ],
+    "next_edges": [
+      "uiux-designer",
+      "frontend-engineer",
+      "backend-engineer"
+    ],
     "model": "deepseek-flash",
     "write": false
   },
   "uiux-designer": {
     "role": "UIUX Designer",
     "system": "Owns Step 1 UIUX design: turns the Architect's design brief into an approved, pixel-tight Storybook shell (no logic) with all visual states MSW-mocked, token/registry compliant, then presents at the human-owned User Preview Gate before handoff. Revalidates the existing surface first (design-revalidation-guide.md — rework-from-scratch when it fails, session = route not modal); consumes data-density-spec.md for dense surfaces and ADR-013's useFocusTrap for overlays. Never wires logic/APIs/state; design only.",
-    "tools": ["workspace"],
-    "next_edges": ["frontend-engineer"],
+    "tools": [
+      "workspace"
+    ],
+    "next_edges": [
+      "frontend-engineer"
+    ],
     "model": "deepseek-flash"
   },
   "frontend-engineer": {
     "role": "Frontend Engineer",
     "system": "Owns Step 2 (code conversion) + all frontend work: React/TS components, hooks, stores, services, pages, styles, tests. Consumes the approved Step 1 design handoff; reuses src/shared/components and globals.css tokens (never hardcode); runs frontend-audit (Parts 1-4) + design-audit before handoff to Code Reviewer.",
-    "tools": ["workspace", "exec"],
-    "next_edges": ["code-reviewer"],
+    "tools": [
+      "workspace",
+      "exec"
+    ],
+    "next_edges": [
+      "code-reviewer"
+    ],
     "model": "deepseek-flash",
     "exec_allow": [
       "typecheck",
@@ -40,8 +55,13 @@
   "backend-engineer": {
     "role": "Backend Engineer",
     "system": "Owns backend work: NestJS 11 modulith controllers/services/modules (Express surface retired), repositories, Prisma schema + migrations, API contracts, tests. Fail-fast validation at controller boundary, repository pattern (services never touch Prisma directly), migration safety review before applying.",
-    "tools": ["workspace", "exec"],
-    "next_edges": ["code-reviewer"],
+    "tools": [
+      "workspace",
+      "exec"
+    ],
+    "next_edges": [
+      "code-reviewer"
+    ],
     "model": "deepseek-flash",
     "exec_allow": [
       "typecheck",
@@ -61,16 +81,27 @@
   "investigator": {
     "role": "Investigator",
     "system": "Thorough codebase investigator: search, trace, and collect structured findings for others to act on. Cast a wide net (code/tests/docs/config/types), trace deeply with codegraph, verify across multiple sources, flag stale docs. Never writes code, runs shell, or makes architecture/implementation recommendations.",
-    "tools": ["workspace"],
-    "next_edges": ["architect", "frontend-engineer", "backend-engineer"],
+    "tools": [
+      "workspace"
+    ],
+    "next_edges": [
+      "architect",
+      "frontend-engineer",
+      "backend-engineer"
+    ],
     "model": "deepseek-flash",
     "write": false
   },
   "docs-writer": {
     "role": "Docs Writer",
     "system": "Owns the documentation lifecycle: BR/impl docs, KB articles, guides, technical challenges, verification artifacts, and doc<->code truth-checks. Never writes production code; derives every claim from code (no invented endpoints/names/counts); bumps Last Updated in the same commit as content edits. At epic close, drive Phase 5 of the Epic & Story Lifecycle (.github/copilot-instructions.md): re-open every surface the Phase 5 table enumerates (docs/architecture.md, README.md, apps/*/README.md, docs/knowledge-base, docs/guides, the generated map, the epic + story records) — a self-audit of touched files cannot see a stale doc you never opened, so never infer the surface set from the diff.",
-    "tools": ["workspace", "exec"],
-    "next_edges": ["code-reviewer"],
+    "tools": [
+      "workspace",
+      "exec"
+    ],
+    "next_edges": [
+      "code-reviewer"
+    ],
     "model": "deepseek-flash",
     "exec_allow": [
       "format_check",
@@ -86,24 +117,14 @@
   "code-reviewer": {
     "role": "Code Reviewer",
     "system": "Cross-cutting code reviewer / safety net: catches violations domain agents missed (architecture boundaries, dead code, interface-vs-type, cross-domain leaks, test gaps, doc<->code truth-check). Read-only; never writes/edits files or runs tests/lint; confirms the Docs Writer truth-check ran.",
-    "tools": ["workspace"],
-    "next_edges": ["complete"],
+    "tools": [
+      "workspace"
+    ],
+    "next_edges": [
+      "complete"
+    ],
     "model": "deepseek-flash",
     "write": false
-  },
-  "layout-critic": {
-    "role": "Layout Critic",
-    "system": "Design critic for ONE route. Reviews the RENDERED route (never its source or a stylesheet) against ADR-011 Night Bench + its page archetype + the quality rubric, and returns per finding either a BRIEF update (the direction/archetype is wrong or silent) or a VISUAL update (the route does not deliver it). Writes exactly one report, verification-artifacts/design-review/design-review-{route}.md. Never measures, never fixes, never writes code, never runs shell; parallel-safe, one route per spawn.",
-    "tools": ["workspace"],
-    "next_edges": ["design-lead"],
-    "model": "deepseek-flash"
-  },
-  "design-lead": {
-    "role": "Design Lead",
-    "system": "Serial synthesis over the per-route design reviews: ALIGNMENT (which routes are unlike ADR-011 or their peers), FIX (what changes first, including what will NOT be fixed) and CONDENSATION (promote to the live token layer, demote to a receipt, retire). Writes exactly one file, verification-artifacts/design-review/design-lead-synthesis.md. Barred from route source and stylesheets in the synthesis pass; may read anything in the extraction pass. Never runs shell - hands the gates to a runner with the exact string each must print.",
-    "tools": ["workspace"],
-    "next_edges": ["complete"],
-    "model": "deepseek-flash"
   },
   "default_chain": "epic",
   "chains": {
@@ -111,13 +132,21 @@
       "investigator",
       "architect",
       "uiux-designer",
-      ["frontend-engineer", "backend-engineer"],
+      [
+        "frontend-engineer",
+        "backend-engineer"
+      ],
       "docs-writer",
       "code-reviewer"
     ],
-    "docs-review": ["docs-writer", "code-reviewer"],
-    "verify": ["investigator", "code-reviewer"],
-    "design-review": ["layout-critic", "design-lead"]
+    "docs-review": [
+      "docs-writer",
+      "code-reviewer"
+    ],
+    "verify": [
+      "investigator",
+      "code-reviewer"
+    ]
   },
   "playbooks": {
     "research": {
@@ -130,18 +159,25 @@
       "role": "frontend-engineer|backend-engineer",
       "note": "stack-resolved; prepend investigator when root cause unknown"
     },
-    "implement-epic": { "kind": "chain", "name": "epic", "note": "investigate-first full epic" },
+    "implement-epic": {
+      "kind": "chain",
+      "name": "epic",
+      "note": "investigate-first full epic"
+    },
     "implement-story": {
       "kind": "role",
       "role": "frontend-engineer|backend-engineer",
       "note": "small feature; prepend uiux-designer when UI is involved"
     },
-    "docs": { "kind": "role", "role": "docs-writer", "note": "docs + doc<->code truth-check" },
-    "review": { "kind": "role", "role": "code-reviewer", "note": "audit / cross-cutting review" },
-    "design": {
-      "kind": "chain",
-      "name": "design-review",
-      "note": "R0->R3: one layout-critic per route in parallel, then serial design-lead synthesis"
+    "docs": {
+      "kind": "role",
+      "role": "docs-writer",
+      "note": "docs + doc<->code truth-check"
+    },
+    "review": {
+      "kind": "role",
+      "role": "code-reviewer",
+      "note": "audit / cross-cutting review"
     }
   }
 }

@@ -175,7 +175,7 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 | Rule                    | Specification                                                                                |
 | ----------------------- | -------------------------------------------------------------------------------------------- |
-| **Card background**     | `--surface-dark` with `--surface-border`                                                     |
+| **Card background**     | `--card` with `--hairline`                                                     |
 | **No shadows on cards** | Quiz cards are flat — shadows add visual noise during focus                                  |
 | **Character glyph**     | `--font-4xl` (32px) minimum, centered                                                        |
 | **Question text**       | `--font-lg` (18px), `--text-primary`                                                         |
@@ -184,7 +184,7 @@ These rules apply to **every** feature, **every** component, **every** screen:
 | **Incorrect feedback**  | Warm red pulse: `--color-error` border + `--color-error-bg` background                       |
 | **Phase badge**         | Primary amber for active phase, muted for locked                                             |
 | **Audio button**        | Ghost treatment — subtle, not competing with content                                         |
-| **Answer input**        | `--surface-light-5` background, `--surface-border` border, focus ring uses `--color-primary` |
+| **Answer input**        | `--surface-light-5` background, `--hairline` border, focus ring uses `--accent-fill` |
 
 **Anti-patterns:**
 
@@ -217,8 +217,8 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 | Rule                  | Specification                                                                             |
 | --------------------- | ----------------------------------------------------------------------------------------- |
-| **Tab headers**       | Use `Tabs` shared component, active tab uses `--color-primary` border                     |
-| **Pinyin grid cells** | `--surface-dark` background, hover shows `--color-primary-bg-medium`                      |
+| **Tab headers**       | Use `Tabs` shared component, active tab uses `--accent-fill` border                     |
+| **Pinyin grid cells** | `--card` background, hover shows `--accent-tint`                      |
 | **Tone cards**        | Tone colors (`--tone-1` through `--tone-5`) for accent only — text stays `--text-primary` |
 | **Stroke animations** | Full-width canvas, no competing UI near the stroke area                                   |
 | **Section spacing**   | `--space-lg` (24px) between major sections, `--space-md` (16px) between related items     |
@@ -233,8 +233,8 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 | Rule               | Specification                                               |
 | ------------------ | ----------------------------------------------------------- |
-| **List items**     | Consistent height, `--surface-dark` background, hover state |
-| **Selected state** | `--color-primary-border` left border indicator              |
+| **List items**     | Consistent height, `--card` background, hover state |
+| **Selected state** | `--accent-fill` left border indicator              |
 | **Search input**   | Standard `Input` shared component                           |
 | **Filter chips**   | `FilterChip` shared component, amber when active            |
 | **Pagination**     | Use `gap-sm` between page buttons                           |
@@ -327,14 +327,14 @@ These have been caught in previous code reviews. Don't reintroduce them:
 
 | Need                      | Use                            | Don't Use                                               |
 | ------------------------- | ------------------------------ | ------------------------------------------------------- |
-| Primary action background | `--color-primary`              | Raw `#b45309`                                           |
-| Card background           | `--surface-dark`               | `--surface-dark-alt` (that's for panels)                |
-| Page background           | `--surface-dark-alt`           | `--surface-dark`                                        |
+| Primary action background | `--accent-fill`              | Raw `#b45309`                                           |
+| Card background           | `--card`               | `--canvas` (that's for panels)                |
+| Page background           | `--canvas`           | `--card`                                        |
 | Primary text              | `--text-primary` (95% white)   | `white` or `#fff`                                       |
 | Secondary text            | `--text-secondary` (85% white) | `--text-primary` (would be too strong)                  |
 | Hover background          | `--surface-hover`              | Manual `rgba()`                                         |
-| Border on cards           | `--surface-border`             | `--color-primary-border` (that's for highlighted items) |
-| Success feedback          | `--color-success`              | `--color-primary`                                       |
+| Border on cards           | `--hairline`             | `--accent-fill` (that's for highlighted items) |
+| Success feedback          | `--color-success`              | `--accent-fill`                                       |
 | Error feedback            | `--color-error`                | `--color-warning`                                       |
 
 ### Heirarchy of Spacing Tokens
@@ -464,7 +464,7 @@ Before reporting any UI code as complete, verify every item:
 
 **Date:** 2026-07-18  
 **Context:** Earlier quiz implementations used elevated cards with shadows (`--shadow-md`).  
-**Decision:** Quiz cards use `--surface-dark` with `--surface-border` — no shadows.  
+**Decision:** Quiz cards use `--card` with `--hairline` — no shadows.  
 **Rationale:** Shadows create visual depth that competes with the quiz content for attention. During a quiz, the user should focus on the question, not the card.
 
 ### ADR-005: Token Freeze
@@ -482,7 +482,7 @@ Before reporting any UI code as complete, verify every item:
 **Date:** 2026-08-18  
 **Status:** Ratified (owner vote, 2026-08-18 — Wave-1 UIUX; previously pending)  
 **Context:** Warm Minimalism was defined, but the two north-star exemplars (ReviewView = focus-task, DashboardPage = hub-launcher) were canonized by choice, never measured; resting Browse surfaces used the amber-tinted `--shadow-md/lg` (glow family), creating an "amber glow adjacency" on surfaces meant to read as neutral; the amber budget (≤1 filled amber per viewport) was policy prose only, enforced nowhere.  
-**Decision:** Ratify the precision-minimal north-star identity: (a) a neutral elevation shadow family `--shadow-elevated-1/2/3` for all resting Browse surfaces; (b) `--surface-border-subtle` hairline on every elevated surface (elevation-no-hairline rule); (c) amber `--shadow-md/lg` + `--shadow-xp-glow` restricted to hover-lift feedback and XP-completion only (the Amber Restriction); (d) a single shared typography role map (DESIGN.md § Typography Role Map); (e) the saturation budget — ≤1 filled saturated element per viewport, extended to all hues (Q10). North-star exemplars are validated by the 8-gate canonization protocol, not declared.  
+**Decision:** Ratify the precision-minimal north-star identity: (a) a neutral elevation shadow family `--shadow-elevated-1/2/3` for all resting Browse surfaces; (b) `--hairline-subtle` hairline on every elevated surface (elevation-no-hairline rule); (c) amber `--shadow-md/lg` + `--shadow-xp-glow` restricted to hover-lift feedback and XP-completion only (the Amber Restriction); (d) a single shared typography role map (DESIGN.md § Typography Role Map); (e) the saturation budget — ≤1 filled saturated element per viewport, extended to all hues (Q10). North-star exemplars are validated by the 8-gate canonization protocol, not declared.  
 **Rationale:** Vercel-refined precision-minimalism keeps the content-first focus, removes the glow adjacency from resting surfaces, and makes "north star" a measured claim (rubric + a11y + visual baseline + owner sign-off) instead of a chosen one.  
 **Consequences:** Resting amber shadows are forbidden (hover/XP only); new pages are built and reviewed against the exemplars; exemplar retro-validation is recorded in `verification-artifacts/northstar-canonization-review.md`; Vercel joins the curated external-borrow shortlist (quality-bar row, alongside Linear/Stripe).
 
@@ -490,8 +490,8 @@ Before reporting any UI code as complete, verify every item:
 
 **Date:** 2026-08-18  
 **Status:** Ratified (owner vote — Q4)  
-**Context:** The `--text-*` ladder was a relative opacity scale (0.95/0.85/0.7/0.5/0.2/0.05) unverified against `--surface-dark` (#262321). `text-muted` (0.5 white) was used for information-bearing body meta in many features and likely landed ~3.5–4:1 → failed WCAG small-text AA. WCAG 2.2 SC 1.4.3 explicitly covers placeholder text, so a "placeholder-exempt" tier was not available.  
-**Decision:** Reclassify text into **role tiers** — `text-primary`/`text-secondary` = body (≥4.5:1); `text-muted` = information-bearing meta, **bumped to ≥4.5:1** (`rgba(255,255,255,0.6)` ≈ 6.5:1 on `--surface-dark`); `text-subtle`/`text-ghost` = **decorative-only + large**, never placeholder text. Placeholder text must use `muted` (≥4.5:1).  
+**Context:** The `--text-*` ladder was a relative opacity scale (0.95/0.85/0.7/0.5/0.2/0.05) unverified against `--card` (#262321). `text-muted` (0.5 white) was used for information-bearing body meta in many features and likely landed ~3.5–4:1 → failed WCAG small-text AA. WCAG 2.2 SC 1.4.3 explicitly covers placeholder text, so a "placeholder-exempt" tier was not available.  
+**Decision:** Reclassify text into **role tiers** — `text-primary`/`text-secondary` = body (≥4.5:1); `text-muted` = information-bearing meta, **bumped to ≥4.5:1** (`rgba(255,255,255,0.6)` ≈ 6.5:1 on `--card`); `text-subtle`/`text-ghost` = **decorative-only + large**, never placeholder text. Placeholder text must use `muted` (≥4.5:1).  
 **Rationale:** Contrast is a token-pair property; every information-bearing text must meet AA. A small decorative-only tier is exempt by role (audited per usage), preserving the faint-text affordance where it carries no meaning.  
 **Consequences:** Existing `text-subtle`/`text-ghost` usages are re-audited (decorative vs. information-bearing); the axe gate on `<Page>Full` stories (non-blocking → hard) enforces it; `text-muted` is now AA-safe.
 

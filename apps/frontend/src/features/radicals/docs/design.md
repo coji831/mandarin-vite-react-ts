@@ -59,7 +59,7 @@ The radicals feature has three phases/views accessible via tabs:
 | Token        | CSS Variable           | Usage                                   |
 | ------------ | ---------------------- | --------------------------------------- |
 | Primary      | `--accent-fill`        | Accent highlights, interactive elements |
-| Primary Dark | `--color-primary-dark` | Hover states (retires at step 1b)       |
+| Primary Dark | `--accent-ink` | Hover states (retires at step 1b)       |
 | Accent text  | `--accent-ink`         | Accent text — never fills               |
 | Error        | `--color-error`        | Error messages, alert backgrounds       |
 | Success      | `--color-success`      | Mastery indicators (★)                  |

@@ -64,9 +64,9 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 1 · Product / Business — review · 5 leaves](#layer-1)
 - [Layer 2 · Planning — planned · 26 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
-- [Layer 4 · Design System — review · 7 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 127 leaves](#layer-5)
-- [Layer 6 · Agentic System — review · 36 leaves](#layer-6)
+- [Layer 4 · Design System — review · 9 leaves](#layer-4)
+- [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
+- [Layer 6 · Agentic System — review · 32 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -153,14 +153,16 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-4"><summary>Layer 4 · Design System — review · 7 leaves</summary>
+<details id="layer-4"><summary>Layer 4 · Design System — review · 9 leaves</summary>
 
 #### Design docs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Design tokens and component specifications for the PinyinPal Mandarin learning platform. Amber primary on warm slate backgrounds. | active | [DESIGN.md](../DESIGN.md) |
+| Design tokens and component specifications for the PinyinPal Mandarin learning platform. Warm gold accent (rgba(216,164,92)) on a near-black warm canvas (#17130f). | active | [DESIGN.md](../DESIGN.md) |
+| Every utility, pattern and animation class the three stylesheets declare, with its first declarations | active | [docs/guides/design/css-class-catalog.md](guides/design/css-class-catalog.md) |
 | Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them | **review** | [docs/guides/design/design-reasoning.md](guides/design/design-reasoning.md) |
+| The flex scroll chain and the layout failure modes it prevents, with the worked examples | active | [docs/guides/design/layout-physics.md](guides/design/layout-physics.md) |
 | The page-level contract — a finite set of named Focus-First page skeletons every page parameterizes | active | [docs/guides/design/page-archetypes.md](guides/design/page-archetypes.md) |
 | The 12 UIUX fundamentals applied to PinyinPal, the 7-layer QA pyramid, the consolidated AI-slop checklist, and the 2026 fact-check corrections — the committed source of record for UI quality | **review** | [docs/guides/design/uiux-fundamentals.md](guides/design/uiux-fundamentals.md) |
 | Reference index of the 29 verified UI/UX study resources (what each teaches, its PinyinPal application, and adoption status) — the entry point for future UI research | **review** | [docs/guides/design/uiux-resources.md](guides/design/uiux-resources.md) |
@@ -174,7 +176,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 127 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 128 leaves</summary>
 
 #### Getting started
 
@@ -220,6 +222,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | How to pin a security or coverage audit as a test that re-derives its subject from source, and how to leave tripwires when a feature is deliberately removed | active | [docs/guides/testing/executable-audits.md](guides/testing/executable-audits.md) |
 | Patterns, examples, and configuration for testing frontend code | **review** | [docs/guides/testing/frontend.md](guides/testing/frontend.md) |
 | Maintained, versioned list of KNOWN pre-existing failures so agents don't re-triage the same known-broken items | active | [docs/guides/testing/known-failures.md](guides/testing/known-failures.md) |
+| How to run, view, mock and verify a Storybook story for a shared component | active | [docs/guides/testing/storybook.md](guides/testing/storybook.md) |
 
 #### Integrations
 
@@ -372,7 +375,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Design spec for the slide-up character detail hub (glyph, readings, radicals, mnemonics, common words) | **review** | [apps/frontend/src/features/character-hub/docs/design.md](../apps/frontend/src/features/character-hub/docs/design.md) |
 | Design spec for the Dashboard demo (overview) — guest + authenticated landing | **review** | [apps/frontend/src/features/dashboard/docs/design.md](../apps/frontend/src/features/dashboard/docs/design.md) |
 | Design doc for the Phase-1 foundations learning path — the Blueprint wizard plus the pinyin/tones/strokes/animations/pictographs reference index | active | [apps/frontend/src/features/foundations/docs/design.md](../apps/frontend/src/features/foundations/docs/design.md) |
-| Design spec for strategy-pattern quiz sessions — phase-gated assessment across quiz modes | active | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
+| Quiz feature design spec: layout, strategy architecture, components, tokens and visual acceptance | active | [apps/frontend/src/features/quiz/docs/design.md](../apps/frontend/src/features/quiz/docs/design.md) |
 | Design spec for the radicals browser, trees, and detail views (phase 2/3) | **review** | [apps/frontend/src/features/radicals/docs/design.md](../apps/frontend/src/features/radicals/docs/design.md) |
 | Design spec for graded readers — passage library, sentence-by-sentence reading, per-sentence audio, progress autosave | active | [apps/frontend/src/features/readers/docs/design.md](../apps/frontend/src/features/readers/docs/design.md) |
 | Design spec for strategy-pattern SRS review sessions — flip-card practice across content types | **review** | [apps/frontend/src/features/review/docs/design.md](../apps/frontend/src/features/review/docs/design.md) |
@@ -385,7 +388,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — review · 36 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — review · 32 leaves</summary>
 
 #### Instructions
 
@@ -417,22 +420,18 @@ _16 instruction leaves · 17 on disk — project-workflow is the control-plane g
 | Use when: designing system architecture, reviewing technical designs, evaluating architectural tradeoffs, defining tech strategy, or producing implementation plans. | **review** | [.github/agents/architect.agent.md](../.github/agents/architect.agent.md) |
 | Use when: building backend APIs, writing NestJS routes/controllers/services/modules, modifying Prisma schema and running migrations, implementing database queries, writing backend tests, performing backend audits, or ensuring database safety. | **review** | [.github/agents/backend-engineer.agent.md](../.github/agents/backend-engineer.agent.md) |
 | Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | **review** | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
-| Design lead for the PinyinPal design system. SYNTHESIS pass: use when synthesising the per-route design reviews into cross-route calls - which routes need ALIGNMENT (against ADR-011, an archetype, or their peers), what needs FIXING and in what order, and where a decided thing should be CONDENSED (a decision promoted to the live token layer, or a live artefact demoted to a receipt). EXTRACTION pass: use when leading the lift of a shared component out of routes that have already been judged. The two passes read different things: the synthesis pass is barred from route source and stylesheets, the extraction pass is not. | **review** | [.github/agents/design-lead.agent.md](../.github/agents/design-lead.agent.md) |
 | Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | **review** | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
 | Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | **review** | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
 | Use when: running a task through the SOLAR v5 governor graph — ONE entry point that deterministically routes to a specialist (or orchestrates an epic as a chain of specialist runs), gates the result, and completes with run-cards (v5 pilot, e.g. epic 25). Also use when the user asks for 'governor', 'v5 run', 'graph-governed', 'run the chain', or wants the same orchestrator UX but with durable checkpoints + run-cards. For ad-hoc single-agent requests with no governor need, delegate straight to the matching specialist instead. | **review** | [.github/agents/governor-v5.agent.md](../.github/agents/governor-v5.agent.md) |
 | Use when: decoding the user's request into an intent + flow before a SOLAR run (intake only). Governor v5 calls Hermes as the FIRST step of every new task. Also answers 'what would you route this as?'. Do NOT use for executing, coding, or designing — Hermes only classifies. | **review** | [.github/agents/hermes.agent.md](../.github/agents/hermes.agent.md) |
 | Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | **review** | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
-| Design critic for ONE route of the PinyinPal app. Use when: reviewing one route VISUALLY against ADR-011 (the ratified Night Bench direction) and the page archetype it belongs to, and returning, per finding, either a BRIEF update (the direction/archetype is wrong or silent) or a VISUAL update (the page does not deliver it). Looks at the rendered route only - never the route's source, never a measurement table, never another route's report. Parallel-safe: one route per spawn, one output file per route. External research allowed and must be cited. | **review** | [.github/agents/layout-critic.agent.md](../.github/agents/layout-critic.agent.md) |
-| Use when: designing UI — wireframes, Storybook Step 1 (no logic), design-token/registry compliance, running the User Preview Gate, or auditing a design against the 12 UIUX fundamentals + AI-slop checklist before handoff to engineering. | **review** | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
+| Use when: specifying the component set for a surface, resolving a need to a spine or shared component, or checking that every visual state is designed before engineering starts. | **review** | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
 
 #### Skills
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| > | **review** | [.github/skills/add-theme/SKILL.md](../.github/skills/add-theme/SKILL.md) |
 | Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | **review** | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
-| > | **review** | [.github/skills/design-review/SKILL.md](../.github/skills/design-review/SKILL.md) |
 | Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | **review** | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
 | Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | **review** | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
 
@@ -471,7 +470,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 34 | 10 | 0 | 44 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 

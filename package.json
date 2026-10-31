@@ -40,6 +40,8 @@
     "check:module-boundaries": "node scripts/check-module-boundaries.mjs",
     "generate:system-map": "node scripts/generate-system-map.mjs --emit",
     "check:system-map": "node scripts/generate-system-map.mjs --check",
+    "generate:class-catalog": "node scripts/generate-class-catalog.mjs",
+    "check:class-catalog": "node scripts/generate-class-catalog.mjs --check",
     "check:doc-links": "node scripts/check-doc-links.mjs",
     "logs:capture": "node scripts/capture-log.mjs",
     "logs:prune": "node scripts/capture-log.mjs --prune"

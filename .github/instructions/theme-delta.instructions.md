@@ -27,6 +27,7 @@ second component stylesheet. Here the live token layer is `apps/frontend/src/sty
   inversion and no muddy cross-hue grey unless the theme says so. Reason: a non-monotonic ramp reads
   as an accident at the boundary between two steps.
 - **`validate-theme` is the intended gate, and it is not implemented yet.** Until it exists, run the
-  seven checks in `.github/skills/add-theme/SKILL.md` and record the results as the pack's receipts,
-  with `npm run check:spine-parity`, `npm run check:token-values` and `npm run check:closure` as the
-  machine-owned half. Reason: a pack without receipts is a palette someone liked.
+  seven checks in spine's `add-theme` skill (the spine checkout's `agents/skills/add-theme`, or
+  `search_kb`) and record the results as the pack's receipts, with `npm run check:spine-parity`,
+  `npm run check:token-values` and `npm run check:closure` as the machine-owned half. Reason: a pack
+  without receipts is a palette someone liked.

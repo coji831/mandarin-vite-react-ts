@@ -34,4 +34,4 @@ reason.
   ladder already carries `--size-touch` (28px, the WCAG 2.5.8 minimum), so a smaller target is a
   literal, and the 44px primary is a documented deliberate exception to that floor.
 - **The gate is the check.** The axe sweep over every theme is the R0 reading; a review that restates
-  a ratio the sweep printed is duplicating the instrument. The static half is `npm run design-audit`.
+  a ratio the sweep printed is duplicating the instrument. The static half is the accessibility plugin's own checks (`run_axe_scan` and the specialists it dispatches). `npm run design-audit` is NOT an accessibility gate: its only a11y rule is `missing-aria-label`.

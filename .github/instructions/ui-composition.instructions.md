@@ -1,108 +1,55 @@
 ---
-description: "Use when designing or laying out new UI — pages, sections, cards, forms. Covers visual hierarchy, spacing rhythm, CTA clarity, and container discipline. Read BEFORE writing any UI code."
+description: "Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing new UI."
 applyTo: "apps/frontend/src/**/*.tsx"
 ---
 
-# UI Composition Guide
+# UI composition
 
-## Purpose
+Judgement, not gate. A linter can check a token; only a reader can check whether a screen has one job.
 
-Prevent "AI slop" UI — generic, cluttered, no-hierarchy layouts. These rules teach the agent how to compose components aesthetically _before_ writing code.
+## Hierarchy
 
-## Golden Rule
+One `h1` per page, then `h2` for sections, `h3` for subsections. Never choose a level for its size; use
+CSS. The primary action uses `variant="primary"`, secondary actions `secondary` or `ghost`, and two
+primary buttons never sit side by side. The most important content is top-left (top-centre for a hero).
 
-**One primary focal point per section.** If the user can't identify the main action or content at a glance, the layout is wrong.
+## Spacing rhythm
 
----
+Space with `gap-*` on the parent, never with margins between children. Sections take `gap-sm` or
+`gap-md`; a dense toolbar takes `gap-xs`. If two sections feel stuck together, the rhythm is wrong, not
+the content.
 
-## 1. Visual Hierarchy
+## Container discipline
 
-- **One clear heading level per section:** Use `<h2>` for section titles, `<h3>` for subsection titles. Never skip levels.
-- **Spotlight the CTA:** The primary action button must use `variant="primary"`. Secondary actions use `variant="secondary"` or `variant="ghost"`. Never use two primary buttons next to each other.
-- **Content priority:** Place the most important content top-left (or top-center for hero sections). Less important content flows below.
-- **Font size ladder:** Don't jump sizes erratically. Use: `font-xl` (h2) → `font-lg` (h3) → `font-sm`/`font-md` (body) → `font-xs` (metadata/muted).
+Prefer `Box` over a raw `div`: it carries the design system's border, background and padding tokens. A
+raw `div` is for a wrapper with no visual treatment. Pick the variant that states the role (`card`,
+`surface`, `elevated`, `divider`) rather than a colour. Nesting stops at three levels.
 
-## 2. Spacing Rhythm
+The page frame is not yours to set: `PageShell` -> `PageHeader` -> `PageStack` -> `PageGrid` own the
+measure, the rhythm and the card grid. A page max-width, a centring wrapper or a page grid in a page
+stylesheet fails `design-audit:foundation`.
 
-- **Use gap utilities, never raw margins between children:** `gap-xs` (8px), `gap-sm` (12px), `gap-md` (16px), `gap-lg` (24px). Stacking sections use `gap-sm` or `gap-md` on the parent flex container.
-- **No raw `margin` properties in CSS** — use utility classes (`mx-auto`, `p-*`, `gap-*`) or `Box` component `padding` prop.
-- **Inner padding:** Use `Box` `padding` prop consistently: `"xs"` for dense toolbars, `"sm"` for card content, `"md"` for section containers.
-- **Breathing room:** Leave at least `gap-sm` between distinct visual sections. If two sections feel stuck together, add `gap-md`.
+## CTA clarity
 
-## 3. Container Discipline
+One primary CTA per view, and the user should know immediately which it is. A destructive action is
+`variant="secondary"` with an error treatment, never primary. Disable what cannot be used, and use the
+`loading` prop rather than hiding the button.
 
-- **Prefer `Box` over raw `<div>`:** `Box` enforces the design system's border, background, and padding tokens. Only use raw `<div>` for truly unstyled wrappers (e.g., flex containers with no visual treatment).
-- **Pick the right `Box` variant:**
-  - `"dark"` — top-level section containers, intro headers, tip callouts
-  - `"dark-alt"` — secondary panels, grids, search bars
-  - `"elevated"` — floating/prominent cards
-  - `"card"` — content cards with interactive state
-  - `"surface"` — inline info blocks
-  - `"divider"` — visual separators between sections
-- **Max nesting depth of 3:** Page wrapper → section Box → content. Beyond 3 levels, extract a component.
-- **Don't nest `Box` inside `Box` unnecessarily** — use a single `Box` with the right variant and padding.
+## Density
 
-## 4. CTA & Interaction Clarity
+More than six or seven loose items in a section wants a grid or a filter. Card grids use
+`grid-2-col` / `grid-3-col`; variable-width lists use `flex-wrap gap-sm`. Wrap dynamic content so it
+cannot overflow: check that `scrollWidth` does not exceed `clientWidth`.
 
-- **One primary CTA per view:** The user should know immediately what to click. Highlight it with `Button variant="primary"`.
-- **Destructive actions use `variant="secondary"` with `className="text-error"`** — never color a destructive button primary.
-- **Disable CTAs that can't be used:** `disabled` prop on `Button`, `op-40` utility for visual feedback.
-- **Loading states on CTAs:** Use `Button`'s `loading` prop — never hide the button during loading.
+## Master-detail: a card is a teaser, a detail is the reward
 
-## 5. Layout Density & Responsiveness
+Three tiers, not two. A **preview** row teases; a **peek** delivers the reward without leaving the
+surface you were reading; a **detail page** is a routable surface for "I arrived at this thing".
 
-- **Don't overcrowd:** If a section has more than 6-7 items, consider a grid or pagination.
-- **Grid items:** Use `flex-wrap gap-sm` for variable-width item lists. Use `grid-2-col`/`grid-3-col` for card grids.
-- **Responsive baseline:** Assume mobile-first. Use `flex-col` stacking on narrow viewports, switch to row layouts with media queries.
-- **Overflow prevention:** Always wrap dynamic content in a container with `overflow-hidden` or test that `scrollWidth` doesn't exceed `clientWidth`.
+A peek is right only where the surface has **no task, no completion and no progress** (the lexical hub,
+ADR-014). A surface **with** a task is a session: it goes straight to a routed detail page, and a peek
+must never host one.
 
-## 6. What "Good UI" Looks Like for This Project
-
-- **Clean dark theme:** Our surfaces use `--surface-dark` (bg) and `--surface-dark-alt` (panel bg). Content sits on `--surface-dark-alt` inside `Box` containers.
-- **Amber accents:** Primary color is amber (`--color-primary`). Use it sparingly — for CTAs, active states, and emphasis only.
-- **Consistent radii:** `radius-sm` for buttons/cards, `radius-md` for larger panels, `radius-pill` for chips/tags.
-- **Subtle borders:** `border-1 border-surface` on panels and cards. Avoid thick borders.
-- **Minimal text colors:** `text-primary` for headings, `text-secondary` for body, `text-tertiary` for secondary info, `text-muted` for hints/metadata. Don't invent other colors.
-
-## 7. Preview vs Detail Separation (Master-Detail Law)
-
-**A card is a teaser. A detail panel is a reward.** The learner clicks the card because it promises value; the detail panel delivers value the card did NOT already show. (Folded in from the retired `preview-detail-separation.instructions.md`.)
-
-There are **three** tiers, not two: a **preview** row (the card — a teaser), a **peek** (a transient
-overlay that delivers the reward without leaving the surface you were reading), and a **detail page**
-(a routable surface with a URL, for "I arrived at this thing"). A peek is right when the surface has no
-task, no completion and no progress — the lexical hub is the reference
-(`features/lexical-hub/components/HubSheet/HubSheet.tsx`, ADR-014). A surface WITH a task is a session
-and goes straight to a routed `detail` page; a peek must never host one.
-
-1. **Identify the preview surface** — the card/list item and its purpose.
-2. **List all elements on it**, then classify each as preview (stays) or reward (moves to detail):
-
-| Preview (stays on card) | Reward (move to detail panel)        |
-| ----------------------- | ------------------------------------ |
-| Glyph (hero)            | Etymology (story)                    |
-| Pinyin (how to say it)  | Variant forms (new discovery)        |
-| Meaning (what it means) | Full character list (the main event) |
-| Strokes (metadata)      | Notes (extra context)                |
-| ★ badge (priority)      | Similar radicals (comparison)        |
-
-3. **Remove reward elements from the card** — duplicating detail content on the card makes the detail panel feel redundant ("I already saw this on the card").
-4. **Verify the reward loop** — after clicking through, the learner finds NEW content.
-
-### Anti-patterns
-
-- Variant forms on the card (discovery of "扌 is also 手" is the reward for clicking)
-- Character preview strip on the card (small characters look clickable but aren't — WAGC violation)
-- Etymology on the card (deep-read element belongs in the detail panel)
-- Duplicating any detail-panel section on the card
-
-### Best practices
-
-- **One priority indicator per card** — a ★ badge is enough; don't stack colored border + elevated shadow + wider column (one signal, not three).
-- **Every card element helps scanning** — Glyph → "Is this the shape?", Meaning → "What is this?", ★ → "Important?", Strokes → "How complex?"
-- **Design for current architecture, not future-state** — don't pre-implement a richer card that belongs to a future redesign.
-- **WAGC + density + clarity** before adding anything to a card.
-
----
-
-**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-css-styling.instructions.md` (styling workflow) • `.github/skills/frontend-audit/SKILL.md` (layout audit)
+When splitting a card, the hero glyph, pinyin, meaning and a priority badge stay; etymology, variant
+forms, the full character list, notes and comparisons move to the detail. Worked examples and the full
+classification table: `docs/guides/design/page-archetypes.md`.

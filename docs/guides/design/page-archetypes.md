@@ -158,7 +158,7 @@ composition-map:
   search: SearchInput
   filters: FilterChip | FilterControls
   list: ContentBrowser | Box variant="item"
-  row-selected: Box variant="item" + left border --color-primary-border
+  row-selected: Box variant="item" + left border --accent-fill
   detail-link: TextLink
   meta: Badge | ClassificationBadge
 states: [loading, empty, error, disabled, edge]
@@ -197,7 +197,7 @@ cta-slot:
   secondary: Button variant="ghost" | variant="icon"
 composition-map:
   progress: ProgressBar
-  task-card: Card (--surface-dark, --surface-border, flat)
+  task-card: Card (--card, --hairline, flat)
   rating: Button variant="rating-again" | "rating-good" | "rating-easy"
   feedback: Box variant="pass" | "fail" (with text, not color alone)
   audio: Button variant="ghost"

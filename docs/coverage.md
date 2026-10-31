@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 34 | 10 | 0 | 44 | 44 |
+| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | 40 |
 
 
 <a id="a1"></a>
@@ -175,11 +175,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (44)  ·  score 34/44 documented · 10 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (40)  ·  score 30/40 documented · 10 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 16 + agents 11 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
+| **Agentic layer (instructions 16 + agents 9 + skills 3)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
 | instructions/a11y-floor | ✅ | .github/instructions/a11y-floor.instructions.md | documented | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
@@ -199,17 +199,13 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | agents/architect | ✅ | .github/agents/architect.agent.md | documented | — | check:system-map |
 | agents/backend-engineer | ✅ | .github/agents/backend-engineer.agent.md | documented | — | check:system-map |
 | agents/code-reviewer | ✅ | .github/agents/code-reviewer.agent.md | documented | — | check:system-map |
-| agents/design-lead | ✅ | .github/agents/design-lead.agent.md | documented | — | check:system-map |
 | agents/docs-writer | ✅ | .github/agents/docs-writer.agent.md | documented | — | check:system-map |
 | agents/frontend-engineer | ✅ | .github/agents/frontend-engineer.agent.md | documented | — | check:system-map |
 | agents/governor-v5 | ✅ | .github/agents/governor-v5.agent.md | documented | — | check:system-map |
 | agents/hermes | ✅ | .github/agents/hermes.agent.md | documented | — | check:system-map |
 | agents/investigator | ✅ | .github/agents/investigator.agent.md | documented | — | check:system-map |
-| agents/layout-critic | ✅ | .github/agents/layout-critic.agent.md | documented | — | check:system-map |
 | agents/uiux-designer | ✅ | .github/agents/uiux-designer.agent.md | documented | — | check:system-map |
-| skills/add-theme | ✅ | .github/skills/add-theme/SKILL.md | documented | — | check:system-map |
 | skills/backend-audit | ✅ | .github/skills/backend-audit/SKILL.md | documented | — | check:system-map |
-| skills/design-review | ✅ | .github/skills/design-review/SKILL.md | documented | — | check:system-map |
 | skills/docs-audit | ✅ | .github/skills/docs-audit/SKILL.md | documented | — | check:system-map |
 | skills/frontend-audit | ✅ | .github/skills/frontend-audit/SKILL.md | documented | — | check:system-map |
 | conventions/api-client | ✅ | docs/guides/conventions/api-client.md | **partial** ⚠️ review (last-verified 2026-08-07 > 6 weeks) | — | check:system-map |
