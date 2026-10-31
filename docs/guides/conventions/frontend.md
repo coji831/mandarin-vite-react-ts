@@ -25,10 +25,6 @@ audience: frontend
 > **Page contract:** `.github/page-inventory.json` — the machine-checked page ledger (route, component, archetype, story, states, status), verified via `npm run check:page-inventory` (gate 7).
 >
 > **Page skeleton:** `docs/guides/design/page-archetypes.md` — the Focus-First page library (archetypes + mode/page table); every page is a parameterization of one archetype.
->
-> **What "good" means:** `docs/guides/design/design-quality-rubric.md` — scored criteria × measure × threshold; the human-pass companion to the machine gates.
->
-> **Per-epic spec:** `docs/guides/design/per-epic-design-spec.md` — the design-spec template naming `archetype:` + `provenance:`.
 
 ## Code Style & Patterns
 

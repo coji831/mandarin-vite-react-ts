@@ -47,7 +47,7 @@ Build the complete visual UI in Storybook BEFORE writing any logic, hooks, or AP
 #### 1.2 — High-Level Design (Wireframe)
 
 1. **Wireframe/sketch** the UI before writing components. Visual understanding must precede implementation.
-2. Read `DESIGN.md` for design tokens and `ui-composition.instructions.md` for layout rules. If the epic has a per-epic design spec (`docs/guides/design/per-epic-design-spec.md`), read it — it names the page `archetype:` (see `docs/guides/design/page-archetypes.md`); score the outcome against `docs/guides/design/design-quality-rubric.md`.
+2. Read `DESIGN.md` for design tokens and `ui-composition.instructions.md` for layout rules. Name the page `archetype:` from `docs/guides/design/page-archetypes.md`.
 3. Identify the **host component**: the page or most-complex parent that will contain the new UI.
 4. Search `src/shared/components/` and check `component-registry.json` for existing components to reuse.
 5. Apply design principles: WAGC (does this look clickable?), content density (parsable in 2s?), clarity (obvious meaning?), cognitive load (reduces or adds?).
@@ -86,13 +86,10 @@ Present the Storybook shell to the user. This is a **structured gate — a score
 unsure):
 
 1. **Walk through each visual state** (loading, empty, error, display, edge cases).
-2. **Run the fillable scorecard** (`design-quality-rubric.md` § Fillable Scorecard): rate 1–5 on
-   Job clarity · Alignment · Spacing/rhythm · Hierarchy · Proportion · Typography · States/
-   resilience · Language · A11y · Business fit · Distinctiveness.
-3. **Ask the uniqueness question**: "Does this read as the generic default you'd produce for any
+2. **Ask the uniqueness question**: "Does this read as the generic default you'd produce for any
    similar page type?" If yes, name what you'd change + why.
-4. **Business check** (goal → signal → lever, §14.5): does the hierarchy serve the screen's ONE job?
-5. **Record a one-line verdict**: `PASS` / `REVISE` / `BLOCK` + what-to-change AND why it fails the
+3. **Business check** (goal → signal → lever, §14.5): does the hierarchy serve the screen's ONE job?
+4. **Record a one-line verdict**: `PASS` / `REVISE` / `BLOCK` + what-to-change AND why it fails the
    check — never "make it prettier".
 
 > ⚠️ **Gate rule**: Do NOT proceed to Step 2 (Code Conversion) until the user has previewed AND the
@@ -117,10 +114,9 @@ unsure):
 1. Open the page in browser and take screenshots — compare against approved Storybook
 2. Test at 320px, 768px, 1024px for responsive correctness
 3. Verify ARIA labels on all interactive elements
-4. Run `frontend-pre-delivery-checklist.instructions.md` — token compliance, states, interaction, layout, quality gates
-5. Run the **`frontend-audit` skill** — Part 1 (12 fundamentals + AI-slop) then Parts 2–4 (architecture, verification, integration) — replaces the old `uiux-audit`/`frontend-audit`/`component-decomposition` skills
-6. Update feature `docs/design.md` with Storybook story references, design tokens used, and visual acceptance criteria
-7. Log any visual discrepancies in `verification-artifacts/` with `review-findings-*` artifact
+4. Run the **`frontend-audit` skill** — Part 1 (12 fundamentals + AI-slop) then Parts 2–4 (architecture, verification, integration) — replaces the old `uiux-audit`/`frontend-audit`/`component-decomposition` skills
+5. Update feature `docs/design.md` with Storybook story references, design tokens used, and visual acceptance criteria
+6. Log any visual discrepancies in `verification-artifacts/` with `review-findings-*` artifact
 
 ## 📐 Core Principles
 
@@ -140,4 +136,4 @@ Components must have a **data-resilient visual shell** — outer container dimen
 
 ---
 
-**See also:** `ui-composition.instructions.md` • `frontend-css-styling.instructions.md` • `storybook-production-alignment.instructions.md` • `frontend-pre-delivery-checklist.instructions.md` • `component-registry.json` • `docs/guides/design/uiux-fundamentals.md`
+**See also:** `ui-composition.instructions.md` • `frontend-css-styling.instructions.md` • `storybook-production-alignment.instructions.md` • `.github/skills/frontend-audit/SKILL.md` (Parts 2–4) • `component-registry.json` • `docs/guides/design/uiux-fundamentals.md`

@@ -1,7 +1,7 @@
 # Chromatic Visual Regression (Wave 4 — Q1/Q7 wiring)
 # Every story is snapshotted against the accepted "last known good" baseline on
-# each push; the per-diff accept/deny decision IS the human manual-test gate
-# (see docs/guides/testing/visual-qa.md). The Visual Tests addon
+# each push; the per-diff accept/deny decision IS the human manual-test gate.
+# The Visual Tests addon
 # (@chromatic-com/storybook, registered in .storybook/main.ts) powers local
 # accept/deny once the project is linked.
 #

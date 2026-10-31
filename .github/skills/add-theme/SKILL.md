@@ -78,7 +78,7 @@ fails the accessibility floor the base paid for.
 ## 4 · Apply and prove
 
 - Apply the pack with `data-theme="<name>"` on a root element; it may be a subtree.
-- Run the axe sweep in `docs/guides/testing/visual-qa.md` with the theme selected and record 0
+- Run the axe sweep with the theme selected and record 0
   violations.
 - Run `npm run design-audit` on the changed set and record the summary line.
 - Add a story or a gallery pane that shows the theme beside the base, so a reviewer sees the delta

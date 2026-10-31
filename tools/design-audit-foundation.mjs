@@ -320,8 +320,8 @@ function runChromeCheck() {
 
 // ─── Session/route check (session = route, navigator = peek) ────────────────
 //
-// The revalidation contract (docs/guides/design/design-revalidation-guide.md §4)
-// classifies surfaces two ways. A surface with a bounded start/end, a completion
+// The session/route contract classifies surfaces two ways. A surface with a
+// bounded start/end, a completion
 // action and progress state is a SESSION and must be a routed `detail`/Focus
 // surface; a surface with none of the three is a NAVIGATOR and may be a
 // transient overlay. The lexical hub is a navigator (rework-proposal §0.3), so
@@ -341,7 +341,7 @@ function runChromeCheck() {
 //                   (b) the dispatcher is still reachable (the sheet renders it),
 //                       so removing the route never leaves the hub unreachable.
 //
-// WHAT THE HUMAN RUBRIC STILL CATCHES (design-quality-rubric.md): a session
+// WHAT A HUMAN REVIEW STILL CATCHES: a session
 // rendered inline in a Browse page — a third mode with no modal at all; a
 // session whose component name carries no session vocabulary; and a "quick
 // reveal" that has quietly grown into a session. Those need a reviewer.
@@ -432,7 +432,7 @@ function runSessionModalCheck() {
         message:
           `a <Modal> hosts a session surface (${[...new Set(hosted)].join(", ")}) — ` +
           "a learning session must be a routed `detail` surface, not an overlay " +
-          '(design-revalidation-guide §4 "session = route, not modal")',
+          "(session = route, not modal)",
       });
     }
   }

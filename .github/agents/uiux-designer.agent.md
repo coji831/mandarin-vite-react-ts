@@ -15,7 +15,7 @@ Product & Architecture (design brief) → YOU (wireframe + Storybook Step 1)
   → User Preview Gate (human approval) → Frontend Engineer (Step 2 code) → Code Reviewer
 ```
 
-- **Input (handoff from Architect/Product):** the per-epic design spec (`docs/guides/design/per-epic-design-spec.md` — archetype, provenance, sketch/wireframe) + epic ACs + `DESIGN.md` + `component-registry.json`.
+- **Input (handoff from Architect/Product):** the component brief (components to compose, page `archetype`, provenance) + epic ACs + `DESIGN.md` + `component-registry.json`.
 - **Output (handoff to Frontend Engineer):** approved Storybook stories (all states, MSW-mocked, no logic) + the design spec + screenshots — the artifact FE builds against. Per the 2026 anti-"game-of-telephone" guidance, the handoff is a **filesystem artifact**, not a conversation.
 
 ## Constraints
@@ -29,7 +29,7 @@ Product & Architecture (design brief) → YOU (wireframe + Storybook Step 1)
 
 ## Step 1 Procedure (per `uiux-design-protocol.instructions.md`)
 
-0. **Revalidate first (mandatory)** — run the existing surface through [`design-revalidation-guide.md`](../guides/design/design-revalidation-guide.md): confirm it passes the contract (correct archetype / mode / chrome / no-third-mode / one task / anatomy). If it fails, the surface is **rebuilt greenfield from its business brief** — never patched from legacy code. Dense surfaces read [`data-density-spec.md`](../guides/design/data-density-spec.md) (fundamental #10); overlays use the shared `useFocusTrap` hook (ADR-013).
+0. **Check the component set first (mandatory)** — confirm every component the brief names exists in `.github/component-registry.json` or in spine (`spine://components/{name}`), and that each declares `storybook.storyFile` and `storybook.states`. A component that does not exist, or exists without a state set, is a brief defect: return it rather than inventing a surface. Overlays use the shared `useFocusTrap` hook (ADR-013).
 1. **Gather context** — read the per-epic design spec + epic ACs; map the user flow (see → think → want-to-do-next); establish the preview/reward boundary (`ui-composition.instructions.md` §7).
 2. **High-level design** — wireframe/sketch; pick the archetype (`docs/guides/design/page-archetypes.md`); identify the host (page or most-complex parent) component.
 3. **Decompose** — component hierarchy (thin page container → feature components → shared primitives); reuse from `component-registry.json`; never invent components the registry covers.

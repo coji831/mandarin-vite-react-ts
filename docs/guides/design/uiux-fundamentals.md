@@ -38,7 +38,7 @@ Each fundamental maps to: what it teaches → concrete PinyinPal application →
 
 ### The two genuinely deferred items
 
-- **#10 data density** — **RESOLVED (2026-10-26):** the spec is written ahead of the surface — see [`data-density-spec.md`](data-density-spec.md) (the dense row/column contract, `tabular-nums`, status-via-roles, and the `reports`/timed-scan composition). Epics 36/37 consume it at design-spec time.
+- **#10 data density** — the dense row/column contract: `tabular-nums`, status-via-roles, the `reports`/timed-scan composition. (The former `data-density-spec.md` was retired 2026-10-31; the contract now lives here.)
 - **#11 composition/portals** — **RESOLVED (2026-10-26):** the dependency decision is settled — extract the shared [`useFocusTrap`](../../../apps/frontend/src/shared/hooks/useFocusTrap.ts) hook, do NOT adopt Radix (see [ADR-013](../adr/composition-portals-focus.md)). Epic 31 consumes the hook; portals are allowed only for a transient overlay that must escape an ancestor's overflow/stacking context.
 
 ---
@@ -50,7 +50,7 @@ Every UI surface is "done" when all its layers have a recorded pass. Cost-shaped
 ```mermaid
 flowchart TB
     L7["L7 Owner sign-off — epic-close + canonization + quarterly"]
-    L6["L6 Human manual QA (judgment) — visual-qa script + rubric human pass"]
+    L6["L6 Human manual QA (judgment) — per-component story review + squint"]
     L5["L5 A11y regression tracking — Chromatic per-story baseline (free tier)"]
     L4["L4 Visual regression (decision-forced) — Chromatic Visual Tests addon + CI push build"]
     L3["L3 A11y machine gate — axe a11y.test:'error' on PageFull/Full (merge)"]
@@ -66,7 +66,7 @@ flowchart TB
 | L3    | `addon-a11y` `a11y.test:'error'` + `runOnly` wcag22a/aa                            | merge                                 | FE                      | contrast, ARIA, labels, keyboard/focus, target-size (~57% of WCAG)        |
 | L4    | Chromatic (local Visual Tests addon + CI `push` build; TurboSnap after 10 builds)  | every PR                              | FE run / Owner accept   | layout drift, overflow, elevation/hairline, spacing rhythm, golden parity |
 | L5    | Chromatic a11y per-story baseline                                                  | every PR                              | machine                 | **new** a11y violations only (debt separated)                             |
-| L6    | `docs/guides/testing/visual-qa.md` per-surface script + rubric human pass + squint | epic-close + quarterly                | DW (runs) + CR (review) | judgment: "is it right/beautiful", hierarchy, contrast appearance, parity |
+| L6    | `test-storybook` story walk + squint                                               | component change                      | DW (runs) + CR (review) | judgment: "is it right/beautiful", hierarchy, contrast appearance, parity |
 | L7    | recorded preview + sign-off line                                                   | epic-close + canonization + quarterly | Owner                   | "this is the accepted standard" decision                                  |
 
 ### Reliability principles (why this is reliable, not vibes)
@@ -129,8 +129,7 @@ These correct earlier research. Do not reintroduce the stale claims.
 | `design-audit` errors                     | #1, #2, #3, #4, #5, #7, #12 (+ AI-slop 1–9, 12) |
 | axe gate (L3, `test-storybook`)           | #1, #6, #11                                     |
 | Chromatic (L4/L5)                         | #5, #8, #9, #4                                  |
-| Human rubric (`design-quality-rubric.md`) | #6, #8, #9, #10                                 |
-| `visual-qa.md` script (L6)                | #8, #9 (epic-close cadence)                     |
+| L6 story review + squint                  | #8, #9 (component change)                       |
 | Canonization protocol (gate 8)            | #8                                              |
 
 ---
@@ -138,10 +137,8 @@ These correct earlier research. Do not reintroduce the stale claims.
 ## Cross-references
 
 - `docs/guides/design/design-reasoning.md` — ADR-007..010 (North-Star identity, Text-Role Contrast Tiers, Fluid Display Type Scale, Vibrancy Amplification), style identity, anti-patterns §6
-- `docs/guides/design/design-quality-rubric.md` — the scored per-page (19) + per-component (8) rubric
 - `docs/guides/design/page-archetypes.md` — the 8 archetypes + Golden Templates
 - `docs/guides/design/uiux-resources.md` — the 30-resource study-card index (source provenance)
-- `docs/guides/testing/visual-qa.md` — the per-surface human QA procedure
 - `DESIGN.md` — tokens, component specs, Elevation Usage Ladder, Global Motion Rule
 - `.github/decision-log.json` — the 12 UIUX-Q decisions + ADR-007..010 records
 - `.github/skills/frontend-audit/SKILL.md` — the runnable audit procedure built on this guide (Part 1 = fundamentals + AI-slop)

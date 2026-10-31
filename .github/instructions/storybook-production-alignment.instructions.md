@@ -94,7 +94,7 @@ Part 1).
    **Stories remain untouched** — MSW handlers simulate the same API responses
    the hooks return at runtime.
 3. **Tests + gates** — `test-storybook` + `design-audit` + unit tests +
-   `frontend-pre-delivery-checklist.instructions.md`.
+   `.github/skills/frontend-audit/SKILL.md` Parts 2–4.
 4. If production must differ from an approved story, raise it at the gate — do
    not silently diverge.
 
@@ -538,4 +538,4 @@ exercised via their page-container story (see §11).
 
 ---
 
-**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (UI gate) • `project-workflow.instructions.md` (commit gates)
+**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `.github/skills/frontend-audit/SKILL.md` (UI gate) • `project-workflow.instructions.md` (commit gates)

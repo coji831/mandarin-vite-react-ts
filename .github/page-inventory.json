@@ -1,6 +1,6 @@
 {
-  "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot. One entry per page container, sourced from the <Page>Full.stories.tsx files + router/paths.ts. A page is 'conforms' when it has a Full story, declared states, and a registry-clean composition map matching its archetype. 'diverges' surfaces the gap (missing Full story, unassigned archetype, or anatomy not yet audited against the archetype library). Enforced by scripts/check-page-inventory.mjs.",
-  "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component; composition maps may only name component-registry.json components. Archetype ids come from page-archetypes.md and spine's closed generic set (overview, list, detail, create-edit, settings, auth, search, profile, notifications, reports, empty, not-found, wizard).",
+  "description": "PinyinPal page inventory — the machine-readable page contract and divergence snapshot. One entry per page container under apps/frontend/src/pages/** plus the Learn home ('/learn'). An entry is 'conforms' when it declares an archetype, a component, mode/chrome derived from that archetype, and anatomy matching it; 'diverges' surfaces the gap (redirect by design, unassigned archetype, or anatomy not yet audited). Enforced by scripts/check-page-inventory.mjs.",
+  "scope": "Pages = route-registered page containers under apps/frontend/src/pages/** plus the Learn home ('/learn'). Component names mirror the routed page component. Archetype ids come from page-archetypes.md and spine's closed generic set (overview, list, detail, create-edit, settings, auth, search, profile, notifications, reports, empty, not-found, wizard). Storybook stories are not tracked here: page stories were retired, and shared-component stories are enforced by check:registry-stories.",
   "version": "1.0",
   "archetypes": [
     "overview",
@@ -27,23 +27,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/dashboard/DashboardPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "focal-card": "Box",
-        "quick-access": "Button",
-        "progress": "ProgressBar",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "overview",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Precision-minimal overview exemplar."
+      "status": "conforms"
     },
     {
       "route": "/learn",
@@ -54,10 +44,7 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": null,
-      "states": [],
-      "status": "diverges",
-      "note": "Redirect by design: the LearnRoutes index → /learn/foundations (the de-facto learn home). There is no page container to conform. A real Learn hub is new UI and belongs with the learn-surface epics (28/32/33), not the anatomy rollout."
+      "status": "diverges"
     },
     {
       "route": "/practices",
@@ -68,22 +55,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/practices/PracticesPageFull.stories.tsx",
-      "states": ["loading", "default", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "focal-card": "Box",
-        "quick-access": "Button",
-        "guest-gate": "GuestUpsell"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "overview",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Overview: Review + Quiz launch cards; guest variant (edge) renders ReviewPromptCard."
+      "status": "conforms"
     },
     {
       "route": "/library",
@@ -94,23 +72,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/LibraryPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "content": "ContentBrowser",
-        "search": "SearchInput",
-        "filters": "FilterControls",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Real content API since the §5 rework: the source composes radicals + grammar + chengyu list endpoints, every card opens the lexical hub peek, and the open item carries a non-colour 'current' cue. The mock content source is deleted."
+      "status": "conforms"
     },
     {
       "route": "/learn/readers",
@@ -121,21 +89,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "empty": "EmptyState",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "The LIBRARY (`list` / Browse). Reading one passage is its own address — `/learn/readers/:passageId`, declared `detail` / Focus in pageChrome and painted with PageShell surface=\"paper\" (§2). Cards show word count, never a known-word ratio (the API's ratio is a generation-time column and cannot vary per learner)."
+      "status": "conforms"
     },
     {
       "route": "/learn/radicals",
@@ -146,24 +106,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "filters": "FilterControls",
-        "list": "Box",
-        "items": "Card",
-        "view-toggle": "Button",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "List with radical/phonetic tree views (edge); empty = no mastered radicals."
+      "status": "conforms"
     },
     {
       "route": "/learn/grammar",
@@ -174,23 +123,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "filters": "FilterControls",
-        "list": "Box",
-        "items": "Card",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "List pattern library; card click opens the shared LexicalHub."
+      "status": "conforms"
     },
     {
       "route": "/learn/chengyu",
@@ -201,24 +140,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "filters": "FilterControls",
-        "list": "Box",
-        "items": "Card",
-        "pager": "Button",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "List idiom library; edge = paginated list (3 pages)."
+      "status": "conforms"
     },
     {
       "route": "/practices/review",
@@ -229,24 +157,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "filters": "RadioGroup",
-        "rating": "Button",
-        "card": "Card",
-        "shell": "Box",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "overview",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "The PICKER is the entry surface (`overview` / Browse) since the §4 rework; the SESSION (`?type=&filter=`) is `detail` / Focus on the same route, resolved by pageChrome's session-query rule. Guests can run a session (BM-1 locks persistence only)."
+      "status": "conforms"
     },
     {
       "route": "/practices/quiz",
@@ -257,20 +174,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/practices/QuizPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "empty": "EmptyState"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "empty",
         "gutter": "default",
         "header": null
       },
-      "note": "Without `?type=` this route is the `empty` / Browse entry surface with one way out (§7); the SESSION (`?type=`) is `detail` / Focus via pageChrome's session-query rule."
+      "status": "conforms"
     },
     {
       "route": "/progress",
@@ -281,23 +191,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/ProgressPageFull.stories.tsx",
-      "states": ["loading", "default", "empty"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "section": "Box",
-        "progress": "ProgressBar",
-        "empty": "EmptyState",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "settings",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "Settings shell: PageShell + PageStack + PageHeader + ONE populated card (real numbers) or ONE honest empty state, each with the page's single primary `Start a review` CTA. The dev receipt and the three stub cards are gone (§6)."
+      "status": "conforms"
     },
     {
       "route": "/auth/login",
@@ -308,19 +208,13 @@
         "rail": "none",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/LoginPageFull.stories.tsx",
-      "states": ["default", "edge"],
-      "status": "conforms",
-      "composition": {
-        "focal-card": "Box"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "auth",
         "gutter": "default",
         "header": null
       },
-      "note": "PageShell(auth) is the 420px centered single column; the auth card owns the page h1 (LoginForm renders it), so there is no PageHeader. Shell-less presentation (auth outside AppLayout) is still an open product decision."
+      "status": "conforms"
     },
     {
       "route": "/auth/register",
@@ -331,19 +225,13 @@
         "rail": "none",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/RegisterPageFull.stories.tsx",
-      "states": ["default", "edge"],
-      "status": "conforms",
-      "composition": {
-        "focal-card": "Box"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "auth",
         "gutter": "default",
         "header": null
       },
-      "note": "PageShell(auth) is the 420px centered single column; the auth card owns the page h1 (RegisterForm renders it), so there is no PageHeader. Shell-less presentation (auth outside AppLayout) is still an open product decision."
+      "status": "conforms"
     },
     {
       "route": "/settings",
@@ -354,19 +242,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/SettingsPageFull.stories.tsx",
-      "states": ["default"],
-      "status": "conforms",
-      "composition": {
-        "section": "Box"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "settings",
         "gutter": "default",
         "header": null
       },
-      "note": "Thin settings placeholder (Box card section) inside PageShell(settings) since S5; full settings shell is not yet built."
+      "status": "conforms"
     },
     {
       "route": "/profile",
@@ -377,19 +259,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/ProfilePageFull.stories.tsx",
-      "states": ["default"],
-      "status": "conforms",
-      "composition": {
-        "section": "Box"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "profile",
         "gutter": "default",
         "header": null
       },
-      "note": "Thin profile placeholder (Box card section) inside PageShell(profile) since S5; the entry moved from the settings archetype to profile (one identity plus its activity)."
+      "status": "conforms"
     },
     {
       "route": "/learn/foundations",
@@ -400,23 +276,13 @@
         "rail": "collapsed",
         "topbar": "recessed"
       },
-      "story": "apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx",
-      "states": ["loading", "default", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "progress": "ProgressBar",
-        "section": "Box",
-        "items": "Card",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "wizard",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "The BLUEPRINT — week 1 as one sequential task (`wizard` / Focus, §3): one step per screen, one primary Continue, a stepper in the step header. The 409-cell reference moved to `/learn/foundations/reference`."
+      "status": "conforms"
     },
     {
       "route": "/learn/foundations/reference",
@@ -427,25 +293,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/foundations/FoundationsReferencePageFull.stories.tsx",
-      "states": ["loading", "default", "error", "edge"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "tabs": "Tabs",
-        "focal-point": "Box",
-        "progress": "ProgressBar",
-        "section": "Box",
-        "items": "Card",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "reports",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "The dense reference index (`reports` / Browse) — pinyin / tones / strokes / animations / pictographs as sibling tabs, URL-driven via `?tab=`. NO tab is locked (§1): the old 'Complete Phase 2 to unlock' gate on Pictographs is deleted."
+      "status": "conforms"
     },
     {
       "route": "/learn/phonetic-clusters",
@@ -456,22 +310,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx",
-      "states": ["loading", "default", "empty", "error"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader",
-        "list": "Box",
-        "items": "Card",
-        "loading": "Skeleton"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "list",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "List over phonetic cluster families (HSK filter)."
+      "status": "conforms"
     },
     {
       "route": "/learn/basic",
@@ -479,10 +324,7 @@
       "archetype": null,
       "mode": null,
       "chrome": null,
-      "story": null,
-      "states": [],
-      "status": "diverges",
-      "note": "Legacy redirect → /learn/foundations (no page container). Retire the alias when nothing references it; there is nothing to conform."
+      "status": "diverges"
     },
     {
       "route": "*",
@@ -493,19 +335,13 @@
         "rail": "expanded",
         "topbar": "standard"
       },
-      "story": "apps/frontend/src/pages/NotFoundPageFull.stories.tsx",
-      "states": ["default"],
-      "status": "conforms",
-      "composition": {
-        "header": "PageHeader"
-      },
       "anatomy": {
         "shell": "PageShell",
         "measure": "not-found",
         "gutter": "default",
         "header": "PageHeader"
       },
-      "note": "The app's ONE catch-all (§10), rendered INSIDE AppLayout so the chrome stays and the visitor is never trapped. The message is the h1 and `Back to dashboard` is the first tab stop in the content region."
+      "status": "conforms"
     }
   ]
 }

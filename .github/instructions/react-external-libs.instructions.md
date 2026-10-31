@@ -79,4 +79,4 @@ function MyCanvas({ onInit }: { onInit: (lib: ExternalLib) => void }) {
 
 ---
 
-**See also:** `frontend-pre-delivery-checklist.instructions.md` (animation rules) • `testing-standards.instructions.md` (test ref interactions)
+**See also:** `.github/skills/frontend-audit/SKILL.md` (animation rules) • `testing-standards.instructions.md` (test ref interactions)

@@ -85,7 +85,7 @@
 
 ## Pre-Delivery UI Checklist
 
-<!-- [UI-ONLY] Only for PRs touching UI. `.github/instructions/frontend-pre-delivery-checklist.instructions.md` (token compliance, states, a11y, layout, z-index/CLS, no console/TODO, Storybook story present, registry consulted). NOTE: `verification-artifacts/` is gitignored — paste verification summaries inline, do not reference by path. -->
+<!-- [UI-ONLY] Only for PRs touching UI. `.github/skills/frontend-audit/SKILL.md` Parts 2–4 (token compliance, states, a11y, layout, z-index/CLS, no console/TODO, Storybook story present, registry consulted). NOTE: `verification-artifacts/` is gitignored — paste verification summaries inline, do not reference by path. -->
 
 - [ ] Design tokens used (no hardcoded values)
 - [ ] All states covered (empty / loading / error / data)

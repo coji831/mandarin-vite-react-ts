@@ -26,7 +26,7 @@ You turn those reports into three decisions.
 Paths below are relative to the repository root (`mandarin-vite-react-ts`). The brief is **ADR-011**
 (`docs/guides/adr/design-direction-night-bench.md`), the archetypes are
 `docs/guides/design/page-archetypes.md` + `.github/page-inventory.json`, and the rubric is
-`docs/guides/design/design-quality-rubric.md`. **There are no per-page prep briefs in this repository**
+`docs/guides/design/uiux-fundamentals.md`. **There are no per-page prep briefs in this repository**
 — that is a standing property of the tree, not a gap for you to fill.
 
 ## Two passes, two rulebooks
@@ -65,7 +65,7 @@ to read the reviews of routes other than your own.
 | `verification-artifacts/design-review/design-review-*.md` | the per-route findings, your primary evidence |
 | `docs/guides/adr/design-direction-night-bench.md` | ADR-011, the brief every finding is weighed against |
 | `docs/guides/design/page-archetypes.md`, `.github/page-inventory.json` | the archetype each route claims |
-| `docs/guides/design/design-quality-rubric.md` | the measurable definition of good |
+| `docs/guides/design/uiux-fundamentals.md` | the measurable definition of good |
 | `DESIGN.md` | the recorded palette and component intent |
 | `docs/guides/adr/*.md` | the ratified decisions, including the ones ADR-011 builds on |
 

@@ -43,7 +43,7 @@ this repository, and one must not be invented for you.** The brief you are held 
 | --- | --- | --- |
 | **ADR-011 — Night Bench** | `docs/guides/adr/design-direction-night-bench.md` | the ratified North Star: a dark instrument register, a light paper surface **only** for long-form reading, one accent hue, sharp corners, no elevation |
 | **The page archetype** | `docs/guides/design/page-archetypes.md` + `.github/page-inventory.json` | which archetype this route is, and therefore which zone order and density it owes |
-| **The quality rubric** | `docs/guides/design/design-quality-rubric.md` | the measurable definition the design lead holds the page to |
+| **The quality rubric** | `docs/guides/design/uiux-fundamentals.md` | the measurable definition the design lead holds the page to |
 | **The measured inventory** | `apps/frontend/src` route tree, and the route's story | what the route claims to be |
 
 Because the brief is a **direction** rather than a per-page spec, a `BRIEF` finding here means the
@@ -68,7 +68,7 @@ across the set is the design lead's job.
 | **One route** | the running app (`npm run dev:frontend`), e.g. `http://localhost:5173/learn/radicals` | the subject |
 | **Its archetype** | `docs/guides/design/page-archetypes.md`, `.github/page-inventory.json` | the spec it is judged against |
 | **ADR-011** | `docs/guides/adr/design-direction-night-bench.md` | the locked direction |
-| **The rubric** | `docs/guides/design/design-quality-rubric.md` | the measurable definition of good |
+| **The rubric** | `docs/guides/design/uiux-fundamentals.md` | the measurable definition of good |
 | **Nothing else in the set** | — | see the isolation rule |
 
 ## The isolation rule — what you must NOT read

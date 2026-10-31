@@ -105,4 +105,4 @@ and goes straight to a routed `detail` page; a peek must never host one.
 
 ---
 
-**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-css-styling.instructions.md` (styling workflow) • `frontend-pre-delivery-checklist.instructions.md` (layout audit)
+**See also:** `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-css-styling.instructions.md` (styling workflow) • `.github/skills/frontend-audit/SKILL.md` (layout audit)

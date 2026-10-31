@@ -55,7 +55,7 @@ PinyinPal borrows **patterns and principles** from external sources, re-expresse
 1. **Extract** — state the principle in one sentence, free of the source's visual language (e.g. "the rating decision must cost <1s and one glance").
 2. **Translate** — map it onto `DESIGN.md`/`globals.css` tokens (`--space-*`, `--font-*`, `--color-*`) + registry components (`Button variant='rating-again/good/easy'`, `Card`, `ProgressBar`) — "none invented".
 3. **Register + story + test + a11y** — if the pattern needs a new shared component, it takes the exact internal path: `component-registry.json` entry + story + states + tests + a11y.
-4. **Gate** — `design-audit` · `check:registry-stories` · `check:page-inventory` · `test-storybook` · addon-a11y · pre-delivery · user preview. Record the borrow's origin in the design spec's `provenance:` field (`per-epic-design-spec.md`).
+4. **Gate** — `design-audit` · `check:registry-stories` · `check:page-inventory` · `test-storybook` · addon-a11y · pre-delivery · user preview. Record the borrow's origin in the design brief's `provenance:` field.
 
 **Eligibility filter:** a borrow must map onto an existing archetype's anatomy/CTA-slot/composition map (or it forces an _archetype change_ = a bigger decision) and serve a Browse or Focus moment — anything that straddles or invents a third mode is rejected.
 

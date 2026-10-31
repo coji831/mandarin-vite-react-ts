@@ -62,11 +62,11 @@ The per-class status vocabulary lives in
 Generated full tree — every tracked leaf (purpose · status · link), nested layer → small branch. `review` = stale > 6 weeks (machine override); scanned .md leaves must carry YAML front-matter (purpose/status/last-verified) — absence is a hard `check:system-map` failure; HTML leaves use a `<!-- last-verified: -->` marker.
 
 - [Layer 1 · Product / Business — review · 5 leaves](#layer-1)
-- [Layer 2 · Planning — planned · 8 leaves](#layer-2)
+- [Layer 2 · Planning — planned · 26 leaves](#layer-2)
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
-- [Layer 4 · Design System — review · 11 leaves](#layer-4)
-- [Layer 5 · Docs / Guides — review · 130 leaves](#layer-5)
-- [Layer 6 · Agentic System — review · 40 leaves](#layer-6)
+- [Layer 4 · Design System — review · 7 leaves](#layer-4)
+- [Layer 5 · Docs / Guides — review · 127 leaves](#layer-5)
+- [Layer 6 · Agentic System — review · 36 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -88,7 +88,28 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-2"><summary>Layer 2 · Planning — planned · 8 leaves</summary>
+<details id="layer-2"><summary>Layer 2 · Planning — planned · 26 leaves</summary>
+
+#### Epics
+
+| Purpose | Status | Link |
+| --- | --- | --- |
+| Secure Guest Identity & Route Gating | ratified | [docs/planning/epics/epic-25.md](planning/epics/epic-25.md) |
+| Practice Calibration: Engine Fixes + Guest Lane + Phase-B Formats | ratified | [docs/planning/epics/epic-26.md](planning/epics/epic-26.md) |
+| Gate & Data Calibration incl. HSK 2025-Rebase | ratified | [docs/planning/epics/epic-27.md](planning/epics/epic-27.md) |
+| Review & SRS Integrity + Comprehension | ratified | [docs/planning/epics/epic-28.md](planning/epics/epic-28.md) |
+| AI Gateway, Observability & Cost Governance | ratified | [docs/planning/epics/epic-29.md](planning/epics/epic-29.md) |
+| Assistant Explain + Deterministic Retrieval Seam | ratified | [docs/planning/epics/epic-30.md](planning/epics/epic-30.md) |
+| Assistant Conversation (Text SSE) | ratified | [docs/planning/epics/epic-31.md](planning/epics/epic-31.md) |
+| Suggestions Recommender v0 | ratified | [docs/planning/epics/epic-32.md](planning/epics/epic-32.md) |
+| Guardian Content + Agent Contract | ratified | [docs/planning/epics/epic-33.md](planning/epics/epic-33.md) |
+| FSRS Deep Modeling: `srs-core` + Fitting | ratified | [docs/planning/epics/epic-34.md](planning/epics/epic-34.md) |
+| Eval Harness & Fine-Tuning | ratified | [docs/planning/epics/epic-35.md](planning/epics/epic-35.md) |
+| ASR Pronunciation & Tone Feedback | ratified | [docs/planning/epics/epic-36.md](planning/epics/epic-36.md) |
+| HSK Exam-Prep Mode | ratified | [docs/planning/epics/epic-37.md](planning/epics/epic-37.md) |
+| ActivityEvent Substrate | ratified | [docs/planning/epics/epic-38.md](planning/epics/epic-38.md) |
+| Observability & Production Hardening | ratified | [docs/planning/epics/epic-39.md](planning/epics/epic-39.md) |
+| Data-Driven Learning Road: `LearnerProfile` + "Next for You" | ratified | [docs/planning/epics/epic-40.md](planning/epics/epic-40.md) |
 
 #### Planning
 
@@ -96,6 +117,8 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Area index for ratified planning docs — epics 25–40 + the D7 backend shell-swap track | active | [docs/planning/README.md](planning/README.md) |
 | Ratified re-sliced epic plan 25–40 (calibration + AI roadmap) + OI-1…OI-10 decision record | ratified | [docs/planning/epics-25-40.md](planning/epics-25-40.md) |
+| Decision record for open items OI-1 to OI-10 raised during the 25-40 re-slice | ratified | [docs/planning/open-items-oi-1-10.md](planning/open-items-oi-1-10.md) |
+| How the 25-40 plan differs from the earlier slice, and why each change was made | historical | [docs/planning/re-slice-notes.md](planning/re-slice-notes.md) |
 
 #### Business requirements
 
@@ -130,19 +153,15 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-4"><summary>Layer 4 · Design System — review · 11 leaves</summary>
+<details id="layer-4"><summary>Layer 4 · Design System — review · 7 leaves</summary>
 
 #### Design docs
 
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Design tokens and component specifications for the PinyinPal Mandarin learning platform. Amber primary on warm slate backgrounds. | active | [DESIGN.md](../DESIGN.md) |
-| The dense-data spec (uiux fundamental #10) — the row/column density contract, tabular numerals, status-via-roles, and how the reports and timed-scan surfaces compose with the archetypes; written ahead of epics 36/37 so dense lists are never invented ad hoc | active | [docs/guides/design/data-density-spec.md](guides/design/data-density-spec.md) |
-| Define "good" operationally — criteria × measurement × threshold — the scored quality bar for designs | **review** | [docs/guides/design/design-quality-rubric.md](guides/design/design-quality-rubric.md) |
 | Enable design decision-making — not just _what_ tokens exist, but _why_ and _when_ to use them | **review** | [docs/guides/design/design-reasoning.md](guides/design/design-reasoning.md) |
-| Per-epic design revalidation guide — each UI epic revalidates the surfaces in its scope against the ratified contract, and reworks from scratch when revalidation fails. | active | [docs/guides/design/design-revalidation-guide.md](guides/design/design-revalidation-guide.md) |
 | The page-level contract — a finite set of named Focus-First page skeletons every page parameterizes | active | [docs/guides/design/page-archetypes.md](guides/design/page-archetypes.md) |
-| The canonical per-epic design-spec template — one doc per UI epic (e.g. `features/*/docs/design.md`), replacing each `UI: … — design spec TBD` line | **review** | [docs/guides/design/per-epic-design-spec.md](guides/design/per-epic-design-spec.md) |
 | The 12 UIUX fundamentals applied to PinyinPal, the 7-layer QA pyramid, the consolidated AI-slop checklist, and the 2026 fact-check corrections — the committed source of record for UI quality | **review** | [docs/guides/design/uiux-fundamentals.md](guides/design/uiux-fundamentals.md) |
 | Reference index of the 29 verified UI/UX study resources (what each teaches, its PinyinPal application, and adoption status) — the entry point for future UI research | **review** | [docs/guides/design/uiux-resources.md](guides/design/uiux-resources.md) |
 
@@ -155,7 +174,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 130 leaves</summary>
+<details id="layer-5"><summary>Layer 5 · Docs / Guides — review · 127 leaves</summary>
 
 #### Getting started
 
@@ -201,7 +220,6 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | How to pin a security or coverage audit as a test that re-derives its subject from source, and how to leave tripwires when a feature is deliberately removed | active | [docs/guides/testing/executable-audits.md](guides/testing/executable-audits.md) |
 | Patterns, examples, and configuration for testing frontend code | **review** | [docs/guides/testing/frontend.md](guides/testing/frontend.md) |
 | Maintained, versioned list of KNOWN pre-existing failures so agents don't re-triage the same known-broken items | active | [docs/guides/testing/known-failures.md](guides/testing/known-failures.md) |
-| Reusable per-surface human visual-QA procedure — the judgment layer of the QA pyramid. Who runs it, on which stories, against which exemplar, and where the evidence lands. | **review** | [docs/guides/testing/visual-qa.md](guides/testing/visual-qa.md) |
 
 #### Integrations
 
@@ -209,7 +227,6 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | --- | --- | --- |
 | Unified guide for cookie-based authentication, CORS setup, API communication, and frontend-backend sync | **review** | [docs/guides/integrations/frontend-backend.md](guides/integrations/frontend-backend.md) |
 | Step-by-step guide for integrating the Google Gemini API for natural language generation, text analysis, and AI-powered features | **review** | [docs/guides/integrations/gemini-api.md](guides/integrations/gemini-api.md) |
-| Narrative companion to the storybook-production-alignment instruction — why the rules keep stories and pages in sync | **review** | [docs/guides/integrations/storybook-alignment.md](guides/integrations/storybook-alignment.md) |
 | How spoken audio is delivered to the browser — the unified audio capability and per-sentence resolution | **review** | [docs/guides/integrations/tts-audio-pipeline.md](guides/integrations/tts-audio-pipeline.md) |
 
 #### Data
@@ -307,7 +324,6 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Conventional Commits message format reference — type(scope): description | **review** | [docs/templates/commit-message-template.md](templates/commit-message-template.md) |
 | Copyable epic business-requirements template | **review** | [docs/templates/epic-business-requirements-template.md](templates/epic-business-requirements-template.md) |
 | Copyable epic implementation template | active | [docs/templates/epic-implementation-template.md](templates/epic-implementation-template.md) |
-| Copyable feature design-spec template — archetype + provenance-led design docs for `features/*/docs/design.md` | **review** | [docs/templates/feature-design-spec-template.md](templates/feature-design-spec-template.md) |
 | Copyable file-summary template | **review** | [docs/templates/file-summary-template.md](templates/file-summary-template.md) |
 | Copyable story business-requirements template | **review** | [docs/templates/story-business-requirements-template.md](templates/story-business-requirements-template.md) |
 | Copyable story implementation template | **review** | [docs/templates/story-implementation-template.md](templates/story-implementation-template.md) |
@@ -369,7 +385,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — review · 40 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — review · 36 leaves</summary>
 
 #### Instructions
 
@@ -382,11 +398,9 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Component architecture — state colocation, logic placement, 3-tier hierarchy, design-system drift prevention | **review** | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
 | CSS conventions — use design tokens, never hardcode values | **review** | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
 | Input debounce, timer edge cases | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
-| Pre-ship UI quality checklist — tokens, states, interaction, layout | **review** | [.github/instructions/frontend-pre-delivery-checklist.instructions.md](../.github/instructions/frontend-pre-delivery-checklist.instructions.md) |
 | Database schema change safety checks and migration commands | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
 | Quiz strategy pattern, routing, component reuse | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
 | Hanzi-writer, D3, canvas library integration with React | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
-| SOLAR v5 driver-orchestrated chain contract — the coordinator (Governor v5 / --auto) runs each link in order; you are ONE link. Never spawn or compose downstream links yourself (nested agents lack the spawn tool). | **review** | [.github/instructions/solar-agent-chain.instructions.md](../.github/instructions/solar-agent-chain.instructions.md) |
 | Page-container delegation, MSW mocking, state parity, drift prevention | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
 | Testing requirements for frontend and backend | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
 | theme-delta (no description) | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
@@ -394,7 +408,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
 | UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_18 instruction leaves · 19 on disk — project-workflow is the control-plane gate table._
+_16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
 
 #### Agents
 
@@ -416,13 +430,11 @@ _18 instruction leaves · 19 on disk — project-workflow is the control-plane g
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Extract a lesson from recent agent struggles and create a .instructions.md file to prevent recurrence. Use when: agent made a mistake, discovered a new convention, found a recurring issue pattern. | **review** | [.github/skills/add-instruction/SKILL.md](../.github/skills/add-instruction/SKILL.md) |
 | > | **review** | [.github/skills/add-theme/SKILL.md](../.github/skills/add-theme/SKILL.md) |
 | Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | **review** | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
 | > | **review** | [.github/skills/design-review/SKILL.md](../.github/skills/design-review/SKILL.md) |
 | Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | **review** | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
 | Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | **review** | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
-| Run Prisma schema changes safely after editing schema.prisma. Use when: editing schema.prisma, adding new models, changing columns, database migration. | **review** | [.github/skills/prisma-migration/SKILL.md](../.github/skills/prisma-migration/SKILL.md) |
 
 #### Control plane
 
@@ -459,7 +471,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 34 | 10 | 0 | 44 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 

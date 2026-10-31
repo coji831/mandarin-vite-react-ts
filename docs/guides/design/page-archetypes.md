@@ -12,7 +12,7 @@ audience: all
 **Audience:** AI Coding Agents
 **Purpose:** The page-level contract that makes cross-page consistency _structural_. A finite set of named page skeletons — every page is a parameterization of one archetype. Read this before designing any new page; the archetype _is_ the consistency contract, and the ledger (`.github/page-inventory.json`) is the living catalog.
 
-> **How to use this file:** (1) pick the archetype for your page from the mode/page table in §0; (2) fill its anatomy, states, CTA slot, and composition map from the YAML block — "none invented"; (3) write the per-epic design spec (`per-epic-design-spec.md`) naming `archetype: <id>`; (4) generate the Step 1 story conforming to the skeleton; (5) score against the design-quality rubric (`design-quality-rubric.md`).
+> **How to use this file:** (1) pick the archetype for your page from the mode/page table in §0; (2) fill its anatomy, states, CTA slot, and composition map from the YAML block — "none invented"; (3) generate the Step 1 story conforming to the skeleton.
 
 ---
 
@@ -769,8 +769,7 @@ gates  = user preview gate → design-audit · check:page-inventory ·
 
 ## Ledger & Gates
 
-- **`.github/page-inventory.json`** — one entry per page container: `{ route, component, archetype, story, states[], status: conforms|diverges }`. This is the machine-readable page contract and the divergence snapshot.
-- **`check:page-inventory`** (gate #7 in `project-workflow.instructions.md`) fails if a page lacks an entry, uses an unregistered archetype, names a non-registry component in its composition map, is missing its `Full` story, or declares no/illegal states.
-- **`design-quality-rubric.md`** — the human scoring companion (what "good" means, how to measure it).
+- **`.github/page-inventory.json`** — one entry per page container: `{ route, component, archetype, mode, chrome, anatomy, status: conforms|diverges }`. This is the machine-readable page contract and the divergence snapshot.
+- **`check:page-inventory`** (gate #7 in `project-workflow.instructions.md`) fails if a page lacks an entry or uses an unregistered archetype.
 
-**See also:** `design-reasoning.md` (design philosophy + token freeze + external borrowing) • `per-epic-design-spec.md` (the spec template that consumes this library) • `design-quality-rubric.md` (the scoring companion) • `frontend-pre-delivery-checklist.instructions.md` (shipped gate artifact).
+**See also:** `design-reasoning.md` (design philosophy + token freeze + external borrowing) • `uiux-fundamentals.md` (the 12 fundamentals the archetypes encode).

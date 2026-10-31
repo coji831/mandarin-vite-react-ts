@@ -20,19 +20,18 @@
  *       "rail": "expanded",                      //   expanded | collapsed | none
  *       "topbar": "standard"                     //   standard | recessed | none
  *     },
- *     "story": "apps/frontend/src/pages/...Full.stories.tsx",  // repo-relative; null when none
- *     "states": ["default"],                     // subset of ALLOWED_STATES
  *     "status": "conforms" | "diverges",         // M0 snapshot semantics (see below)
- *     "composition": { "region": "RegistryComponent" },  // optional; registry names ONLY
  *     "anatomy": {                               // OPTIONAL declared target (page-anatomy law, S0a-4)
  *       "shell": "PageShell",                    //   the page-content layout primitive (law target)
  *       "measure": "overview",                   //   archetype whose --page-measure-* governs the width;
  *                                                //   MUST equal the entry's `archetype`
  *       "gutter": "default",                     //   PageGrid gutter tier: sm | default | lg
  *       "header": "PageHeader" | null            //   header primitive (registry component) or null
- *     },
- *     "note": "optional human context"
+ *     }
  *   }
+ *
+ * Storybook stories are NOT part of this ledger: page stories were retired, and
+ * shared-component stories are enforced by check-registry-stories.
  *
  * Anatomy semantics (S0a-4, ratified rollout — "declared target" model):
  *   `anatomy` declares the page's TARGET under the page-anatomy law — the ledger
@@ -44,30 +43,25 @@
  *
  * Status semantics (M0 divergence report):
  *   - `conforms`  — the page claims it matches its archetype contract, so it
- *                   MUST declare: a valid archetype, a `component`, a `story`
- *                   whose file exists on disk, and >=1 valid state. A conforms
- *                   page missing any of those is a hard FAIL.
- *   - `diverges`  — the page is a known gap (missing Full story / unassigned
+ *                   MUST declare: a valid `archetype`, a `component`, mode +
+ *                   chrome derived from that archetype, and a matching
+ *                   `anatomy`. A conforms page missing any of those is a hard
+ *                   FAIL.
+ *   - `diverges`  — the page is a known gap (redirect by design / unassigned
  *                   archetype / anatomy not yet audited). It is REPORTED as a
  *                   divergence, not failed — this IS the M0 snapshot. But a
- *                   diverges entry that *declares* a story whose file is
- *                   missing, uses an illegal state, or names a non-registry
- *                   component in its composition map is still a hard FAIL
- *                   (declared-but-wrong is always drift).
+ *                   diverges entry that declares an illegal archetype, mode or
+ *                   chrome is still a hard FAIL (declared-but-wrong is always
+ *                   drift).
  *
  * Fail conditions (exit 1):
  *   1. A routed page has NO ledger entry ("lacks an entry").
  *   2. An entry declares an archetype not in the allowed enum.
- *   3. An entry's composition map names a component not in component-registry.json.
- *   4. A `conforms` entry is missing its Full story, or any entry declares a
- *      story whose file does not exist on disk.
- *   5. An entry has no/illegal states (values outside the allowed enum).
- *   6. An entry's component name does not resolve to a page file under
+ *   3. An entry's `anatomy.header` names a component not in component-registry.json.
+ *   4. An entry's component name does not resolve to a page file under
  *      apps/frontend/src/pages/**, or a page file has no ledger entry.
  *
  * Coverage sources (the "which pages exist" ground truth):
- *   - Every `<Page>Full.stories.tsx` under apps/frontend/src/pages/** must be
- *     referenced by a ledger entry's `story`.
  *   - Every `*Page.tsx` under apps/frontend/src/pages/** must appear as some
  *     entry's `component` (exempt list: internal/non-routed page helpers).
  *
@@ -106,20 +100,6 @@ const ALLOWED_ARCHETYPES = [
   "empty",
   "not-found",
   "wizard",
-];
-
-// Shared with check-registry-stories.mjs.
-const ALLOWED_STATES = [
-  "variant-catalog",
-  "default",
-  "loading",
-  "error",
-  "empty",
-  "disabled",
-  "edge",
-  "with-description",
-  "with-cta",
-  "with-eyebrow",
 ];
 
 // Page-anatomy contract (S0a-4, ratified rollout). The `measure` archetype is
@@ -200,17 +180,6 @@ function collectPageComponents() {
   return names;
 }
 
-/** All Full story files under pages/** (repo-relative). */
-function collectFullStories() {
-  if (!fs.existsSync(PAGES_DIR)) return [];
-  const stories = [];
-  for (const file of walkFiles(PAGES_DIR)) {
-    if (!file.endsWith("Full.stories.tsx")) continue;
-    stories.push(path.relative(ROOT, file).replace(/\\/g, "/"));
-  }
-  return stories;
-}
-
 /** Does a component name resolve to a real *Page.tsx under pages/**? */
 function pageComponentExists(name) {
   if (!fs.existsSync(PAGES_DIR)) return false;
@@ -282,49 +251,6 @@ function main() {
         problems.push(`duplicate component "${page.component}" (one entry per page container)`);
       } else {
         seenComponents.add(page.component);
-      }
-    }
-
-    // story file must exist when declared
-    if (page.story != null) {
-      if (typeof page.story !== "string" || page.story.length === 0) {
-        problems.push("`story` declared but not a non-empty string");
-      } else {
-        const absStory = path.resolve(ROOT, page.story);
-        if (!fs.existsSync(absStory)) {
-          problems.push(`story file not found on disk: ${page.story}`);
-        }
-      }
-    }
-
-    // states: legal enum values when declared
-    if (page.states != null) {
-      if (!Array.isArray(page.states)) {
-        problems.push("`states` must be an array");
-      } else {
-        const invalid = page.states.filter((s) => !ALLOWED_STATES.includes(s));
-        if (invalid.length > 0) {
-          problems.push(
-            `invalid state(s): ${invalid.join(", ")} (allowed: ${ALLOWED_STATES.join(", ")})`,
-          );
-        }
-      }
-    }
-
-    // composition map: registry names only
-    if (page.composition != null) {
-      if (typeof page.composition !== "object" || Array.isArray(page.composition)) {
-        problems.push("`composition` must be an object of { region: registryComponent }");
-      } else {
-        for (const [region, componentName] of Object.entries(page.composition)) {
-          if (typeof componentName !== "string") {
-            problems.push(`composition.${region} must be a component name string`);
-          } else if (!registryNames.has(componentName)) {
-            problems.push(
-              `composition.${region} names non-registry component "${componentName}" (not in component-registry.json)`,
-            );
-          }
-        }
       }
     }
 
@@ -404,14 +330,10 @@ function main() {
       }
     }
 
-    // conforms → must declare archetype + component + story + >=1 state + anatomy
+    // conforms → must declare archetype + component + mode + chrome + anatomy
     if (page.status === "conforms") {
       if (page.archetype == null) problems.push("conforms page missing `archetype`");
       if (page.component == null) problems.push("conforms page missing `component`");
-      if (page.story == null) problems.push("conforms page missing its `Full` story");
-      if (!Array.isArray(page.states) || page.states.length === 0) {
-        problems.push("conforms page missing declared states (expected >=1)");
-      }
       if (page.anatomy == null) {
         problems.push(
           "conforms page missing `anatomy` (declared target required — { shell: PageShell, measure: <archetype>, gutter, header })",
@@ -432,18 +354,6 @@ function main() {
     } else if (page.status === "diverges") {
       divergences.push(page);
     }
-  }
-
-  // ── Coverage: every Full story must be referenced by the ledger ───────────
-  const ledgerStories = new Set(pages.map((p) => p.story).filter((s) => typeof s === "string"));
-  const uncoveredStories = collectFullStories().filter((s) => !ledgerStories.has(s));
-  if (uncoveredStories.length > 0) {
-    failures.push({
-      label: "coverage",
-      problems: uncoveredStories.map(
-        (s) => `page has a <Page>Full.stories.tsx but no ledger entry references it: ${s}`,
-      ),
-    });
   }
 
   // ── Coverage: every page component must be in the ledger ──────────────────

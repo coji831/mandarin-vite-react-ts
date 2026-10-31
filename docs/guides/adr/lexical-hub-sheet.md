@@ -2,7 +2,7 @@
 purpose: "ADR-014 — the lexical hub is a navigator, not a session: it becomes a standalone cross-page peek sheet in the popover layer (no route, one history entry per open), and --size-hub-sheet lands through ADR-005's token route."
 status: ratified
 date: 2026-10-29
-relates-to: "ADR-005 (Token Freeze) · ADR-011 (Night Bench) · ADR-013 (composition, portals, focus) · design-revalidation-guide §4 (session vs navigator)"
+relates-to: "ADR-005 (Token Freeze) · ADR-011 (Night Bench) · ADR-013 (composition, portals, focus)"
 last-verified: 2026-10-29
 type: adr
 audience: agents
@@ -16,8 +16,8 @@ audience: agents
 ## Context
 
 The lexical hub (character / word / radical / chengyu / grammar detail) had been rebuilt twice:
-first as an app-wide modal overlay, then — under `design-revalidation-guide.md` §4 "session = route,
-not modal" — as a routed `detail`/Focus page at `/learn/hub/:entityType/:entityId`.
+first as an app-wide modal overlay, then — under the "session = route,
+not modal" rule — as a routed `detail`/Focus page at `/learn/hub/:entityType/:entityId`.
 
 The routed form failed its own business intent, measurably:
 
@@ -74,7 +74,6 @@ The routed form failed its own business intent, measurably:
 
 ## References
 
-- `docs/guides/design/design-revalidation-guide.md` §4 (the classifier)
 - `docs/guides/design/page-archetypes.md` §0 (mode/page table — the hub row is now Browse + peek)
 - `features/lexical-hub/components/HubSheet/HubSheet.tsx`
 - `shared/store/hubStore.ts` · `shared/hub-entry/hubEntryPoint.ts`

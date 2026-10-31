@@ -35,4 +35,4 @@ npx prisma migrate dev --name add-quiz-attempt-model
 
 ---
 
-**See also:** `.github/skills/prisma-migration/SKILL.md` (advanced migrations) • `backend-error-messages.instructions.md` (error format in services) • `testing-standards.instructions.md` (test your Prisma queries)
+**See also:** `backend-error-messages.instructions.md` (error format in services) • `testing-standards.instructions.md` (test your Prisma queries)

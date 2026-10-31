@@ -234,3 +234,36 @@ chain to one agent:
 Expect **N run-cards** (one per link) — richer telemetry, not a bug. If a
 specialist returns "I composed the next roles in-role", that is wrong: stop and
 spawn the real next specialist.
+
+## Link contract (when you are ONE link of a chain)
+
+Applies whenever you are dispatched as ONE link of a named chain — by Governor
+v5 headless `--auto`, or by the IDE driver. Do your step and return; the
+coordinator runs the links. If you are doing a normal single-step job, this
+section does not apply.
+
+1. **Do your own step first.** Follow your own agent definition and constraints.
+2. **Delegate ONLY if you can spawn.** If you have the agent tool, you MAY run
+   the next exact agent (name from the mapping above) with a brief carrying:
+   (a) the ORIGINAL epic objective, (b) the upstream context you received, and
+   (c) your own deliverable. If you do NOT have the agent tool, stop after your
+   step and return — the coordinator runs the next link.
+3. **Never fabricate.** Do not pretend to be, or compose output for, downstream
+   specialists you cannot actually run. Return your own deliverable and stop.
+4. **Parallel group:** if you have spawn capability, run each member with the
+   SAME shared brief and merge; otherwise return and let the coordinator run the
+   group.
+5. **Last link returns the final.** When you are `code-reviewer` (next =
+   complete), your output is the final result.
+6. **Bubble the final up.** Whatever a downstream link returns is what you
+   return to your caller. You may prepend a 1-2 line note on your own
+   deliverable, but never truncate or replace the downstream final.
+7. **Never loop.** Each role runs once per chain. If rework is needed, note it
+   in the returned result — do not re-run an upstream role yourself.
+8. **Carry context.** Pass file paths + links, not just prose, so the next
+   specialist can open exactly what you produced.
+9. **Human-owned gates stop you, not the governor.** If your role owns a human
+   gate (UIUX Designer: the User Preview Gate — never auto-merge design), you
+   stop at that gate and return `STATUS: AWAITING <gate>` + your deliverable
+   paths so the caller can get the human's decision before the chain continues.
+   That pause is a designed gate, not a governor bounce.

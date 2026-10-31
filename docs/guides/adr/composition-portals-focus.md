@@ -4,7 +4,7 @@ status: ratified
 last-verified: 2026-10-26
 type: decision
 audience: all
-relates-to: "ADR-002 (Fixed-Height Data Shells) · ADR-005 (Token Freeze) · ADR-007 (North-Star Visual Identity) · design-reasoning.md §0 External Borrowing Protocol · page-archetypes.md §0 · design-revalidation-guide.md"
+relates-to: "ADR-002 (Fixed-Height Data Shells) · ADR-005 (Token Freeze) · ADR-007 (North-Star Visual Identity) · design-reasoning.md §0 External Borrowing Protocol · page-archetypes.md §0"
 evidence: "apps/frontend/package.json (dependencies) · apps/frontend/src grep for createPortal / role=dialog / focus (2026-10-26) · WAI-ARIA APG Dialog (Modal) Pattern · design-reasoning.md §0 curated borrow shortlist (Radix row)"
 ---
 
@@ -63,7 +63,7 @@ seam, no second composition model beside the registry's.
 
 ### 3. Portals: allowed only for a transient overlay that must escape an ancestor
 
-**Session surfaces are routes, not modals** (`design-revalidation-guide.md` §4), so the conversation
+**Session surfaces are routes, not modals**, so the conversation
 panel needs no portal: it is a `detail` route, and its scrolling is the ADR-002 fixed shell's inner
 scroll. A portal is permitted only when all three hold:
 

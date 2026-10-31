@@ -5,7 +5,7 @@ applyTo: "**"
 
 # Accessibility floor
 
-The floor is WCAG 2.2 AA. The axe sweep in `docs/guides/testing/visual-qa.md` enforces what a machine
+The floor is WCAG 2.2 AA. The axe sweep enforces what a machine
 can check; the rest is a contract a reviewer checks by hand. `docs/guides/design/uiux-fundamentals.md`
 owns the full table and the component-by-component keyboard contracts; this file is the rule and its
 reason.

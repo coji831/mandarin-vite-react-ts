@@ -168,7 +168,7 @@ See `docs/guides/design/design-reasoning.md` for the full design philosophy docu
 
 ## Pre-Delivery Checklist
 
-Before reporting any UI as complete, run through the [Pre-Delivery Checklist](../../../.github/instructions/frontend-pre-delivery-checklist.instructions.md). It covers:
+Before reporting any UI as complete, run through the [Frontend Audit skill, Parts 2–4](../../../.github/skills/frontend-audit/SKILL.md). It covers:
 
 - Token compliance
 - States coverage (loading, empty, error)

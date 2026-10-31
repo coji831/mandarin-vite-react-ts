@@ -94,4 +94,4 @@ Untested edge cases in inputs cause the worst UX bugs — partial answers submit
 
 ---
 
-**See also:** `quiz-architecture.instructions.md` (timer strategies in quiz) • `testing-standards.instructions.md` (test timer edge cases) • `frontend-pre-delivery-checklist.instructions.md` (state coverage)
+**See also:** `quiz-architecture.instructions.md` (timer strategies in quiz) • `testing-standards.instructions.md` (test timer edge cases) • `.github/skills/frontend-audit/SKILL.md` (state coverage)

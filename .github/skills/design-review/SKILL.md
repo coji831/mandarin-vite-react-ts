@@ -18,14 +18,10 @@ existing round needs synthesising or re-verifying.
 priced each finding, R3 has re-checked every high-severity finding against the live render, and the
 round's receipts are on disk.
 
-`docs/guides/design/design-quality-rubric.md` owns the measurable definition of good and
 `docs/guides/design/page-archetypes.md` owns the page shapes. This skill is the sequence; it does not
-restate either.
+restate them.
 
-The review also applies `docs/guides/design/design-revalidation-guide.md` — a surface that fails the
-contract is **reworked from scratch**, not patched, and "session = route, not modal" is a binding rule.
-Dense surfaces are judged against `docs/guides/design/data-density-spec.md` (fundamental #10) and
-overlays against ADR-013 (`useFocusTrap`).
+Overlays follow ADR-013 (`useFocusTrap`).
 
 > **Roles are generic and skill-driven.** The review runs through the generic `layout-critic` → `design-lead`
 > roles in `.solar/registry.json`, each executing this skill. Do not proliferate one-off specialist agents

@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 38 | 10 | 0 | 48 | 48 |
+| A10 Agentic / Dev-Flow | 34 | 10 | 0 | 44 | 44 |
 
 
 <a id="a1"></a>
@@ -51,26 +51,26 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| / | ✅ | apps/frontend/src/pages/dashboard/DashboardPageFull.stories.tsx | documented | — | page-inventory |
+| / | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
 | /learn | — | docs/guides/design/page-archetypes.md | doc-only (route without page container (redirect/planned)) | — | page-inventory |
-| /practices | ✅ | apps/frontend/src/pages/practices/PracticesPageFull.stories.tsx | documented | — | page-inventory |
-| /library | ✅ | apps/frontend/src/pages/LibraryPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/readers | ✅ | apps/frontend/src/pages/learn/readers/ReadersPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/radicals | ✅ | apps/frontend/src/pages/learn/radicals/RadicalsPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/grammar | ✅ | apps/frontend/src/pages/learn/grammar/GrammarPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/chengyu | ✅ | apps/frontend/src/pages/learn/chengyu/ChengyuPageFull.stories.tsx | documented | — | page-inventory |
-| /practices/review | ✅ | apps/frontend/src/pages/practices/ReviewPageFull.stories.tsx | documented | — | page-inventory |
-| /practices/quiz | ✅ | apps/frontend/src/pages/practices/QuizPageFull.stories.tsx | documented | — | page-inventory |
-| /progress | ✅ | apps/frontend/src/pages/ProgressPageFull.stories.tsx | documented | — | page-inventory |
-| /auth/login | ✅ | apps/frontend/src/pages/LoginPageFull.stories.tsx | documented | — | page-inventory |
-| /auth/register | ✅ | apps/frontend/src/pages/RegisterPageFull.stories.tsx | documented | — | page-inventory |
-| /settings | ✅ | apps/frontend/src/pages/SettingsPageFull.stories.tsx | documented | — | page-inventory |
-| /profile | ✅ | apps/frontend/src/pages/ProfilePageFull.stories.tsx | documented | — | page-inventory |
-| /learn/foundations | ✅ | apps/frontend/src/pages/learn/foundations/FoundationsPageFull.stories.tsx | documented | — | page-inventory |
-| /learn/foundations/reference | ✅ | apps/frontend/src/pages/learn/foundations/FoundationsReferencePageFull.stories.tsx | documented | — | page-inventory |
-| /learn/phonetic-clusters | ✅ | apps/frontend/src/pages/learn/phonetic-clusters/PhoneticClustersPageFull.stories.tsx | documented | — | page-inventory |
+| /practices | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /library | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/readers | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/radicals | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/grammar | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/chengyu | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /practices/review | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /practices/quiz | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /progress | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /auth/login | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /auth/register | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /settings | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /profile | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/foundations | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/foundations/reference | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
+| /learn/phonetic-clusters | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
 | /learn/basic | — | — | doc-only (route without page container (redirect/planned)) | — | page-inventory |
-| * | ✅ | apps/frontend/src/pages/NotFoundPageFull.stories.tsx | documented | — | page-inventory |
+| * | ✅ | docs/guides/design/page-archetypes.md | documented | — | page-inventory |
 
 <a id="a3"></a>
 
@@ -175,11 +175,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (48)  ·  score 38/48 documented · 10 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (44)  ·  score 34/44 documented · 10 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 18 + agents 11 + skills 7)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
+| **Agentic layer (instructions 16 + agents 11 + skills 5)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
 | instructions/a11y-floor | ✅ | .github/instructions/a11y-floor.instructions.md | documented | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
@@ -187,11 +187,9 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | instructions/frontend-component-architecture | ✅ | .github/instructions/frontend-component-architecture.instructions.md | documented | — | check:system-map |
 | instructions/frontend-css-styling | ✅ | .github/instructions/frontend-css-styling.instructions.md | documented | — | check:system-map |
 | instructions/frontend-input-handling | ✅ | .github/instructions/frontend-input-handling.instructions.md | documented | — | check:system-map |
-| instructions/frontend-pre-delivery-checklist | ✅ | .github/instructions/frontend-pre-delivery-checklist.instructions.md | documented | — | check:system-map |
 | instructions/prisma-schema-changes | ✅ | .github/instructions/prisma-schema-changes.instructions.md | documented | — | check:system-map |
 | instructions/quiz-architecture | ✅ | .github/instructions/quiz-architecture.instructions.md | documented | — | check:system-map |
 | instructions/react-external-libs | ✅ | .github/instructions/react-external-libs.instructions.md | documented | — | check:system-map |
-| instructions/solar-agent-chain | ✅ | .github/instructions/solar-agent-chain.instructions.md | documented | — | check:system-map |
 | instructions/storybook-production-alignment | ✅ | .github/instructions/storybook-production-alignment.instructions.md | documented | — | check:system-map |
 | instructions/testing-standards | ✅ | .github/instructions/testing-standards.instructions.md | documented | — | check:system-map |
 | instructions/theme-delta | ✅ | .github/instructions/theme-delta.instructions.md | documented | — | check:system-map |
@@ -209,13 +207,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | agents/investigator | ✅ | .github/agents/investigator.agent.md | documented | — | check:system-map |
 | agents/layout-critic | ✅ | .github/agents/layout-critic.agent.md | documented | — | check:system-map |
 | agents/uiux-designer | ✅ | .github/agents/uiux-designer.agent.md | documented | — | check:system-map |
-| skills/add-instruction | ✅ | .github/skills/add-instruction/SKILL.md | documented | — | check:system-map |
 | skills/add-theme | ✅ | .github/skills/add-theme/SKILL.md | documented | — | check:system-map |
 | skills/backend-audit | ✅ | .github/skills/backend-audit/SKILL.md | documented | — | check:system-map |
 | skills/design-review | ✅ | .github/skills/design-review/SKILL.md | documented | — | check:system-map |
 | skills/docs-audit | ✅ | .github/skills/docs-audit/SKILL.md | documented | — | check:system-map |
 | skills/frontend-audit | ✅ | .github/skills/frontend-audit/SKILL.md | documented | — | check:system-map |
-| skills/prisma-migration | ✅ | .github/skills/prisma-migration/SKILL.md | documented | — | check:system-map |
 | conventions/api-client | ✅ | docs/guides/conventions/api-client.md | **partial** ⚠️ review (last-verified 2026-08-07 > 6 weeks) | — | check:system-map |
 | conventions/backend | ✅ | docs/guides/conventions/backend.md | **partial** ⚠️ review (last-verified 2026-09-03 > 6 weeks) | — | check:system-map |
 | conventions/data-import-scripts | ✅ | docs/guides/conventions/data-import-scripts.md | **partial** ⚠️ review (last-verified 2026-07-24 > 6 weeks) | — | check:system-map |

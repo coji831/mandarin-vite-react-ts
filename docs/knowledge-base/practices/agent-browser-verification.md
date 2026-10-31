@@ -119,5 +119,5 @@ non-ASCII text.
   pattern and its pitfalls (full URLs, `decodeURIComponent`, JWT-shaped refresh mocks).
 - `docs/knowledge-base/agentics/agent-visual-understanding.md` — the visual-design
   verification loop (Storybook-first, MCP toolchain).
-- `.github/instructions/frontend-pre-delivery-checklist.instructions.md` — the pre-ship UI
+- `.github/skills/frontend-audit/SKILL.md` (Parts 2–4) — the pre-ship UI
   checklist that browser verification feeds.

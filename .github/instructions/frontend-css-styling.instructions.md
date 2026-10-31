@@ -521,4 +521,4 @@ const getStyle = (isActive) => ({
 
 ---
 
-**See also:** `ui-composition.instructions.md` (layout rules) • `uiux-design-protocol.instructions.md` (design pipeline) • `frontend-pre-delivery-checklist.instructions.md` (token compliance check)
+**See also:** `ui-composition.instructions.md` (layout rules) • `uiux-design-protocol.instructions.md` (design pipeline) • `.github/skills/frontend-audit/SKILL.md` (token compliance check)
