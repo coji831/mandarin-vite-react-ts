@@ -9,7 +9,7 @@ type: epic
 
 **BR Reference:** `docs/business-requirements/epic-26-practice-calibration/README.md`
 
-**Branch:** `epic-26-practice-calibration` · **PR:** [#62](https://github.com/coji831/mandarin-vite-react-ts/pull/62)
+**Branch:** `epic-26-practice-calibration` · **PR:** [#62](https://github.com/coji831/mandarin-vite-react-ts/pull/62) (merged 2026-10-31, merge commit `6deb1c6d`)
 
 ## Epic Summary
 
@@ -27,7 +27,7 @@ type: epic
   already exist (`0` is the sentinel, and also a legal neutral tone). Q8 comprehension is the taxonomy's tenth
   format and stays in epic 28.
 
-**Status:** Completed — all eight stories landed on `epic-26-practice-calibration` and the branch is open as PR [#62](https://github.com/coji831/mandarin-vite-react-ts/pull/62), pending merge.
+**Status:** Completed — all eight stories landed on `epic-26-practice-calibration` and merged to `main` as PR [#62](https://github.com/coji831/mandarin-vite-react-ts/pull/62) (merge commit `6deb1c6d`, 2026-10-31).
 
 **Last Update:** October 31, 2026
 
