@@ -25,6 +25,8 @@ Use these commands when working with Storybook:
 
 **Do not start Storybook with `npm --prefix apps/frontend run storybook`.** `--prefix` resolves the package but leaves the shell's working directory in place, and `@storybook/builder-vite` generates the iframe import map with `path.relative(process.cwd(), importPath)` — so the map keys come out absolute and **every** story dies with `TypeError: importers[path] is not a function`, even though the build "succeeds". `.storybook/main.ts` now fails fast with an actionable message when `process.cwd()` is not the workspace root (Vitest story runs are exempt — `@storybook/addon-vitest` uses its own resolution). Use `--workspace=@mandarin/frontend`, or run `npm run storybook` from `apps/frontend`.
 
+**Accessibility is enforced on two surfaces with one rule set.** Components are covered by the Storybook axe gate above: `preview.tsx` sets `parameters.a11y.test: "error"`, so `test-storybook` fails on any axe violation in a story, running the six WCAG 2.2 A/AA tags named in that file's `a11y.options.runOnly`. Pages are covered by `apps/frontend/src/__tests__/pages.a11y.test.tsx` in the unit suite, which `test` and `test:full` already collect: it renders every route in `.github/page-inventory.json` through the real router in guest state and runs the same tags. The only pages it excludes are `/learn` and `/learn/basic`, which are `<Navigate>` redirects to `/learn/foundations` — that surface is checked directly.
+
 ### How to View Stories in the Browser
 
 After running `npm run storybook --workspace=@mandarin/frontend`, Storybook opens at `http://localhost:6006`. Use the `open_browser_page` tool to open this URL, then navigate to the story via the sidebar.
