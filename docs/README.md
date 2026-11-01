@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-10-31 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-11-01 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -394,22 +394,22 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| a11y-floor (no description) | **review** | [.github/instructions/a11y-floor.instructions.md](../.github/instructions/a11y-floor.instructions.md) |
-| Consistent error response format for API controllers | **review** | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
-| Documentation template compliance, technical challenges, KB extraction | **review** | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
-| API calls go through service layer, never direct | **review** | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
-| Component architecture — state colocation, logic placement, 3-tier hierarchy, design-system drift prevention | **review** | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
-| CSS conventions — use design tokens, never hardcode values | **review** | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
-| Input debounce, timer edge cases | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
-| Database schema change safety checks and migration commands | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
-| Quiz strategy pattern, routing, component reuse | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
-| Hanzi-writer, D3, canvas library integration with React | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
-| Page-container delegation, MSW mocking, state parity, drift prevention | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
-| Testing requirements for frontend and backend | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
-| theme-delta (no description) | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
-| token-discipline (no description) | **review** | [.github/instructions/token-discipline.instructions.md](../.github/instructions/token-discipline.instructions.md) |
-| Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
-| UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
+| The WCAG 2.2 floors every component and page must clear, and the one rule each floor implies. Applies to every file. | **review** | [.github/instructions/a11y-floor.instructions.md](../.github/instructions/a11y-floor.instructions.md) |
+| Use when writing backend API controllers, services, or error handling. Covers consistent error response format and message conventions. | **review** | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
+| Use when writing or updating a doc under docs/. Covers the leaf front-matter contract, template compliance, and the doc-to-code truth-check. | **review** | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
+| Use when making API calls from frontend code. Mandates service layer pattern — never call apiClient directly from hooks or components. | **review** | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
+| Where React state and logic belong: the three-layer hierarchy, colocation, service and store placement. Read when building or refactoring a component. | **review** | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
+| CSS rules for PinyinPal: the token law, the three-file split, and the prohibitions. Read before writing any stylesheet or className. | **review** | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
+| Use when building input components with debounce, auto-submit, or timer functionality. Covers edge cases like multi-character input and countdown completion. | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
+| Use when editing Prisma schema, adding database models, changing columns, or running migrations. Covers safety checks and required commands. | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
+| Use when creating or modifying quiz modes, quiz strategies, quiz pages, or quiz routing. Covers strategy pattern compliance, routing conventions, and component reuse rules. | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
+| Use when integrating external DOM-manipulating libraries (hanzi-writer, D3, charts, canvas libraries) with React components. Covers ref stability, DOM ownership, and lifecycle coordination. | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
+| Storybook is for shared components only. Read before adding or changing a shared component or its story. | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
+| Minimum testing requirements per tier: what must be tested, at what level, before a story closes. Read when adding logic, writing tests, or completing a story. | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
+| A theme is a delta overlay over the same semantic token names: no new names, no component overrides, no fork. Applies to the live token layer and the design spec. | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
+| The token layer is the only source of a value: every colour, length, duration and z-index reads var(--token). Applies to stylesheets and TSX. | **review** | [.github/instructions/token-discipline.instructions.md](../.github/instructions/token-discipline.instructions.md) |
+| Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
+| UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
 _16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
 
@@ -439,7 +439,7 @@ _16 instruction leaves · 17 on disk — project-workflow is the control-plane g
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Agent roles, behavior rules, prohibited patterns, and the agentic-layer enumerator | **review** | [.github/AGENTS.md](../.github/AGENTS.md) |
+| Agent roles, behavior rules, prohibited patterns; the rule/agent/skill inventory is derived from disk | **review** | [.github/AGENTS.md](../.github/AGENTS.md) |
 | Operational playbook for AI agents — quick start, architecture, rule index | **review** | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
 | Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | **review** | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
 | Visualized dev flow — generation stages, verification, gates | **review** | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |

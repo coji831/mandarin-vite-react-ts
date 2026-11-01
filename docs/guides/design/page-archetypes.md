@@ -39,7 +39,7 @@ Every route declares its mode as part of its page archetype — never ad hoc.
 5. **Density + spacing contract** — Focus surfaces stay consumer-comfortable (`gap-lg/md/sm/xs` hierarchy per `design-reasoning.md` §5.3; never the same gap at different levels); density rises only in Browse indexes and the HSK exam scan surface.
 6. **No page-scoped layout CSS, ever (page-anatomy law)** - every page composes PageShell
    (per-archetype `--page-measure-*`) -> PageStack (section rhythm) -> PageGrid (card home). No
-   page max-width / `margin:...auto` wrapper / `grid-template-columns` in `*Page.css`
+   page max-width / `margin:...auto` wrapper / `grid-template-columns` in a page's own stylesheet
    (`design-audit`: `missing-layout-token` / `page-scoped-layout-css` / `page-scoped-grid`). The
    anatomy ledger (`.github/page-inventory.json` shell/measure/gutter/header) is the machine
    contract; drift leaders converge in the S2 wave order (D5).

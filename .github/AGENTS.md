@@ -7,67 +7,10 @@ roles:
   - "Backend-focused developer (NestJS migration, Prisma, API, DB)"
   - "Code reviewer (cross-cutting conventions)"
   - "Documentation writer (Docs Writer agent — BR/impl docs, KB, guides, verification artifacts, truth-check)"
-instructions:
-  - file: ".github/copilot-instructions.md"
-    description: "The always-on law: commit gate, the never-do list, spine ownership, the seven-phase lifecycle table, naming, commands, and a routing table to the scoped rules. This is the only rule file loaded on every task"
-  - file: ".github/instructions/project-workflow.instructions.md"
-    description: "Development workflow, epic/story closing, quality gates"
-  - file: ".github/instructions/frontend-css-styling.instructions.md"
-    description: "CSS conventions — use design tokens, never hardcode values"
-  - file: ".github/instructions/frontend-component-architecture.instructions.md"
-    description: "Component architecture — state colocation, logic placement, 3-tier hierarchy, design-system drift prevention"
-  - file: ".github/instructions/frontend-api-client.instructions.md"
-    description: "API calls go through service layer, never direct"
-  - file: ".github/instructions/frontend-input-handling.instructions.md"
-    description: "Input debounce, timer edge cases"
-  - file: ".github/instructions/testing-standards.instructions.md"
-    description: "Testing requirements for frontend and backend"
-  - file: ".github/instructions/documentation-standards.instructions.md"
-    description: "Documentation template compliance, technical challenges, KB extraction"
-  - file: ".github/instructions/backend-error-messages.instructions.md"
-    description: "Consistent error response format for API controllers"
-  - file: ".github/instructions/prisma-schema-changes.instructions.md"
-    description: "Database schema change safety checks and migration commands"
-  - file: ".github/instructions/react-external-libs.instructions.md"
-    description: "Hanzi-writer, D3, canvas library integration with React"
-  - file: ".github/instructions/uiux-design-protocol.instructions.md"
-    description: "UIUX design protocol — Storybook-first pipeline, 12 UIUX fundamentals, AI-slop checklist, data-resilient shells, verification"
-  - file: ".github/instructions/quiz-architecture.instructions.md"
-    description: "Quiz strategy pattern, routing, component reuse"
-  - file: ".github/instructions/storybook-production-alignment.instructions.md"
-    description: "Page-container delegation, MSW mocking, state parity, drift prevention"
-  - file: ".github/instructions/ui-composition.instructions.md"
-    description: "Visual hierarchy, spacing rhythm, CTA clarity, container discipline, preview-vs-detail master-detail law"
-  - file: "DESIGN.md"
-    description: "Design tokens — colors, spacing, typography, component specs"
-  - file: ".github/component-registry.json"
-    description: "Shared component registry — the machine-checked catalog. MUST check before creating any UI structure; do not invent components not listed here"
-  - file: ".github/page-inventory.json"
-    description: "Page inventory / consistency ledger — every page's route, component, archetype, story, states; the page-level contract (verified via check:page-inventory)"
-  - file: ".github/skills/frontend-audit/SKILL.md"
-    description: "Frontend audit skill — Part 1 UIUX fundamentals + AI-slop, Parts 2–4 architecture/verification/integration"
-  - file: ".github/skills/backend-audit/SKILL.md"
-    description: "Backend audit checklist — error format, architecture, Prisma, security"
-  - file: ".github/skills/docs-audit/SKILL.md"
-    description: "Docs audit checklist — template compliance, truth-check, rename hygiene, cross-linking"
-skills:
-  - ".github/skills/frontend-audit/SKILL.md"
-  - ".github/skills/backend-audit/SKILL.md"
-  - ".github/skills/docs-audit/SKILL.md"
-agents:
-  - ".github/agents/architect.agent.md"
-  - ".github/agents/backend-engineer.agent.md"
-  - ".github/agents/code-reviewer.agent.md"
-  - ".github/agents/docs-writer.agent.md"
-  - ".github/agents/frontend-engineer.agent.md"
-  - ".github/agents/governor-v5.agent.md"
-  - ".github/agents/hermes.agent.md"
-  - ".github/agents/investigator.agent.md"
-  - ".github/agents/uiux-designer.agent.md"
 last-verified: 2026-09-06
 prohibitions:
   - "NEVER hardcode color, spacing, or typography values — use CSS variables or DESIGN.md tokens"
-  - "NEVER write page-scoped layout CSS - a page content region composes PageShell (per-archetype --page-measure-*) -> PageStack (section rhythm) -> PageGrid (card home); no page max-width, margin:...auto wrapper, or grid-template-columns in *Page.css (page-anatomy law; design-audit errors: missing-layout-token / page-scoped-layout-css / page-scoped-grid)"
+  - "NEVER write page-scoped layout CSS - a page content region composes PageShell (per-archetype --page-measure-*) -> PageStack (section rhythm) -> PageGrid (card home); no page max-width, margin:...auto wrapper, or grid-template-columns in a page's own stylesheet (page-anatomy law; design-audit errors: missing-layout-token / page-scoped-layout-css / page-scoped-grid)"
   - "NEVER create a new Button, Input, LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch, or ContentBrowser — import from src/shared/components/"
   - "NEVER store state in components/ — use stores/ directories"
   - "NEVER call apiClient directly from hooks or components — use service layer"
@@ -106,7 +49,7 @@ measure) -> PageHeader -> PageStack (section rhythm) -> PageGrid (cards)** - see
 shell/measure/gutter/header, verified by `check:page-inventory`).
 
 - **No page-scoped layout CSS, ever.** Never set a page max-width, a `margin: ... auto` centering
-  wrapper, or `grid-template-columns` in `*Page.css` - PageShell/PageStack/PageGrid own measure,
+  wrapper, or `grid-template-columns` in a page's own stylesheet - PageShell/PageStack/PageGrid own measure,
   rhythm, and the card grid. `design-audit` errors: `missing-layout-token`,
   `page-scoped-layout-css`, `page-scoped-grid` (S0a-3). Retrofit drift leaders in the S2 wave
   order - never add new UI on an un-converged shell (D5).

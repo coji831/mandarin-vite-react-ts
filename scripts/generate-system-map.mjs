@@ -19,9 +19,11 @@
  * and the flags strip. `docs/branches/` was deleted — a stale `docs/branches/`
  * dir is caught by `runCheck` as a linkage note, never a hard fail.
  *
- * Agentic layer (A10): enumerated from `.github/AGENTS.md` front-matter
- * (`instructions:` minus project-workflow · `agents:` · `skills:`), with a
- * directory-scan fallback + linkage note when a list is missing/out of sync.
+ * Agentic layer (A10): enumerated FROM DISK (`instructions:` minus
+ * project-workflow · `agents/` · `skills/`), each unit's purpose taken from
+ * the leaf's own front-matter `description:`. `.github/AGENTS.md` no longer
+ * hand-maintains those lists; if a list is still present and disagrees with
+ * the directory scan, `check` reports it as drift.
  * Freshness is layer-level via AGENTS.md `last-verified:`; per-file freshness
  * applies only to conventions (prose `**Last Updated:**`) and control-plane
  * (native markers); `decision-log.json` is exempt.
@@ -229,7 +231,7 @@ const LAYER_ORDER = [1, 2, 3, 4, 5, 6, 7];
 // front-matter on .github/ files. decision-log.json moved to the L3 tree leaf.
 const AGENTIC_PURPOSES = {
   ".github/AGENTS.md":
-    "Agent roles, behavior rules, prohibited patterns, and the agentic-layer enumerator",
+    "Agent roles, behavior rules, prohibited patterns; the rule/agent/skill inventory is derived from disk",
   ".github/copilot-instructions.md":
     "Operational playbook for AI agents — quick start, architecture, rule index",
   ".github/instructions/project-workflow.instructions.md":
@@ -782,13 +784,14 @@ function collectTooling() {
 /**
  * A10 — Docs + agentic + working (the agentic/dev-flow freshness area).
  * 5 groups, units are their OWN docs (docPath === the file itself):
- *   17 instructions (excl. project-workflow.instructions.md — the gate table
- *      control-plane row) · 7 agents · 6 skills · 8 conventions · 5 control-plane.
+ *   16 instructions (excl. project-workflow.instructions.md — the gate table
+ *      control-plane row) · 9 agents · 3 skills · 8 conventions · 5 control-plane.
  *
- * Enumeration comes from `.github/AGENTS.md` front-matter (the single
- * enumerator for instructions/agents/skills); a missing/out-of-sync list falls
- * back to the directory scan and emits a linkage note (never a hard fail).
- * Returns { units, notes }.
+ * Enumeration is DERIVED FROM DISK. `.github/AGENTS.md` used to hand-maintain
+ * `instructions:` / `agents:` / `skills:` lists; a hand-maintained inventory
+ * rots silently (three rules were added and the list was not), so disk is the
+ * enumerator now and a stale list — if one is ever present — is reported as
+ * drift by `agentsList`. Returns { units, notes }.
  */
 function collectAgentic() {
   const units = [];
@@ -808,8 +811,9 @@ function collectAgentic() {
 
   const agentsMeta = readAgentsFrontMatter();
 
-  // 1. Instructions (17) — from AGENTS.md `instructions:[].file`, filtered to
-  //    `/instructions/*.instructions.md`, minus project-workflow (control-plane).
+  // 1. Instructions (16) — every `/instructions/*.instructions.md` on disk,
+  //    minus project-workflow (the control-plane gate table). Purpose is the
+  //    rule's own front-matter `description:`.
   const instrOnDisk = listFiles(
     path.join(ROOT, ".github", "instructions"),
     (f) => f.endsWith(".instructions.md") && f !== "project-workflow.instructions.md",
@@ -826,12 +830,12 @@ function collectAgentic() {
       .split("/")
       .pop()
       .replace(/\.instructions\.md$/, "");
-    const desc = agentsMeta?.instructionDescs?.[rel];
-    if (!desc) notes.push(`instructions/${slug}: no description in AGENTS.md — using unit name`);
+    const desc = readLeafMeta(rel)?.description;
+    if (!desc) notes.push(`instructions/${slug}: no native description — using unit name`);
     push(`instructions/${slug}`, rel, "instructions", desc ?? `${slug} (no description)`);
   }
 
-  // 2. Review agents (7) — from AGENTS.md `agents:`.
+  // 2. Review agents (9) — every `.github/agents/*.agent.md` on disk.
   const agentsOnDisk = listFiles(path.join(ROOT, ".github", "agents"), (f) =>
     f.endsWith(".agent.md"),
   ).map((f) => `.github/agents/${f}`);
@@ -846,7 +850,7 @@ function collectAgentic() {
     push(`agents/${slug}`, rel, "agents", desc ?? `${slug} (no description)`);
   }
 
-  // 3. Skills (6) — from AGENTS.md `skills:` (SKILL.md inside each skill dir).
+  // 3. Skills (3) — every `.github/skills/*/SKILL.md` on disk.
   const skillsOnDisk = listDirs(path.join(ROOT, ".github", "skills")).map(
     (n) => `.github/skills/${n}/SKILL.md`,
   );
@@ -888,24 +892,26 @@ function collectAgentic() {
 }
 
 /**
- * Pick the enumeration list for an AGENTS.md-tracked group. Returns the
- * AGENTS.md list when it is present and in sync with the on-disk scan; on a
- * missing/out-of-sync list, falls back to the dir scan and records a linkage
- * note (never a hard fail).
+ * Enumerate an AGENTS.md-tracked group from disk, and report a stale list.
+ *
+ * Disk is the source of truth: `.github/AGENTS.md` no longer hand-maintains
+ * `instructions:` / `agents:` / `skills:`, so an ABSENT list is the normal
+ * state and is silent — warning on it would be a permanent false alarm, which
+ * is how real warnings get ignored. A list that IS present but disagrees with
+ * the directory scan is the drift case worth reporting, so that warns. Either
+ * way the disk scan is what gets returned.
  */
 function agentsList(fromAgents, onDisk, group, notes) {
   const norm = (p) => path.normalize(p).replace(/\\/g, "/");
   const diskSet = new Set(onDisk.map(norm));
   const missing = fromAgents.filter((p) => !diskSet.has(norm(p)));
-  const inSync =
-    fromAgents.length > 0 && missing.length === 0 && fromAgents.length === onDisk.length;
-  if (!inSync) {
+  const inSync = missing.length === 0 && fromAgents.length === onDisk.length;
+  if (fromAgents.length > 0 && !inSync) {
     notes.push(
       `AGENTS.md ${group} list missing/out of sync — falling back to dir scan (${fromAgents.length} in AGENTS.md vs ${onDisk.length} on disk)`,
     );
-    return onDisk;
   }
-  return fromAgents;
+  return onDisk;
 }
 
 // ─── Classification pass + scoreboard ────────────────────────────────────────
@@ -1589,10 +1595,12 @@ function renderTree(treeArg) {
 }
 
 /**
- * Parse `.github/AGENTS.md` front-matter for the agentic-layer enumeration:
- * `instructions:` (list of `file:` paths) · `agents:` (paths) · `skills:`
- * (paths) · `last-verified:` (scalar). Returns null when AGENTS.md or its
- * front-matter is missing; lists default to empty arrays.
+ * Parse `.github/AGENTS.md` front-matter. Enumeration is derived from disk by
+ * `collectAgentic`, so the `instructions:` / `agents:` / `skills:` lists are
+ * no longer the enumerator: they are read only so a list still present but
+ * stale is reported as drift. `last-verified:` is the live scalar consumer.
+ * Returns null when AGENTS.md or its front-matter is missing; lists default to
+ * empty arrays.
  */
 function readAgentsFrontMatter() {
   const abs = path.join(ROOT, ".github", "AGENTS.md");
@@ -1601,28 +1609,20 @@ function readAgentsFrontMatter() {
   const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
   if (!fm) return null;
   const meta = { instructions: [], agents: [], skills: [], "last-verified": null };
-  const instructionDescs = {};
   let currentKey = null;
-  let currentFile = null;
   for (const line of fm[1].split(/\r?\n/)) {
     const kv = line.match(/^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$/);
     if (kv) {
       currentKey = kv[1];
-      currentFile = null;
       const val = kv[2].trim();
       if (val) meta[currentKey] = val.replace(/^["']|["']$/g, "");
     } else if (currentKey === "instructions") {
-      // `- file: "..."` + `description: "..."` pairs — capture the purpose.
+      // `- file: "..."` entries; a nested `description:` line is ignored —
+      // the instruction file's own `description:` is the purpose now.
       const fileKv = line.match(/^\s*-\s+file:\s*["']?(.+?)["']?\s*$/);
       if (fileKv) {
-        currentFile = fileKv[1].trim().replace(/["']$/g, "");
         if (!Array.isArray(meta.instructions)) meta.instructions = [];
-        meta.instructions.push(currentFile);
-        continue;
-      }
-      const descKv = line.match(/^\s+description:\s*(.+?)\s*$/);
-      if (descKv && currentFile) {
-        instructionDescs[currentFile] = descKv[1].trim().replace(/^["']|["']$/g, "");
+        meta.instructions.push(fileKv[1].trim().replace(/["']$/g, ""));
       }
     } else {
       const item = line.match(/^\s*-\s+(.+)$/);
@@ -1635,7 +1635,6 @@ function readAgentsFrontMatter() {
       }
     }
   }
-  meta.instructionDescs = instructionDescs;
   return meta;
 }
 
@@ -1898,6 +1897,17 @@ function extractBlock(content, open, close) {
 
 // ─── Check: in-memory emit + diff + linkage/count-truth ─────────────────────
 
+/**
+ * Drop the generation-date stamp before comparing blocks.
+ *
+ * The stamp is emitted INSIDE the compared region, so a byte-exact comparison goes red at the first
+ * midnight after any regeneration and reports "stale" for a file that differs only by its date. A
+ * check that cries wolf every day is a check people learn to skip, and the real drift it exists to
+ * catch is indistinguishable from the noise.
+ */
+const stripStamp = (s) =>
+  s.replace(/<!-- generated \d{4}-\d{2}-\d{2} by scripts\/generate-system-map\.mjs[^>]*-->/g, "");
+
 function runCheck(areas, flags, agenticNotes) {
   const failures = [];
 
@@ -1922,7 +1932,7 @@ function runCheck(areas, flags, agenticNotes) {
       failures.push(
         `${label}: generated block missing — run \`npm run generate:system-map\` to emit it`,
       );
-    } else if (existing !== body.trim()) {
+    } else if (stripStamp(existing) !== stripStamp(body.trim())) {
       failures.push(
         `${label}: generated block is stale — run \`npm run generate:system-map\` (drift from sources)`,
       );
