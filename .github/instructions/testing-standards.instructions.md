@@ -10,7 +10,7 @@ stay narrow, and end-to-end covers a few critical journeys.
 
 | Tier | What it is | When it runs |
 | --- | --- | --- |
-| Static | `tsc`, eslint, stylelint, `design-audit` | every change |
+| Static | `tsc`, eslint, stylelint, `design-audit:foundation` | every change |
 | Unit | one pure function or hook in isolation | logic worth isolating |
 | Integration | a component or service with real collaborators, MSW for HTTP | the largest slice |
 | End-to-end | a critical journey through the real app | few, and only critical |
@@ -34,8 +34,8 @@ stay narrow, and end-to-end covers a few critical journeys.
 
 ## Gates
 
-Tier 1 and Tier 2 are defined in `project-workflow.instructions.md` and are the only place a gate list
-lives. Run `npm test` for the changed scope while working; `npm run test:full` before a story closes.
+Tiers 1 and 2 live in `project-workflow.instructions.md`, the only gate list. Run `npm test` for the
+changed scope while working; `npm run test:full` before a story closes.
 A failure that already exists belongs in `docs/guides/testing/known-failures.md`: match it there first
 rather than re-triaging from scratch.
 

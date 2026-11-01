@@ -5,13 +5,14 @@ applyTo: "**/*.css,apps/frontend/src/**/*.tsx"
 
 # CSS and styling
 
-Every value reads a token. The token layer is `styles/globals.css` (`:root`, plus single-property
-utilities), with `styles/components.css` (multi-property patterns) and `styles/animations.css`
-(`@keyframes`, transition classes) imported beside it. `DESIGN.md` records the intent.
+Every value reads a token. The token layer is `styles/globals.css`, with `styles/components.css` and
+`styles/animations.css` imported beside it; the table below says what each one holds. `DESIGN.md`
+records the intent.
 
-**The gate is the authority, not this file.** `npm run design-audit` reports a literal as
-`hardcoded-color`, `hardcoded-spacing` or `hardcoded-font-size`, and `npm run check:spine-parity`
-checks the name vocabulary. If this file and the gate disagree, the gate wins.
+**Reported, never gated.** `npm run design-audit` (the `--full` run, a pinned measurement that already
+exits 1) reports a literal as `hardcoded-color`, `hardcoded-spacing` or `hardcoded-font-size`; stylelint
+fails only CSS `rgb()`/`rgba()`; `npm run check:spine-parity` checks the name vocabulary. This file is
+the law.
 
 ## The prohibitions
 

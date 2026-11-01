@@ -5,7 +5,7 @@ applyTo: "apps/frontend/src/**/*.tsx"
 
 # UIUX protocol
 
-Three obligations, and the gates enforce them. Everything else is judgement and lives in the guides.
+Three obligations. Everything else is judgement and lives in the guides.
 
 ## 1. The design system is spine, read through the MCP
 
@@ -40,8 +40,8 @@ data density, composition and portals, and the external-reference discipline. Th
 applied form are in `docs/guides/design/uiux-fundamentals.md`; read it rather than scoring from this
 list, which only exists so you know what you are missing.
 
-The AI-slop tells are machine-checked by `design-audit` (`slop-*`, `accent-budget`, `rounded-card-tell`,
-`centered-column-tell`, `eyebrow-pill-tell`), so they are not restated here. Run the gate.
+The AI-slop tells are reported, not gated, by `npm run design-audit` (`slop-*`, `accent-budget`,
+`rounded-card-tell`, `centered-column-tell`, `eyebrow-pill-tell`), so they are not restated here.
 
 ## The gates
 
