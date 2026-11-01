@@ -1,0 +1,518 @@
+{
+  "reason": "Pre-existing debt accepted 2026-11-01, not a target: relative links that pointed at moved or retired docs before this gate existed (mostly under docs/business-requirements/archive/). Pinned as identities, not as a count, so a fix in one file cannot pay for a new break in another. Every entry here is a link the tree no longer resolves; the list is cleared by the docs link-repair batch, one entry at a time, and the gate turns red on any entry that stops being broken.",
+  "pinned": "2026-11-01",
+  "entries": [
+    {
+      "file": "docs/business-requirements/archive/epic-14-api-modernization/story-14-4-progress-service-migration.md",
+      "target": "../../epic-15-learning-retention/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../architecture.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../guides/conventions/frontend.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../guides/conventions/state-management.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../guides/integrations/gemini-api.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../guides/operations/troubleshooting.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../guides/setup/redis.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../issue-implementation/epic-15-learning-retention/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../knowledge-base/learning-theory/chinese-character-structure.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../knowledge-base/learning-theory/cognitive-science-active-recall.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../knowledge-base/learning-theory/gamification-psychology-learning.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../knowledge-base/learning-theory/spaced-repetition-algorithms.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../../knowledge-base/learning-theory/vocabulary-retention-research.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/README.md",
+      "target": "../archive/epic-14-api-modernization/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../../TODO.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../guides/conventions/frontend.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../guides/conventions/state-management.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../guides/integrations/gemini-api.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../guides/operations/troubleshooting.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../guides/setup/redis.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../knowledge-base/learning-theory/chinese-character-structure.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../knowledge-base/learning-theory/cognitive-science-active-recall.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../knowledge-base/learning-theory/gamification-psychology-learning.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../knowledge-base/learning-theory/spaced-repetition-algorithms.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/enhancements-from-research.md",
+      "target": "../../knowledge-base/learning-theory/vocabulary-retention-research.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/story-15-11-feature-extensions.md",
+      "target": "../epic-17-knowledge-hub/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/story-15-2-core-quiz-backend.md",
+      "target": "../../issue-implementation/epic-15-learning-retention/story-15-2-core-quiz-backend.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md",
+      "target": "../../issue-implementation/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/README.md",
+      "target": "../../architecture.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/README.md",
+      "target": "../../issue-implementation/epic-16-word-examples/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/README.md",
+      "target": "../archive/epic-14-api-modernization/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/README.md",
+      "target": "../archive/epic-8-conversation-generation/README.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/story-16-1-single-line-example-api.md",
+      "target": "../../issue-implementation/epic-16-word-examples/story-16-1-single-line-example-api.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/story-16-2-example-ui-component.md",
+      "target": "../../issue-implementation/epic-16-word-examples/story-16-2-example-ui-component.md"
+    },
+    {
+      "file": "docs/business-requirements/archive/epic-16-word-examples/story-16-3-example-caching-performance.md",
+      "target": "../../issue-implementation/epic-16-word-examples/story-16-3-example-caching-performance.md"
+    },
+    {
+      "file": "docs/guides/conventions/backend.md",
+      "target": "../knowledge-base/backend/backend-architecture.md"
+    },
+    {
+      "file": "docs/guides/conventions/git.md",
+      "target": "../templates/commit-message-template.md"
+    },
+    {
+      "file": "docs/guides/integrations/frontend-backend.md",
+      "target": "../knowledge-base/backend/api-response-patterns.md"
+    },
+    {
+      "file": "docs/guides/integrations/frontend-backend.md",
+      "target": "../knowledge-base/backend/backend-architecture.md#cors-cross-origin-resource-sharing-deep-dive"
+    },
+    {
+      "file": "docs/guides/integrations/frontend-backend.md",
+      "target": "../knowledge-base/backend/backend-authentication.md"
+    },
+    {
+      "file": "docs/guides/integrations/frontend-backend.md",
+      "target": "./troubleshooting.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "../deployment-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "../knowledge-base/backend/backend-architecture.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "../knowledge-base/backend/backend-authentication.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "../knowledge-base/frontend/frontend-development-server.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "../knowledge-base/infrastructure/integration-caching.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./backend-testing-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./database-setup-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./environment-setup-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./frontend-development-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./frontend-testing-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./redis-setup-guide.md"
+    },
+    {
+      "file": "docs/guides/operations/troubleshooting.md",
+      "target": "./vite-setup-guide.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./api-client-patterns.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./environment-setup-guide.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./frontend-backend-integration-guide.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./frontend-conventions.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./frontend-testing-guide.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./state-management-patterns.md"
+    },
+    {
+      "file": "docs/guides/setup/frontend-development.md",
+      "target": "./troubleshooting.md#development-server-wont-start"
+    },
+    {
+      "file": "docs/guides/setup/tooling-standards.md",
+      "target": "conventions/backend.md"
+    },
+    {
+      "file": "docs/guides/setup/tooling-standards.md",
+      "target": "conventions/frontend.md"
+    },
+    {
+      "file": "docs/guides/setup/tooling-standards.md",
+      "target": "getting-started/environment-setup.md"
+    },
+    {
+      "file": "docs/guides/setup/tooling-standards.md",
+      "target": "setup/linting.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-13-production-backend-architecture/summary.md",
+      "target": "../../../../apps/backend/src/api/docs/openapi.yaml"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/README.md",
+      "target": "../../architecture.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/README.md",
+      "target": "../../business-requirements/epic-15-learning-retention/README.md#business-rules"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/README.md",
+      "target": "../archive/epic-14-api-modernization/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-1-progress-system-adaptation.md",
+      "target": "../../../apps/backend/prisma/schema.prisma"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-1-progress-system-adaptation.md",
+      "target": "../../../apps/backend/src/core/services/ProgressService.js"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-1-progress-system-adaptation.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-1-progress-system-adaptation.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-10-quiz-ux-polish.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-10-quiz-ux-polish.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-11-feature-extensions.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-11-feature-extensions.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-11-research-validation.md",
+      "target": "../../business-requirements/epic-15-learning-retention/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-11-research-validation.md",
+      "target": "../../business-requirements/epic-15-learning-retention/enhancements-from-research.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-11-research-validation.md",
+      "target": "../../knowledge-base/learning-theory/vocabulary-retention-research.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-12-documentation-finalization.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-12-documentation-finalization.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-12-documentation-finalization.md",
+      "target": "../../guides/conventions/frontend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-12-documentation-finalization.md",
+      "target": "../../guides/testing/frontend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-2-core-quiz-backend.md",
+      "target": "../../../apps/backend/docs/api-spec.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-2-core-quiz-backend.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-2-core-quiz-backend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-2-core-quiz-backend.md",
+      "target": "../../guides/testing/backend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-2-core-quiz-backend.md",
+      "target": "../../knowledge-base/backend/backend-database-postgres.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-3-streak-gamification-backend.md",
+      "target": "../../../apps/backend/docs/api-spec.md#gamification-endpoints-story-153"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-3-streak-gamification-backend.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-3-streak-gamification-backend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-4-ai-feedback-backend.md",
+      "target": "../../../apps/backend/docs/api-spec.md#ai-feedback-endpoints-story-154"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-4-ai-feedback-backend.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-4-ai-feedback-backend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-5-core-quiz-ui-components.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-5-core-quiz-ui-components.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-6-quiz-container-state.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-6-quiz-container-state.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md",
+      "target": "../../guides/conventions/frontend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-7-gamification-feedback-display-ui.md",
+      "target": "../../knowledge-base/practices/solid-principles.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-8-core-quiz-integration.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-8-core-quiz-integration.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-15-learning-retention/story-15-9-gamification-ai-integration.md",
+      "target": "../../business-requirements/epic-15-learning-retention/story-15-9-gamification-ai-integration.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-16-word-examples/README.md",
+      "target": "../../architecture.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-16-word-examples/README.md",
+      "target": "../../business-requirements/epic-16-word-examples/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-16-word-examples/README.md",
+      "target": "../archive/epic-14-api-modernization/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-16-word-examples/README.md",
+      "target": "../archive/epic-8-conversation-generation/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-18-foundations/README.md",
+      "target": "apps/backend/src/shared/utils/contentUtils.js"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-18-foundations/README.md",
+      "target": "docs/audits/epic-18-foundations-audit.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "apps/backend/src/modules/review/"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "apps/frontend/src/features/character-hub/"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "apps/frontend/src/features/review/"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "content/manifest.json"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "docs/business-requirements/archive/epic-19-radicals/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "docs/guides/conventions/backend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "docs/guides/conventions/frontend.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "docs/issue-implementation/archive/epic-18-foundations/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/README.md",
+      "target": "docs/knowledge-base/data/shared-data-model.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-19-radicals/story-19-4-radical-trees.md",
+      "target": "../../../../.github/skills/component-decomposition/SKILL.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-2-vocabulary-learning-flow/README.md",
+      "target": "../../../src/features/mandarin/components/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/README.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/README.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/README.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-1-card-based-layout-implementation.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/README.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-2-metadata-integration-display.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/README.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-3-search-filtering-functionality.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/README.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-4-visual-enhancements-responsive-design.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/story-5-1-card-based-layout-implementation.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-1-card-based-layout-implementation.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/story-5-2-metadata-integration-display.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-2-metadata-integration-display.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/story-5-3-search-filtering-functionality.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-3-search-filtering-functionality.md"
+    },
+    {
+      "file": "docs/issue-implementation/archive/epic-5-vocabulary-list-ui-enhancement/story-5-4-visual-enhancements-responsive-design.md",
+      "target": "../../business-requirements/epic-5-vocabulary-list-ui-enhancement/story-5-4-visual-enhancements-responsive-design.md"
+    },
+    {
+      "file": "docs/knowledge-base/backend/backend-advanced-patterns.md",
+      "target": "./infra-deployment.md"
+    },
+    {
+      "file": "docs/knowledge-base/backend/backend-architecture.md",
+      "target": "./frontend-development-server.md"
+    },
+    {
+      "file": "docs/knowledge-base/frontend/strategy-pattern-frontend.md",
+      "target": "../architecture.md#quiz--review-system"
+    },
+    {
+      "file": "docs/knowledge-base/infrastructure/infra-configuration-management.md",
+      "target": "./backend-database-cloud.md"
+    },
+    {
+      "file": "docs/knowledge-base/infrastructure/infra-configuration-management.md",
+      "target": "./frontend-development-server.md"
+    },
+    {
+      "file": "docs/knowledge-base/practices/documentation-patterns.md",
+      "target": "../templates/story-implementation-template.md"
+    },
+    {
+      "file": "docs/knowledge-base/practices/git-workflow.md",
+      "target": "../guides/setup/linting.md"
+    },
+    {
+      "file": "docs/knowledge-base/testing/storybook-addon-vitest.md",
+      "target": "./storybook-msw-handlers.md"
+    }
+  ]
+}

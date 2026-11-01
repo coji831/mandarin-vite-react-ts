@@ -23,9 +23,10 @@
  *      - a probe whose regex matches nothing is a FAILURE ("probe blind"), never a pass. That is the
  *        exact failure mode this gate exists to catch, and a blind probe would otherwise reproduce it;
  *      - a gate that exits 1 on pre-existing debt is NOT a liveness failure. `check:doc-links` reports
- *        `623 markdown file(s) scanned` and exits 1 over 128 unresolved links: the denominator is 623,
- *        so the gate is alive. The verdict belongs to that gate and the docs work; this reads the
- *        denominator only, and never makes its own run red because another gate is red on debt;
+ *        `623 markdown file(s) scanned` and is green against its pinned baseline of 128 unresolved
+ *        links: the denominator is 623, so the gate is alive whatever its verdict. The verdict belongs
+ *        to that gate, and this reads the denominator only, never making its own run red because
+ *        another gate is red on debt;
  *      - a probe may be PINNED DEAD with a reason naming what clears it. The pin cuts both ways: a
  *        pinned gate that starts reporting a non-zero denominator is a finding ("baseline stale"), so
  *        a pin cannot outlive the condition that justified it.
@@ -92,7 +93,7 @@ const PROBES = [
   {
     script: "check:doc-links",
     denominator: [at(/(\d+) markdown file\(s\) scanned/)],
-    note: "exits 1 over 128 unresolved links of pre-existing debt; 623 scanned files is the denominator",
+    note: "623 scanned files is the denominator; its 128 unresolved links are pinned in the baseline",
   },
   {
     script: "check:reflow",

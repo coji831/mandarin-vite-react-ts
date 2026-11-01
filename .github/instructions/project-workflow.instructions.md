@@ -36,7 +36,7 @@ its own gate set.
 | 10 | Backend type-check | `npm run typecheck --workspace=@mandarin/backend` | backend | program files from the backend tsconfig; none printed |
 | 11 | Frontend audit skill | `.github/skills/frontend-audit/SKILL.md` | frontend | UI, components, pages and userflows against uiux-fundamentals.md |
 | 12 | Backend audit skill | `.github/skills/backend-audit/SKILL.md` | backend | backend modules against the boundary, validation and DI rules |
-| 13 | Docs + AC + truth-check | BR/impl/design updated; every AC complete; doc-code truth-check; `npm run check:system-map; npm run check:doc-links` | blocking | surfaces from the system-map scoreboard; links from `docs/**`, `.github/**` and root `*.md` |
+| 13 | Docs + AC + truth-check | BR/impl/design updated; every AC complete; doc-code truth-check; `npm run check:system-map; npm run check:doc-links` | blocking | surfaces from the system-map scoreboard; unresolved-link identities from `docs/**`, `.github/**` and root `*.md`, matched against the pinned baseline |
 | 14 | Design parity | `npm run check:design-parity` | `DESIGN.md` + `globals.css` | token/var pairs from DESIGN.md and globals.css |
 | 15 | Name discipline | `npm run check:spine-parity` | `globals.css` + spine snapshot | var names from `:root` in globals.css and `tools/spine-token-names.json` |
 | 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets | classes from globals.css, components.css and animations.css |
@@ -59,8 +59,15 @@ Notes that cost a run when missed:
   `page-anatomy findings: 0 of 639 total`). The unfiltered `--full` run (`npm run design-audit`) is a
   **pinned-baseline measurement, not a gate**: it exits 1 at `219 error(s), 420 warning(s) in 639
   finding(s)` against a floor of 249/436/685, and stays out of CI on purpose.
-- **`check:doc-links` and `check:system-map`** are red at times on pre-existing debt. Compare against
-  the base commit, do not chase zero.
+- **`check:system-map`** is red at times on pre-existing debt. Compare against the base commit, do not
+  chase zero.
+- **`check:doc-links` is a ratchet against a pinned baseline, not a chase to zero.** The unresolved
+  relative links accepted as pre-existing debt are pinned by identity (`file` + `target`) in
+  `.github/doc-links-baseline.json`, whose size and `pinned` date are the record. A break that is not
+  in the baseline is red and named on its own; a baseline entry that is no longer broken is red and
+  asks you to lower the baseline; an unchanged tree is green, with the current and baseline counts on
+  one line. Re-pin deliberately with `npm run check:doc-links -- --print-baseline`, review the diff,
+  and never re-pin just to get green.
 - **`check:solar-parity` is driven by the table above, not by a list of its own.** It reads every
   `npm run` in a numbered row and fails when the script does not exist, when no command in
   `.solar/commands.json` runs it, or when a solar command names a script nobody has. Adding a gate here
