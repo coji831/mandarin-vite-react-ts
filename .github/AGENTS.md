@@ -19,26 +19,6 @@ prohibitions:
   - "NEVER invent a generic design token, generic component, or page-archetype measure - spine (`C:\\CodeProjects\\Personal\\spine`, reachable through the spine MCP) is the source of truth for the generic layer; PinyinPal owns only its theme overlay + `domain.pinyinpal` support tokens"
 ---
 
-## How context loads (and its budget)
-
-Two mechanisms exist, and nothing else. A rule whose frontmatter carries `applyTo` arrives when you
-touch a matching path. A skill arrives when its `description` matches your task. Everything else in
-`docs/` costs nothing until you open it, which is why `docs/` is allowed to be large and this directory
-is not.
-
-Measured by `npm run check:load` against `.github/agent-surface.json`:
-
-- **always-on** = `copilot-instructions.md` + `a11y-floor` (`applyTo: **`) + the session's user-level
-  instructions (`~/.copilot/instructions`). Counted once per task, before any file is read.
-- **fan-in** = the rules one representative edit pulls in, summed with the always-on layer. This is the
-  number that bites: at the branch base, eight instructions carried an `apps/frontend/src/**/*.tsx` glob
-  and measured 85,270 B between them, so one component edit arrived behind a five-figure wall of rules. It
-  is six now, because `ui-composition` was keyed on every `.tsx` while its subject is a page or layout.
-
-Both ceilings are a ratchet. When you earn headroom, lower the number in the same commit. If a new rule
-needs a broad glob, prefer a narrow one plus a pointer from the routing table in
-`copilot-instructions.md`.
-
 ## UI Codegen Protocol
 
 ## Page-Anatomy Law (read before building ANY page)
