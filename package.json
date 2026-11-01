@@ -47,6 +47,7 @@
     "check:solar-parity": "node scripts/check-solar-parity.mjs",
     "check:load": "node scripts/check-load.mjs",
     "check:gate-liveness": "node scripts/check-gate-liveness.mjs",
+    "gates": "node scripts/run-gate-set.mjs",
     "logs:capture": "node scripts/capture-log.mjs",
     "logs:prune": "node scripts/capture-log.mjs --prune"
   },

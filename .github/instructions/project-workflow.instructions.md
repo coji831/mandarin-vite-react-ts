@@ -76,6 +76,13 @@ Notes that cost a run when missed:
   changed against `--base <rev>` (default `HEAD`) plus the untracked ones, and measured ~1 s against the
   full sweep's 22 s on this tree (2026-11-01). It is an optimization and **never a substitute**:
   `format:check` keeps its exact globs, and `ci.yml` runs that full sweep on every PR.
+- **The Tier-2 gate commands have the same fast path: `npm run gates -- <gate> <gate> ...`.** It runs the
+  named commands as child `node` processes under one npm invocation and prints each gate's own name, exit
+  code and duration, with a failing gate's own output under its name. Measured 2026-11-01: the npm wrapper
+  is ~540 ms per invocation and 45% of a multi-gate run, so the 13 cheap Tier-2 commands take **16.2 s run
+  one by one against 9.3 s** under this runner, with the gates themselves unchanged. It is an optimization
+  and **never a substitute**: the rows above keep the individual commands, `ci.yml` runs those, and a red
+  sweep still names the gate that is red.
 
 ## Before implementing
 
