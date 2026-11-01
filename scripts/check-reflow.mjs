@@ -21,10 +21,24 @@
  * future epic (`design-lead-s8-ruling.md` § Debt records E2/E3) — they are SUPPOSED
  * to stay red here until that layout work lands.
  *
+ * An empty denominator is not a pass. If the page ledger selects no route to
+ * measure, the gate exits 1 before it spawns Storybook and says which ledger it
+ * read, how many entries carry `route` and how many carry `story`. It measured
+ * nothing, so it proved nothing: staying quiet is the F8 class again, one level
+ * up — the gate spent its boot time to report on no pages at all.
+ *
+ * The same holds per viewport: a viewport that returned no reading prints
+ * `0 measured — NOTHING PROVED`, never a fraction, and reddens the run by itself.
+ *
+ * Exit: 0 = every measured page fits; 1 = a failure stands, or nothing was
+ *       measured; 2 = the run itself broke (Storybook never served, browser
+ *       failed to launch).
+ *
  * Usage:
- *   node scripts/check-reflow.mjs                 # boots storybook dev itself
- *   node scripts/check-reflow.mjs --base <url>    # use an already-running Storybook
+ *   node scripts/check-reflow.mjs                    # boots storybook dev itself
+ *   node scripts/check-reflow.mjs --base <url>       # use an already-running Storybook
  *   node scripts/check-reflow.mjs --port 6007
+ *   node scripts/check-reflow.mjs --inventory <path> # read another page ledger
  */
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -54,9 +68,46 @@ const VIEWPORTS = [
 /** Content box in priority order; the fallback exists only for the standalone layout. */
 const BOXES = [".app-content", ".page-shell", "main", "#storybook-root"];
 
-const inventory = JSON.parse(
-  readFileSync(path.join(ROOT, ".github", "page-inventory.json"), "utf8"),
-);
+/** Fail closed: no reading is not a pass (`check-spine-parity.mjs` uses the same shape). */
+const die = (code, message) => {
+  console.error(message);
+  process.exit(code);
+};
+
+/** Ledger is injectable so the guard can be proved against a fixture outside the repo. */
+const LEDGER_ARG = argValue("--inventory", null);
+const LEDGER_PATH = LEDGER_ARG
+  ? path.resolve(ROOT, LEDGER_ARG)
+  : path.join(ROOT, ".github", "page-inventory.json");
+const LEDGER_REL = path.relative(ROOT, LEDGER_PATH).replace(/\\/g, "/");
+/** Name the file actually read: repo-relative inside the repo, absolute outside it. */
+const LEDGER_NAME =
+  LEDGER_REL === "" || LEDGER_REL.startsWith("..") || path.isAbsolute(LEDGER_REL)
+    ? LEDGER_PATH
+    : LEDGER_REL;
+
+/** A ledger that cannot be read broke the run, not the pages: exit 2, one line, no trace. */
+function readLedger() {
+  let raw;
+  try {
+    raw = readFileSync(LEDGER_PATH, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      die(2, `❌ reflow: no ledger at ${LEDGER_NAME} — fail closed, nothing was measured.`);
+    }
+    die(
+      2,
+      `❌ reflow: cannot read ${LEDGER_NAME} (${error?.code ?? error?.message}) — fail closed.`,
+    );
+  }
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    die(2, `❌ reflow: ${LEDGER_NAME} is not valid JSON (${error?.message}) — fail closed.`);
+  }
+}
+
+const inventory = readLedger();
 const ledger = Array.isArray(inventory) ? inventory : (inventory.pages ?? inventory.entries ?? []);
 const routeStories = ledger
   .filter((e) => e && e.story && e.route)
@@ -65,6 +116,25 @@ const routeStories = ledger
     storyFile: e.story,
     key: e.story.includes("/src/") ? e.story.slice(e.story.indexOf("/src/")) : e.story,
   }));
+
+if (routeStories.length === 0) {
+  const withRoute = ledger.filter((e) => e && e.route).length;
+  const withStory = ledger.filter((e) => e && e.story).length;
+  die(
+    1,
+    [
+      `❌ reflow: nothing to measure — ${LEDGER_NAME} has ${ledger.length} entries, ` +
+        `${withRoute} carrying \`route\`, ${withStory} carrying \`story\`, 0 selected.`,
+      "   Precondition: the selector requires BOTH `story` and `route`; `route` alone selects nothing.",
+      "   Cause: page stories were retired on purpose (`scripts/check-page-inventory.mjs` header),",
+      "   so no entry carries `story`, none can be selected, and storybook was not started.",
+      "   Repair: this ratchet needs a new measurement source — page-level measurement through a",
+      "   served app (jsdom has no layout). That is its own batch, not a ledger edit.",
+      "   Do NOT silence this by re-adding `story` keys to the ledger: a denominator made green by",
+      "   hand proves nothing. No reading is not a pass.",
+    ].join("\n"),
+  );
+}
 
 /** States whose content is populated — the ones a reflow reading means anything on. */
 const NON_POPULATED = /loading|error|empty/i;
@@ -228,7 +298,10 @@ async function main() {
     }
   }
 
-  const summary = VIEWPORTS.map((v) => {
+  // A fraction over a zero denominator reads as success: "0/0 pass" said "pass" about
+  // nothing. A viewport that returned no reading states the zero instead, and reddens the
+  // run below — the denominator is part of the claim, so it cannot be left to resolve.
+  const perViewport = VIEWPORTS.map((v) => {
     const rows = results.filter((r) => r.viewport === v.label);
     const measured = rows.filter((r) => r.outcome === "pass" || r.outcome === "fail");
     const fails = measured.filter((r) => r.outcome === "fail").map((r) => r.route);
@@ -236,23 +309,41 @@ async function main() {
       .filter((r) => r.outcome !== "pass" && r.outcome !== "fail")
       .map((r) => r.route);
     const pass = measured.length - fails.length;
-    let out = `${v.label} ${pass}/${measured.length} pass, ${fails.length} FAIL`;
-    if (fails.length) out += ` — ${fails.join(", ")}`;
-    if (broken.length) out += `  [${broken.length} not measurable — ${broken.join(", ")}]`;
-    return out;
+    let text =
+      measured.length === 0
+        ? `${v.label} 0 measured — NOTHING PROVED`
+        : `${v.label} ${pass}/${measured.length} pass, ${fails.length} FAIL`;
+    if (fails.length) text += ` — ${fails.join(", ")}`;
+    if (broken.length) text += `  [${broken.length} not measurable — ${broken.join(", ")}]`;
+    return { label: v.label, measured: measured.length, text };
   });
 
   const boxes = [...new Set(results.map((r) => r.box).filter(Boolean))];
-  console.log(`\nreflow: box=${boxes.join("|") || "(none)"}  ${summary.join("  ")}`);
+  // The ledger is named here too: with `--inventory`, a green reading is only worth what
+  // the file it came from is worth, so the evidence line carries its own source.
+  console.log(
+    `\nreflow: ledger=${LEDGER_NAME} box=${boxes.join("|") || "(none)"}  ${perViewport.map((v) => v.text).join("  ")}`,
+  );
 
+  const failures = results.filter((r) => r.outcome === "fail");
   const failed = results.some((r) => r.outcome !== "pass");
-  if (failed) {
+  // The debt note explains N1b/N1c overflows. It must not be printed over rows that
+  // never produced a reading: those are a broken instrument, not ruled debt.
+  if (failures.length) {
     console.log(
       "\nreflow: RATCHET RED — the failures above are N1b/N1c debt (design-lead-s8-ruling.md § Debt\n" +
         "records E2/E3). They clear when the layout work lands, not by relaxing this assertion.",
     );
   }
-  process.exit(failed ? 1 : 0);
+
+  const empty = perViewport.filter((v) => v.measured === 0).map((v) => v.label);
+  if (empty.length) {
+    console.log(
+      `\nreflow: RATCHET RED — ${empty.join(", ")} measured 0 rows, so there is no reading to report\n` +
+        "and nothing is proved for that viewport. A viewport with an empty denominator cannot be green.",
+    );
+  }
+  process.exit(failed || empty.length ? 1 : 0);
 }
 
 main().catch((err) => {
