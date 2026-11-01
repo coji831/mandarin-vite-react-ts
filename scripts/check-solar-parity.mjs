@@ -30,9 +30,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { GATE_TABLE, gateCommands, readGateTable } from "./lib/gate-table.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const WORKFLOW = ".github/instructions/project-workflow.instructions.md";
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj ?? {}, key);
 const pad = (v, w) => String(v) + " ".repeat(Math.max(0, w - String(v).length));
@@ -64,23 +64,8 @@ const runTargets = (argv) =>
     t === "run" && argv[i + 1] && !argv[i + 1].startsWith("-") ? [argv[i + 1]] : [],
   );
 
-/** Every `npm run <script>` in a numbered gate row, with the `--workspace=` that follows it. */
-const gates = [];
-for (const line of fs.readFileSync(path.join(ROOT, WORKFLOW), "utf8").split(/\r?\n/)) {
-  const row = line.match(/^\|\s*(\d+)\s*\|/);
-  if (!row) continue;
-  const label = line.split("|")[2]?.trim() ?? "";
-  const matches = [...line.matchAll(/npm run ([\w:.-]+)/g)];
-  matches.forEach((m, i) => {
-    const tail = line.slice(m.index + m[0].length, matches[i + 1]?.index ?? line.length);
-    gates.push({
-      row: +row[1],
-      label,
-      script: m[1],
-      workspace: tail.match(/--workspace=([\w@/.-]+)/)?.[1],
-    });
-  });
-}
+/** Every gate command the table declares, flat and in table order. */
+const gates = gateCommands(readGateTable(ROOT));
 
 const resolves = (g) =>
   g.workspace ? has(workspaceScripts.get(g.workspace), g.script) : has(rootScripts, g.script);
@@ -136,7 +121,7 @@ const L = Math.max(...rows.map((r) => r.label.length), 5);
 const S = Math.max(...rows.map((r) => `${r.script} ${r.workspace ?? ""}`.trim().length), 6);
 const stats = `${rows.length} gate commands · ${Object.keys(solar).length} solar commands`;
 const agents = `${workers.length} workers · ${onDisk.length} agents · ${runtime.length} runtime`;
-console.log(`\n🔍 Solar parity: ${WORKFLOW}`);
+console.log(`\n🔍 Solar parity: ${GATE_TABLE}`);
 console.log(`  ${stats}\n  ${agents}\n`);
 for (const r of rows) {
   const cmd = `${r.script}${r.workspace ? " " + r.workspace : ""}`;

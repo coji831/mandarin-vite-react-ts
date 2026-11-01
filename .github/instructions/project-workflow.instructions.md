@@ -17,31 +17,32 @@ its own gate set.
 
 ### Tier 1, every code change
 
-| # | Gate | Command | Scope |
-| --- | --- | --- | --- |
-| 1 | Format | `npm run format` / `npm run format:check` | both |
-| 2 | Lint | `npm run lint` (0 errors) | both |
-| 3 | CSS lint | `npm run lint:css --workspace=@mandarin/frontend` | frontend |
-| 4 | Type-check + build | `npm run build` | both |
-| 5 | Tests, changed scope | `npm test` | both |
+| # | Gate | Command | Scope | Measures |
+| --- | --- | --- | --- | --- |
+| 1 | Format | `npm run format` / `npm run format:check` | both | matched files from the format globs; none printed |
+| 2 | Lint | `npm run lint` (0 errors) | both | linted files across both workspaces; none printed |
+| 3 | CSS lint | `npm run lint:css --workspace=@mandarin/frontend` | frontend | linted stylesheets from the `src/**/*.css` glob; none printed |
+| 4 | Type-check + build | `npm run build` | both | workspace builds from the package.json workspaces list; none printed |
+| 5 | Tests, changed scope | `npm test` | both | changed-scope tests from the non-storybook frontend and backend vitest projects |
 
 ### Tier 2, pre-merge, story close, epic close
 
-| # | Gate | Command | Scope |
-| --- | --- | --- | --- |
-| 6 | Full tests | `npm run test:full` | both |
-| 7 | Story tests + ledgers | `npm run test-storybook --workspace=@mandarin/frontend; npm run check:registry-stories; npm run check:module-boundaries; npm run check:page-inventory` | stories, always at merge |
-| 8 | Design lint | `npm run design:lint` | `DESIGN.md` |
-| 9 | Design audit | `npm run design-audit` | frontend |
-| 10 | Backend type-check | `npm run typecheck --workspace=@mandarin/backend` | backend |
-| 11 | Frontend audit skill | `.github/skills/frontend-audit/SKILL.md` | frontend |
-| 12 | Backend audit skill | `.github/skills/backend-audit/SKILL.md` | backend |
-| 13 | Docs + AC + truth-check | BR/impl/design updated; every AC complete; doc-code truth-check; `npm run check:system-map; npm run check:doc-links` | blocking |
-| 14 | Design parity | `npm run check:design-parity` | `DESIGN.md` + `globals.css` |
-| 15 | Name discipline | `npm run check:spine-parity` | `globals.css` + spine snapshot |
-| 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets |
-| 17 | Rule surface budget | `npm run check:load` | `.github/instructions/**`, `copilot-instructions.md` |
-| 18 | Solar parity | `npm run check:solar-parity` | `.solar/commands.json`, `.solar/registry.json`, `.github/agents/` |
+| # | Gate | Command | Scope | Measures |
+| --- | --- | --- | --- | --- |
+| 6 | Full tests | `npm run test:full` | both | tests from the non-storybook frontend, backend and shared-utils vitest suites |
+| 7 | Story tests + ledgers | `npm run test-storybook --workspace=@mandarin/frontend; npm run check:registry-stories; npm run check:module-boundaries; npm run check:page-inventory` | stories, always at merge | stories from the frontend storybook project; imports from shared dirs; pages from page-inventory.json |
+| 8 | Design lint | `npm run design:lint` | `DESIGN.md` | linted DESIGN.md sections; none printed |
+| 9 | Design audit | `npm run design-audit` | frontend | audited files under `apps/frontend/src`; none printed |
+| 10 | Backend type-check | `npm run typecheck --workspace=@mandarin/backend` | backend | program files from the backend tsconfig; none printed |
+| 11 | Frontend audit skill | `.github/skills/frontend-audit/SKILL.md` | frontend | UI, components, pages and userflows against uiux-fundamentals.md |
+| 12 | Backend audit skill | `.github/skills/backend-audit/SKILL.md` | backend | backend modules against the boundary, validation and DI rules |
+| 13 | Docs + AC + truth-check | BR/impl/design updated; every AC complete; doc-code truth-check; `npm run check:system-map; npm run check:doc-links` | blocking | surfaces from the system-map scoreboard; links from `docs/**`, `.github/**` and root `*.md` |
+| 14 | Design parity | `npm run check:design-parity` | `DESIGN.md` + `globals.css` | token/var pairs from DESIGN.md and globals.css |
+| 15 | Name discipline | `npm run check:spine-parity` | `globals.css` + spine snapshot | var names from `:root` in globals.css and `tools/spine-token-names.json` |
+| 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets | classes from globals.css, components.css and animations.css |
+| 17 | Rule surface budget | `npm run check:load` | `.github/instructions/**`, `copilot-instructions.md` | instruction files and representative paths from `.github/instructions` and `agent-surface.json` |
+| 18 | Solar parity | `npm run check:solar-parity` | `.solar/commands.json`, `.solar/registry.json`, `.github/agents/` | gate commands parsed from the numbered rows of this table |
+| 19 | Gate liveness | `npm run check:gate-liveness` | `scripts/check-*.mjs` + this table | numbered rows carrying a `Measures` cell; check scripts on disk; denominators read from each probed gate's summary line |
 
 Notes that cost a run when missed:
 

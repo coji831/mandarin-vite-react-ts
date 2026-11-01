@@ -138,6 +138,12 @@
     "timeout": 120,
     "describe": "Every gate in the workflow table resolves and has a solar command that runs it, and every registry agent has an agent file."
   },
+  "check_gate_liveness": {
+    "argv": ["npm", "--silent", "run", "check:gate-liveness"],
+    "kind": "check",
+    "timeout": 120,
+    "describe": "Every numbered gate declares what it measures, every scripts/check-*.mjs is a table gate or a stated exemption, and each probed gate prints a non-zero denominator."
+  },
   "validate_radical_content": {
     "argv": ["npm", "--silent", "run", "validate:radical-content"],
     "kind": "check",
