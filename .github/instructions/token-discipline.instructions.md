@@ -7,14 +7,10 @@ applyTo: "apps/frontend/src/**/*.tsx,apps/frontend/src/**/*.css"
 
 The token layer is the one place a value changes once and reaches every consumer. A literal moves
 that decision into the component, which is why a gate treats it as a failure rather than a style
-preference. In this repository the layer is `apps/frontend/src/styles/globals.css` (tokens, utilities),
-with `components.css` and `animations.css` imported beside it; `DESIGN.md` records the intent.
+preference.
 
 - **Every value in CSS is `var(--token)`.** No hex, no `rgb()`, no `px`, no `ms`, no raw integer for
-  `z-index`. **One exception:** a one-off *structural* layout value may be a literal when it is layout
-  math rather than a scale step (a fixed panel width, a hairline border, a `min-height` on a fixed-state
-  shell). `frontend-css-styling.instructions.md` names the sanctioned example. Colours, radii and the
-  spacing scale never qualify. Reason: `design-audit` reports a literal as `hardcoded-color`, `hardcoded-spacing` or
+  `z-index`. Reason: `design-audit` reports a literal as `hardcoded-color`, `hardcoded-spacing` or
   `hardcoded-font-size`, and a literal cannot be themed or audited.
 - **A value with no token is a token-layer request, not a local literal.** Stop, name the role the
   value plays, and add the token (or ask for one). Reason: a component that invents a value silently

@@ -31,8 +31,7 @@ component takes more than two.
 - Side effects live in event handlers. `useEffect` is the last resort, for synchronisation with
   something outside React.
 - Reusable stateful behaviour becomes a custom hook in `shared/hooks/`.
-- Stateless domain or API work becomes a service. Never call `apiClient` from a component or hook
-  (`frontend-api-client.instructions.md`).
+- Stateless domain or API work becomes a service.
 
 ## Barrels re-export only
 
@@ -55,7 +54,7 @@ A store never lives under a `components/` directory. Check: `ls -d **/components
 
 ## Token discipline and the design gates
 
-A component reads only the token paths its registry entry declares. Hardcoded values, drift between a
+Hardcoded values, drift between a
 component and the design system, and page-scoped layout are all caught by `design-audit`; see
 `token-discipline.instructions.md` for the rule and `frontend-css-styling.instructions.md` for the CSS
 prohibitions. Do not restate them here.

@@ -50,8 +50,7 @@ in its parent's. A component that uses only global utilities needs no CSS file a
 ## Compose, do not restyle
 
 Import shared components from `src/shared/components` rather than rebuilding one, and read
-`.github/component-registry.json` before creating any UI structure. Never reimplement Button, Input,
-LoadingScreen, ErrorScreen, ProgressBar, FilterChip, ToggleSwitch or ContentBrowser.
+`.github/component-registry.json` before creating any UI structure.
 
 Use the **native element** where one exists: `<button>` for an action, `<a href>` for navigation. A
 `<div role="button" tabIndex={0}>` is never the answer; it loses keyboard activation, focus behaviour
