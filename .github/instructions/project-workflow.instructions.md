@@ -32,7 +32,7 @@ its own gate set.
 | 6 | Full tests | `npm run test:full` | both | tests from the non-storybook frontend, backend and shared-utils vitest suites |
 | 7 | Story tests + ledgers | `npm run test-storybook --workspace=@mandarin/frontend; npm run check:registry-stories; npm run check:module-boundaries; npm run check:page-inventory` | stories, always at merge | stories from the frontend storybook project; imports from shared dirs; pages from page-inventory.json |
 | 8 | Design lint | `npm run design:lint` | `DESIGN.md` | linted DESIGN.md sections; none printed |
-| 9 | Design audit | `npm run design-audit` | frontend | audited files under `apps/frontend/src`; none printed |
+| 9 | Design audit | `npm run design-audit:foundation` | frontend | page-anatomy, mode/chrome and session/route findings from spine's audit of `apps/frontend/src`; prints `page-anatomy findings: N of M total`, and N must be 0 |
 | 10 | Backend type-check | `npm run typecheck --workspace=@mandarin/backend` | backend | program files from the backend tsconfig; none printed |
 | 11 | Frontend audit skill | `.github/skills/frontend-audit/SKILL.md` | frontend | UI, components, pages and userflows against uiux-fundamentals.md |
 | 12 | Backend audit skill | `.github/skills/backend-audit/SKILL.md` | backend | backend modules against the boundary, validation and DI rules |
@@ -54,8 +54,11 @@ Notes that cost a run when missed:
   design; `tsc -b` covers the whole `src` graph.
 - **`npm test` is `vitest run --changed`** and can pass with zero tests. It is a changed-scope check
   only. `test:full` is the real suite.
-- **`design-audit` is non-zero on this tree by design** (pinned baseline). Treat it as **no new
-  findings**, never "exit 0".
+- **Gate 9 is the foundation variant, and it passes**: `design-audit:foundation` filters spine's audit
+  to the page-anatomy, mode/chrome and session/route laws and exits 0 (measured 2026-11-01:
+  `page-anatomy findings: 0 of 639 total`). The unfiltered `--full` run (`npm run design-audit`) is a
+  **pinned-baseline measurement, not a gate**: it exits 1 at `219 error(s), 420 warning(s) in 639
+  finding(s)` against a floor of 249/436/685, and stays out of CI on purpose.
 - **`check:doc-links` and `check:system-map`** are red at times on pre-existing debt. Compare against
   the base commit, do not chase zero.
 - **`check:solar-parity` is driven by the table above, not by a list of its own.** It reads every

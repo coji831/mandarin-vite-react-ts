@@ -23,9 +23,13 @@
 # value equality. colors/typography/gradients are NOT covered (hex<->rgba +
 # variant-array mapping needs a semantic comparator — tracked separately).
 #
-# Deliberately NOT here: gate #9 (design-audit) stays Tier-2 backlog (267
-# pre-existing errors incl. the intentional 15 page-anatomy deviations that ARE
-# the S2 wave list).
+# Deliberately NOT here: gate #9 (design-audit) belongs to
+# .github/workflows/spine-foundation.yml, which runs `npm run design-audit:foundation`
+# (the page-anatomy, mode/chrome and session/route laws). Measured 2026-11-01: it
+# exits 0 with `page-anatomy findings: 0 of 639 total`. The unfiltered
+# `npm run design-audit` (`--full`) exits 1 over 219 errors and 420 warnings in 639
+# findings, against a pinned floor of 249/436/685 — a baseline measurement, not a
+# gate, so it is not wired in CI.
 
 name: Design Gates
 
