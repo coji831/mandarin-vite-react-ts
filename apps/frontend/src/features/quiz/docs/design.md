@@ -13,14 +13,12 @@ audience: agents
 
 ---
 
-
 ## Figma Reference
 
 - **File:** (not yet linked — add Figma file URL here)
 - **Frame:** Quiz Session (Wireframe Section 4.6)
 
 ---
-
 
 ## Layout
 
@@ -32,7 +30,6 @@ Quiz sessions use a single-page pattern with phase-based routing. All quiz types
 | `/practices/quiz`                 | `QuizPage`        | Fallback — no strategy selected |
 
 ---
-
 
 ## Architecture (Strategy Pattern)
 
@@ -46,7 +43,6 @@ The quiz system uses the **Strategy Pattern**:
 - **Epic 26 delta:** the registry grows from 3 to 7 strategies — `cloze`, `sentence-building`, `listening-dictation`, `tone-judgment` join the three above. The delta, the archetype/anatomy for it, and the data contract are specified in §26; this list stays the as-built record until 26-4/26-5 land.
 
 ---
-
 
 ## Components
 
@@ -82,7 +78,6 @@ The quiz system uses the **Strategy Pattern**:
 
 ---
 
-
 ## Shared Components Reused
 
 | Component     | Source                          |
@@ -91,7 +86,6 @@ The quiz system uses the **Strategy Pattern**:
 | `ProgressBar` | `shared/components/ProgressBar` |
 
 ---
-
 
 ## Design Tokens Used
 
@@ -127,7 +121,6 @@ The quiz system uses the **Strategy Pattern**:
 | `.p-xl`                           | Page padding                                      |
 
 ---
-
 
 ## Visual Acceptance Criteria
 

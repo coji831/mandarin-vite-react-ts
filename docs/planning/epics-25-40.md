@@ -5,7 +5,6 @@ last-verified: 2026-10-27
 type: planning
 ---
 
-
 # Epic Plan 25–40 — Re-Sliced (Calibration + AI Roadmap)
 
 **Status:** ✅ RATIFIED — owner-approved 2026-08-17; **D7 serial sequencing re-ratified 2026-08-21 (D10)** — full-scoped Epic 24 runs first to completion; epics 25–28 land on NestJS after
@@ -22,7 +21,6 @@ type: planning
 
 Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appendix B) plus the calibrated guest-access, tech-mapping, and production-readiness working specs. Locked constraints honored unchanged: D1=NestJS 11, **D7=full-scoped serial Epic 24 first; 25–28 after, on NestJS** (29/30/31 land on NestJS) — ⚠️ deliberate owner re-ratification 2026-08-21 (D10) **reversing** the earlier "D7=shell-swap parallel with 25–28" + "P0-1 first gate" framing; **P0-1 absorbed into Epic 24 (24-1 stopgap)** instead of being epic-25's gate 1; P0-2 re-based as data prerequisite, 4 satellite carve-outs, business-deferred items kept out of scope.
 
-
 ## Re-Slicing Principles
 
 1. **Epic numbers 25–40 are kept stable** — every decision-log anchor (`epic-25` P0-1, `epic-27` rebase, `epic-29` quota, `epic-31` conversation demo-quota, `epic-36` Q11-gated, `epic-37` after rebase, `epic-38` ActivityEvent, `epic-39` observability, `epic-40` L3/L4) stays valid. No renumbering, no merges.
@@ -32,7 +30,6 @@ Reviewed: `docs/business/business-model.md` (ratified L-series, P11-AMEND, Appen
 5. **ACs are testable and gate-aligned** — backend → integration test / endpoint contract; frontend → component/story or e2e; close criteria reference the repo's two-tier gates (Tier 1 per-change, Tier 2 at story/epic-close).
 
 ---
-
 
 ## Design-System (Spine) Adoption Track
 
@@ -68,7 +65,6 @@ registry — see this track", not "to be invented per epic".
 migration. Never restyle a surface before its tokens are aligned to spine's names.
 
 ---
-
 
 ## 2026 Audit Amendments (PO × Designer, 2026-10-26)
 
@@ -168,32 +164,30 @@ bar, PR #56) is the baseline each epic consumes, and the pre-26 spine epic (A0) 
 
 ---
 
-
 ## Epic files
 
 One file per epic. The amendments and sequencing below still govern them all.
 
-| Epic | File |
-| --- | --- |
-| Epic 25 — Secure Guest Identity & Route Gating _(Phase A)_ | [Epic 25 — Secure Guest Identity & Route Gating](epics/epic-25.md) |
+| Epic                                                                   | File                                                                                            |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Epic 25 — Secure Guest Identity & Route Gating _(Phase A)_             | [Epic 25 — Secure Guest Identity & Route Gating](epics/epic-25.md)                              |
 | Epic 26 — Practice Calibration: Engine Fixes + Guest Lane + Phase-B Fo | [Epic 26 — Practice Calibration: Engine Fixes + Guest Lane + Phase-B Formats](epics/epic-26.md) |
-| Epic 27 — Gate & Data Calibration incl. HSK 2025-Rebase _(Phase C)_ | [Epic 27 — Gate & Data Calibration incl. HSK 2025-Rebase](epics/epic-27.md) |
-| Epic 28 — Review & SRS Integrity + Comprehension _(Phase B, part 2 + P | [Epic 28 — Review & SRS Integrity + Comprehension](epics/epic-28.md) |
-| Epic 29 — AI Gateway, Observability & Cost Governance _(E.0)_ _(Tier 1 | [Epic 29 — AI Gateway, Observability & Cost Governance](epics/epic-29.md) |
-| Epic 30 — Assistant Explain + Deterministic Retrieval Seam _(E.1)_ _(T | [Epic 30 — Assistant Explain + Deterministic Retrieval Seam](epics/epic-30.md) |
-| Epic 31 — Assistant Conversation (Text SSE) _(E.2)_ _(Tier 1)_ | [Epic 31 — Assistant Conversation (Text SSE)](epics/epic-31.md) |
-| Epic 32 — Suggestions Recommender v0 _(E.3)_ _(Tier 1)_ | [Epic 32 — Suggestions Recommender v0](epics/epic-32.md) |
-| Epic 33 — Guardian Content + Agent Contract _(E.4 + E.5)_ _(Tier 1)_ | [Epic 33 — Guardian Content + Agent Contract](epics/epic-33.md) |
-| Epic 34 — FSRS Deep Modeling: `srs-core` + Fitting _(T2.1 + T2.2)_ _(T | [Epic 34 — FSRS Deep Modeling: `srs-core` + Fitting](epics/epic-34.md) |
-| Epic 35 — Eval Harness & Fine-Tuning _(T2.5 + T2.6)_ _(Tier 2)_ | [Epic 35 — Eval Harness & Fine-Tuning](epics/epic-35.md) |
-| Epic 36 — ASR Pronunciation & Tone Feedback _(N1)_ _(product-gated)_ | [Epic 36 — ASR Pronunciation & Tone Feedback](epics/epic-36.md) |
-| Epic 37 — HSK Exam-Prep Mode _(N3)_ _(product lane)_ | [Epic 37 — HSK Exam-Prep Mode](epics/epic-37.md) |
-| Epic 38 — ActivityEvent Substrate _(Phase D substrate)_ | [Epic 38 — ActivityEvent Substrate](epics/epic-38.md) |
-| Epic 39 — Observability & Production Hardening | [Epic 39 — Observability & Production Hardening](epics/epic-39.md) |
-| Epic 40 — Data-Driven Learning Road: `LearnerProfile` + "Next for You" | [Epic 40 — Data-Driven Learning Road: `LearnerProfile` + "Next for You"](epics/epic-40.md) |
-| Re-slice Notes (vs §5) | [Re-slice Notes vs the earlier slice](re-slice-notes.md) |
-| Resolved Open Items — OI-1…OI-10 (Decision Record) | [Resolved Open Items OI-1 to OI-10](open-items-oi-1-10.md) |
-
+| Epic 27 — Gate & Data Calibration incl. HSK 2025-Rebase _(Phase C)_    | [Epic 27 — Gate & Data Calibration incl. HSK 2025-Rebase](epics/epic-27.md)                     |
+| Epic 28 — Review & SRS Integrity + Comprehension _(Phase B, part 2 + P | [Epic 28 — Review & SRS Integrity + Comprehension](epics/epic-28.md)                            |
+| Epic 29 — AI Gateway, Observability & Cost Governance _(E.0)_ _(Tier 1 | [Epic 29 — AI Gateway, Observability & Cost Governance](epics/epic-29.md)                       |
+| Epic 30 — Assistant Explain + Deterministic Retrieval Seam _(E.1)_ _(T | [Epic 30 — Assistant Explain + Deterministic Retrieval Seam](epics/epic-30.md)                  |
+| Epic 31 — Assistant Conversation (Text SSE) _(E.2)_ _(Tier 1)_         | [Epic 31 — Assistant Conversation (Text SSE)](epics/epic-31.md)                                 |
+| Epic 32 — Suggestions Recommender v0 _(E.3)_ _(Tier 1)_                | [Epic 32 — Suggestions Recommender v0](epics/epic-32.md)                                        |
+| Epic 33 — Guardian Content + Agent Contract _(E.4 + E.5)_ _(Tier 1)_   | [Epic 33 — Guardian Content + Agent Contract](epics/epic-33.md)                                 |
+| Epic 34 — FSRS Deep Modeling: `srs-core` + Fitting _(T2.1 + T2.2)_ _(T | [Epic 34 — FSRS Deep Modeling: `srs-core` + Fitting](epics/epic-34.md)                          |
+| Epic 35 — Eval Harness & Fine-Tuning _(T2.5 + T2.6)_ _(Tier 2)_        | [Epic 35 — Eval Harness & Fine-Tuning](epics/epic-35.md)                                        |
+| Epic 36 — ASR Pronunciation & Tone Feedback _(N1)_ _(product-gated)_   | [Epic 36 — ASR Pronunciation & Tone Feedback](epics/epic-36.md)                                 |
+| Epic 37 — HSK Exam-Prep Mode _(N3)_ _(product lane)_                   | [Epic 37 — HSK Exam-Prep Mode](epics/epic-37.md)                                                |
+| Epic 38 — ActivityEvent Substrate _(Phase D substrate)_                | [Epic 38 — ActivityEvent Substrate](epics/epic-38.md)                                           |
+| Epic 39 — Observability & Production Hardening                         | [Epic 39 — Observability & Production Hardening](epics/epic-39.md)                              |
+| Epic 40 — Data-Driven Learning Road: `LearnerProfile` + "Next for You" | [Epic 40 — Data-Driven Learning Road: `LearnerProfile` + "Next for You"](epics/epic-40.md)      |
+| Re-slice Notes (vs §5)                                                 | [Re-slice Notes vs the earlier slice](re-slice-notes.md)                                        |
+| Resolved Open Items — OI-1…OI-10 (Decision Record)                     | [Resolved Open Items OI-1 to OI-10](open-items-oi-1-10.md)                                      |
 
 ## Sequencing Summary
 
@@ -246,7 +240,6 @@ graph LR
 **Critical path (AI Tier-1):** **Epic 24 (D7, serial) first** → 25 → (26 ∥ 27) → 28 → 29 → 30 → 31 → 33, with **38 riding 28**, **39 parallel (P1/P2 before 29)** and **25–28 queued behind Epic 24**. **SRS deep path:** 25 → 26 → 28 → 34 → 35. Product lanes 36/37 and the learning road 40 attach at their single dependency (29+Q11 / 27-M2 / 28+38+32).
 
 ---
-
 
 ## What Still Genuinely Needs the Owner at BR Time (near-empty shortlist)
 

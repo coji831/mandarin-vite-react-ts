@@ -59,15 +59,15 @@ flowchart TB
     L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7
 ```
 
-| Layer | Tool                                                                               | Cadence                               | Who                     | Catches                                                                   |
-| ----- | ---------------------------------------------------------------------------------- | ------------------------------------- | ----------------------- | ------------------------------------------------------------------------- |
-| L1    | Vitest 4 + RTL + `test-storybook` + MSW                                            | per-change                            | FE                      | behavior, logic, states, render errors, API contracts                     |
-| L2    | `design-audit` + `@google/design.md lint` + stylelint                              | per-change                            | FE+DW                   | token violations, slop, magic values, color-role leaks, elevation/z-index |
-| L3    | `addon-a11y` `a11y.test:'error'` + `runOnly` wcag22a/aa                            | merge                                 | FE                      | contrast, ARIA, labels, keyboard/focus, target-size (~57% of WCAG)        |
-| L4    | Chromatic (local Visual Tests addon + CI `push` build; TurboSnap after 10 builds)  | every PR                              | FE run / Owner accept   | layout drift, overflow, elevation/hairline, spacing rhythm, golden parity |
-| L5    | Chromatic a11y per-story baseline                                                  | every PR                              | machine                 | **new** a11y violations only (debt separated)                             |
-| L6    | `test-storybook` story walk + squint                                               | component change                      | DW (runs) + CR (review) | judgment: "is it right/beautiful", hierarchy, contrast appearance, parity |
-| L7    | recorded preview + sign-off line                                                   | epic-close + canonization + quarterly | Owner                   | "this is the accepted standard" decision                                  |
+| Layer | Tool                                                                              | Cadence                               | Who                     | Catches                                                                   |
+| ----- | --------------------------------------------------------------------------------- | ------------------------------------- | ----------------------- | ------------------------------------------------------------------------- |
+| L1    | Vitest 4 + RTL + `test-storybook` + MSW                                           | per-change                            | FE                      | behavior, logic, states, render errors, API contracts                     |
+| L2    | `design-audit` + `@google/design.md lint` + stylelint                             | per-change                            | FE+DW                   | token violations, slop, magic values, color-role leaks, elevation/z-index |
+| L3    | `addon-a11y` `a11y.test:'error'` + `runOnly` wcag22a/aa                           | merge                                 | FE                      | contrast, ARIA, labels, keyboard/focus, target-size (~57% of WCAG)        |
+| L4    | Chromatic (local Visual Tests addon + CI `push` build; TurboSnap after 10 builds) | every PR                              | FE run / Owner accept   | layout drift, overflow, elevation/hairline, spacing rhythm, golden parity |
+| L5    | Chromatic a11y per-story baseline                                                 | every PR                              | machine                 | **new** a11y violations only (debt separated)                             |
+| L6    | `test-storybook` story walk + squint                                              | component change                      | DW (runs) + CR (review) | judgment: "is it right/beautiful", hierarchy, contrast appearance, parity |
+| L7    | recorded preview + sign-off line                                                  | epic-close + canonization + quarterly | Owner                   | "this is the accepted standard" decision                                  |
 
 ### Reliability principles (why this is reliable, not vibes)
 
@@ -124,13 +124,13 @@ These correct earlier research. Do not reintroduce the stale claims.
 
 ## 5. Enforcement Map (fundamental → rule/gate)
 
-| Enforced by                               | Fundamentals                                    |
-| ----------------------------------------- | ----------------------------------------------- |
-| `design-audit` errors                     | #1, #2, #3, #4, #5, #7, #12 (+ AI-slop 1–9, 12) |
-| axe gate (L3, `test-storybook`)           | #1, #6, #11                                     |
-| Chromatic (L4/L5)                         | #5, #8, #9, #4                                  |
-| L6 story review + squint                  | #8, #9 (component change)                       |
-| Canonization protocol (gate 8)            | #8                                              |
+| Enforced by                     | Fundamentals                                    |
+| ------------------------------- | ----------------------------------------------- |
+| `design-audit` errors           | #1, #2, #3, #4, #5, #7, #12 (+ AI-slop 1–9, 12) |
+| axe gate (L3, `test-storybook`) | #1, #6, #11                                     |
+| Chromatic (L4/L5)               | #5, #8, #9, #4                                  |
+| L6 story review + squint        | #8, #9 (component change)                       |
+| Canonization protocol (gate 8)  | #8                                              |
 
 ---
 

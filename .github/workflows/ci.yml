@@ -5,16 +5,21 @@
 # preview smoke in preview.yml.
 #
 # Wired (canonical table: .github/instructions/project-workflow.instructions.md):
-#   • Lint             → npm run lint        (gate #2, both)
-#   • Type-check       → npm run typecheck   (gate #10, backend full)
-#   • Type-check+build → npm run build       (gate #4, both — build IS the type-
-#                                             check gate; frontend has no separate
-#                                             typecheck script by design)
-#   • Full tests       → npm run test:full   (gate #6, both)
+#   • Format           → npm run format:check  (gate #1, both)
+#   • Lint             → npm run lint          (gate #2, both)
+#   • Type-check       → npm run typecheck     (gate #10, backend full)
+#   • Type-check+build → npm run build         (gate #4, both — build IS the type-
+#                                               check gate; frontend has no separate
+#                                               typecheck script by design)
+#   • Full tests       → npm run test:full     (gate #6, both)
+#
+# Format (gate #1) is enforced as of the 2026-11-01 sweep: `.github/**` is
+# prettier-ignored because the rule surface is governed by `check:load`'s byte
+# ratchet (a padded gate table costs ~4 KB of rules loaded on every task), and
+# `**/archive/**` is ignored because archives are records. LF is pinned by
+# `.gitattributes`, so a green tree stays green.
 #
 # Deliberately NOT wired (why):
-#   • Format (gate #1, `npm run format:check`) — not repo-green (836 pre-existing
-#     prettier-drift files at HEAD, 2026-08-24); needs a standalone sweep first.
 #   • `npm test` (Tier-1 changed scope) — `vitest run --changed` diffs working
 #     tree vs local git base → 0 tests on a clean CI checkout, always green.
 #     test:full is the reliable CI gate.
@@ -73,6 +78,9 @@ jobs:
         run: npm run db:generate --workspace=@mandarin/backend
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+      - name: Format
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint

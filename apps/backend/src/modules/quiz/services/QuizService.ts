@@ -163,7 +163,13 @@ export class QuizService {
       }
     }
 
-    return { passed, accuracy, totalScore, maxScore, categoryBreakdown: this.computeCategoryBreakdown(answers) };
+    return {
+      passed,
+      accuracy,
+      totalScore,
+      maxScore,
+      categoryBreakdown: this.computeCategoryBreakdown(answers),
+    };
   }
 
   /**
@@ -192,8 +198,11 @@ export class QuizService {
 
     // Read pass threshold from the strategy instead of hardcoded if/else
     const strategy = getStrategy(attempt.quizType);
-    const { passed, accuracy, totalScore, maxScore, categoryBreakdown } =
-      this.evaluateWithStrategy(attempt, strategy!, answers);
+    const { passed, accuracy, totalScore, maxScore, categoryBreakdown } = this.evaluateWithStrategy(
+      attempt,
+      strategy!,
+      answers,
+    );
 
     await this.quizRepository.completeQuizAttempt(attemptId, { totalScore, maxScore, passed });
 

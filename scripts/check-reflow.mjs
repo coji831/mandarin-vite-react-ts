@@ -54,7 +54,9 @@ const VIEWPORTS = [
 /** Content box in priority order; the fallback exists only for the standalone layout. */
 const BOXES = [".app-content", ".page-shell", "main", "#storybook-root"];
 
-const inventory = JSON.parse(readFileSync(path.join(ROOT, ".github", "page-inventory.json"), "utf8"));
+const inventory = JSON.parse(
+  readFileSync(path.join(ROOT, ".github", "page-inventory.json"), "utf8"),
+);
 const ledger = Array.isArray(inventory) ? inventory : (inventory.pages ?? inventory.entries ?? []);
 const routeStories = ledger
   .filter((e) => e && e.story && e.route)
@@ -105,12 +107,19 @@ async function main() {
   let index;
 
   if (!GIVEN_BASE) {
-    const bin = path.join(path.dirname(require.resolve("storybook/package.json")), "dist/bin/dispatcher.js");
-    server = spawn(process.execPath, [bin, "dev", "-p", String(PORT), "--ci", "--quiet", "--no-open"], {
-      cwd: FRONTEND,
-      stdio: "ignore",
-      env: { ...process.env, BROWSER: "none", STORYBOOK_DISABLE_TELEMETRY: "1" },
-    });
+    const bin = path.join(
+      path.dirname(require.resolve("storybook/package.json")),
+      "dist/bin/dispatcher.js",
+    );
+    server = spawn(
+      process.execPath,
+      [bin, "dev", "-p", String(PORT), "--ci", "--quiet", "--no-open"],
+      {
+        cwd: FRONTEND,
+        stdio: "ignore",
+        env: { ...process.env, BROWSER: "none", STORYBOOK_DISABLE_TELEMETRY: "1" },
+      },
+    );
     index = await waitForServer(base);
   } else {
     index = await waitForServer(base, 15_000);
@@ -223,7 +232,9 @@ async function main() {
     const rows = results.filter((r) => r.viewport === v.label);
     const measured = rows.filter((r) => r.outcome === "pass" || r.outcome === "fail");
     const fails = measured.filter((r) => r.outcome === "fail").map((r) => r.route);
-    const broken = rows.filter((r) => r.outcome !== "pass" && r.outcome !== "fail").map((r) => r.route);
+    const broken = rows
+      .filter((r) => r.outcome !== "pass" && r.outcome !== "fail")
+      .map((r) => r.route);
     const pass = measured.length - fails.length;
     let out = `${v.label} ${pass}/${measured.length} pass, ${fails.length} FAIL`;
     if (fails.length) out += ` — ${fails.join(", ")}`;

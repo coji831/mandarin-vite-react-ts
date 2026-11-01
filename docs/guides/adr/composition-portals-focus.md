@@ -20,20 +20,21 @@ epic 31".
 
 Fundamental **#11 composition & portals/focus** was the last unbuilt prerequisite in the design set. The
 conversation panel (epic 31) is the first surface that is both **compositional** (a scrollable turn list
-+ an anchored composer + transient overlays) and a **Focus** surface, so the item had to be settled
-before that panel is specced. Two candidates were on the table: extract a shared `useFocusTrap` hook, or
-adopt Radix at epic 31.
+
+- an anchored composer + transient overlays) and a **Focus** surface, so the item had to be settled
+  before that panel is specced. Two candidates were on the table: extract a shared `useFocusTrap` hook, or
+  adopt Radix at epic 31.
 
 The repository state, measured rather than assumed (2026-10-26):
 
-| Probe                                                    | Result                                                                                                                            |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| UI primitive dependencies in `apps/frontend/package.json` | **none** — 9 runtime deps, all framework/data (`react`, `react-dom`, `react-router-dom`, `zustand`, `axios`, `hanzi-writer`, `lucide-react`, two workspace packages) |
-| `createPortal` in `apps/frontend/src`                     | **0 occurrences** — every overlay renders in place                                                                                |
+| Probe                                                     | Result                                                                                                                                                                                                                                   |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI primitive dependencies in `apps/frontend/package.json` | **none** — 9 runtime deps, all framework/data (`react`, `react-dom`, `react-router-dom`, `zustand`, `axios`, `hanzi-writer`, `lucide-react`, two workspace packages)                                                                     |
+| `createPortal` in `apps/frontend/src`                     | **0 occurrences** — every overlay renders in place                                                                                                                                                                                       |
 | Hand-rolled overlays already shipped                      | `Modal` (backdrop + Escape + scroll lock + `role="dialog"`/`aria-modal`), `Dropdown` (listbox, click-outside, Escape), `UserMenu` (popover at `--z-popover`), `WordPopover` (edge-aware position, Escape, focus-in **and** focus-return) |
-| Missing behavior                                         | a **Tab/Shift+Tab cycle**. `WordPopover` moves focus in and returns it; no surface traps it. `Modal` neither moves nor traps focus. |
+| Missing behavior                                          | a **Tab/Shift+Tab cycle**. `WordPopover` moves focus in and returns it; no surface traps it. `Modal` neither moves nor traps focus.                                                                                                      |
 
-So the repo has already chosen hand-rolled composition four times, and the only *missing* piece is one
+So the repo has already chosen hand-rolled composition four times, and the only _missing_ piece is one
 reusable behavior. The question is not "do we need focus management" — it is "do we buy a component
 library to get 30 lines of it".
 
@@ -43,7 +44,7 @@ library to get 30 lines of it".
 
 ### 1. One shared behavior: `shared/hooks/useFocusTrap.ts`
 
-The hook owns the four behaviors the APG *Dialog (Modal) Pattern* specifies, transcribed as behavior
+The hook owns the four behaviors the APG _Dialog (Modal) Pattern_ specifies, transcribed as behavior
 only (no source code borrowed):
 
 1. **Focus in** on activate — to the container, or to the first tabbable descendant.
@@ -79,9 +80,9 @@ A portal is **never** a fix for a stacking bug: the ladder + stacking-context di
 ## Why not Radix
 
 1. **It is a code borrow, and the borrow protocol rejects it.** `design-reasoning.md` §0's shortlist row
-   for Radix reads: *mine* = "a11y behavioral specs — focus management, keyboard nav, ARIA patterns";
-   *reject* = "its code (unless vendored via ADR)". Adopting the package is the rejected half of a row
-   the repo already wrote. This ADR extracts the *principle* and keeps the rejection.
+   for Radix reads: _mine_ = "a11y behavioral specs — focus management, keyboard nav, ARIA patterns";
+   _reject_ = "its code (unless vendored via ADR)". Adopting the package is the rejected half of a row
+   the repo already wrote. This ADR extracts the _principle_ and keeps the rejection.
 2. **It adds a second composition model.** Radix ships its own DOM shape, its own props, and its own
    styling seams for six or more primitives (`react-dialog`, `react-focus-scope`, `react-dropdown-menu`,
    `react-tabs`, `react-slot`, …). The repo's composition law is that a page composes **registry**

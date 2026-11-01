@@ -13,9 +13,9 @@ type: business
 
 ## Change Log
 
-| Date       | Change                                                            | Decision ID | Approval           |
-| ---------- | ----------------------------------------------------------------- | ----------- | ------------------ |
-| 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road | BM-1        | Owner (2026-08-14) |
+| Date       | Change                                                                                                                                 | Decision ID | Approval           |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------ |
+| 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road                                                                      | BM-1        | Owner (2026-08-14) |
 | 2026-10-26 | Premium surface → per-syllable tone measurement; pricing direction (tone-grading = paywall anchor, 17+ day trial, demo-quota-as-trial) | BM-2        | Owner (2026-10-26) |
 
 ---
@@ -71,7 +71,7 @@ Only remaining 🔒 is **persistence** — now the _primary_ register incentive 
 
 **Pricing stays OPEN** until the future costing/monetization (V10) feature — unchanged from O1/O2.
 
-**BM-2 direction (2026-10-26):** the guest demo quota *is* the trial — the tone-grading demo (3+3 tries/day)
+**BM-2 direction (2026-10-26):** the guest demo quota _is_ the trial — the tone-grading demo (3+3 tries/day)
 must demonstrate the tone-accuracy delta in the **first session** (RevenueCat 2026: 55% of trial
 cancellations happen on Day 0). When V10 lands, the **tone-grading surface's unlimited tier becomes the
 hard-paywall anchor** (the wedge is what people pay for), with a **17+ day trial** (42.5% vs 25.5%
@@ -179,15 +179,15 @@ Worst-case guest spend/day at the ratified quotas = **penny-scale**; cost-per-gu
 
 ### B.2 STILL OPEN (business — to confirm/close before or during future planning)
 
-| Business open item                      | Nature                     | Why open                                                                                                      |
-| --------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Quota numbers final sign-off**        | Confirm                    | Defaults accepted; owner final confirm at BR time (epic-25/26/29/31/36)                                       |
+| Business open item                      | Nature                                             | Why open                                                                                                        |
+| --------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Quota numbers final sign-off**        | Confirm                                            | Defaults accepted; owner final confirm at BR time (epic-25/26/29/31/36)                                         |
 | **V10 pricing**                         | Direction RATIFIED (BM-2); figures still reference | tone-grading = hard-paywall anchor, 17+ day trial; $9.99/$79.99 + Pro = reference only (O1); free-for-now holds |
-| **G7 funnel measurement**               | OPEN until costing feature | Unmeasurable at launch (O3); accepted risk                                                                    |
-| **Q11 ASR test run**                    | Business-validation track  | Design + budget + vendor set LOCKED (FV4–FV6); the run itself is pending (can start in parallel)              |
-| **TTS guest surfaces**                  | Cost-side (P11 flag)       | Cache-first verification + quota mechanics for `POST /v1/tts` + passage-audio — stance LOCKED, mechanics open |
-| **Global guest-spend budget figure**    | Cost-side                  | Set once real costing data exists (post-epic-29); the circuit-breaker cap value                               |
-| **Cross-feature per-user daily budget** | Cost-side                  | Unified cap figure via `AICallLog` (policy LOCKED; number pending costing data)                               |
+| **G7 funnel measurement**               | OPEN until costing feature                         | Unmeasurable at launch (O3); accepted risk                                                                      |
+| **Q11 ASR test run**                    | Business-validation track                          | Design + budget + vendor set LOCKED (FV4–FV6); the run itself is pending (can start in parallel)                |
+| **TTS guest surfaces**                  | Cost-side (P11 flag)                               | Cache-first verification + quota mechanics for `POST /v1/tts` + passage-audio — stance LOCKED, mechanics open   |
+| **Global guest-spend budget figure**    | Cost-side                                          | Set once real costing data exists (post-epic-29); the circuit-breaker cap value                                 |
+| **Cross-feature per-user daily budget** | Cost-side                                          | Unified cap figure via `AICallLog` (policy LOCKED; number pending costing data)                                 |
 
 > **P11 amendment note (L5):** the earlier "guests never incur cost" framing is **superseded** — guests may incur **BOUNDED** vendor cost under the demo quota. The demo quota is a deliberate, budgeted **marketing line** (penny-scale/day), not an open tap; enforced by `AICallLog` + server-side per-guest counters + a global guest-spend circuit breaker (epic-29 scope — noted, not planned).
 
@@ -246,9 +246,9 @@ These are implementation/planning items, deliberately excluded from the ratified
 
 ### C.4 Change Log
 
-| Date       | Change                                                            | Decision ID | Approval           |
-| ---------- | ----------------------------------------------------------------- | ----------- | ------------------ |
-| 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road | BM-1        | Owner (2026-08-14) |
+| Date       | Change                                                                                                                                 | Decision ID | Approval           |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------ |
+| 2026-08-15 | Initial ratified version — demo-guest + data-driven learning road                                                                      | BM-1        | Owner (2026-08-14) |
 | 2026-10-26 | Premium surface → per-syllable tone measurement; pricing direction (tone-grading = paywall anchor, 17+ day trial, demo-quota-as-trial) | BM-2        | Owner (2026-10-26) |
 
 ---

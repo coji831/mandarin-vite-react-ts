@@ -143,6 +143,12 @@ npx prettier --write "**/*.{ts,tsx,js,json,css}"
 npx prettier --check "**/*.{ts,tsx,js,json,css}"
 ```
 
+**Line endings.** `.gitattributes` pins the tree to `* text=auto eol=lf`, so the repository stores LF
+and git normalises both sides before comparing. A Windows clone made with `core.autocrlf=true` still
+materialises CRLF on disk, which makes `npm run format:check` fail on files nobody edited. Fix the
+clone once with `git config --local core.autocrlf false`, then re-checkout the working tree so the
+files are rewritten as LF.
+
 ### VS Code Integration
 
 Enable format-on-save in `.vscode/settings.json`:

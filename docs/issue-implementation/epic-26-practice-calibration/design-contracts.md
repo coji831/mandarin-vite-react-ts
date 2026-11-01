@@ -53,7 +53,6 @@ Every comprehension (Q8) question set MUST carry **at least one typed answer** �
 
 ---
 
-
 ## 26.4 Data & contract notes (architect → engineer)
 
 ### 26.4.1 The four strategy ids
@@ -148,7 +147,6 @@ Seed + verification duties (26-7):
 
 ---
 
-
 ## 26.5 Story slicing
 
 Order justified by dependency, not by size: truth first (26-1) so nothing downstream renders a mislabelled phase; the A26 residual next (26-2) so the four formats are never built into the failing completion region; the guest lane third (26-3) because it is a defect fix in the region 26-2 just rebuilt; formats in two pairs (26-4, 26-5) to reuse the cloze/option primitives before the second pair; the BE contract (26-6) can run parallel from the start but lands before seeded banks are consumed; banks (26-7) last-but-one because they need the registered ids; docs/verification closes (26-8).
@@ -165,7 +163,6 @@ Order justified by dependency, not by size: truth first (26-1) so nothing downst
 | `26-8` | **Docs + verification artifact.** This spec's status flipped to implemented with the as-built deltas; `QuizPageFull.stories.tsx` inventory note (only `pages/**/*Full.stories.tsx` is collected — the 17 existing stories stay the page gate, format stories live beside their views); verification artifact with the 5 measurements (guest 0 rows, 12 states × 4 formats, seed counts, phase aggregation, announce-region evidence); CHANGELOG entry only if a path/rule/output moved. | AC6 + close   | all                                               |
 
 ---
-
 
 ## 26.6 Token budget
 
@@ -186,7 +183,6 @@ Order justified by dependency, not by size: truth first (26-1) so nothing downst
 If implementation discovers a genuine gap, the path is the ADR route (`DESIGN.md` + `globals.css` + `design-audit` + gate #14/#15), and it is **not** part of this epic. New CSS is limited to component classes in `Quiz.css` (`.quiz-cloze__*`, `.quiz-sentence__*`, …): no `max-width`, no `margin: auto`, no `grid-template-columns` at page scope (`design-audit`: `page-scoped-layout-css` / `page-scoped-grid` / `missing-layout-token`).
 
 ---
-
 
 ## 26.7 Open decisions (human sign-off before 26-1 lands)
 

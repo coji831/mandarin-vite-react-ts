@@ -86,7 +86,9 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>({
 
     const activeElement = document.activeElement;
     invokerRef.current =
-      activeElement instanceof HTMLElement && activeElement !== document.body ? activeElement : null;
+      activeElement instanceof HTMLElement && activeElement !== document.body
+        ? activeElement
+        : null;
 
     // A container that cannot hold focus cannot be the initial target.
     const addedTabIndex = !container.hasAttribute("tabindex");

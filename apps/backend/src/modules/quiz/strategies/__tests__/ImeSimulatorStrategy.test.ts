@@ -48,13 +48,37 @@ function makeRadical(id: string, chars: Array<Record<string, unknown>>) {
 }
 
 const FAMILIAR_POOL = [
-  { glyph: "人", definition: "person", readings: [{ pinyin: "ren" }], hskLevel: 1, frequencyRank: 2 },
-  { glyph: "好", definition: "good", readings: [{ pinyin: "hao" }], hskLevel: 1, frequencyRank: 26 },
-  { glyph: "山", definition: "mountain", readings: [{ pinyin: "shan" }], hskLevel: 1, frequencyRank: 90 },
+  {
+    glyph: "人",
+    definition: "person",
+    readings: [{ pinyin: "ren" }],
+    hskLevel: 1,
+    frequencyRank: 2,
+  },
+  {
+    glyph: "好",
+    definition: "good",
+    readings: [{ pinyin: "hao" }],
+    hskLevel: 1,
+    frequencyRank: 26,
+  },
+  {
+    glyph: "山",
+    definition: "mountain",
+    readings: [{ pinyin: "shan" }],
+    hskLevel: 1,
+    frequencyRank: 90,
+  },
   // Obscure characters WITHOUT a meaning clue must be excluded (G4)
   { glyph: "圾", definition: "", readings: [{ pinyin: "ji" }], hskLevel: 6, frequencyRank: 9999 },
   // Obscure character WITH a meaning but high HSK / poor frequency — ranked last
-  { glyph: "婿", definition: "son-in-law", readings: [{ pinyin: "xu" }], hskLevel: 6, frequencyRank: 5000 },
+  {
+    glyph: "婿",
+    definition: "son-in-law",
+    readings: [{ pinyin: "xu" }],
+    hskLevel: 6,
+    frequencyRank: 5000,
+  },
 ];
 
 describe("ImeSimulatorStrategy", () => {
@@ -112,8 +136,20 @@ describe("ImeSimulatorStrategy", () => {
     it("handles a character with null hskLevel/frequencyRank (ranked last, still included)", async () => {
       mockRadicalFindMany.mockResolvedValue([
         makeRadical("rad_0001", [
-          { glyph: "人", definition: "person", readings: [{ pinyin: "ren" }], hskLevel: 1, frequencyRank: 2 },
-          { glyph: "佘", definition: "surname She", readings: [{ pinyin: "she" }], hskLevel: null, frequencyRank: null },
+          {
+            glyph: "人",
+            definition: "person",
+            readings: [{ pinyin: "ren" }],
+            hskLevel: 1,
+            frequencyRank: 2,
+          },
+          {
+            glyph: "佘",
+            definition: "surname She",
+            readings: [{ pinyin: "she" }],
+            hskLevel: null,
+            frequencyRank: null,
+          },
         ]),
       ]);
 

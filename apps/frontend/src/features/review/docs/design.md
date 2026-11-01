@@ -42,18 +42,18 @@ Review uses a **Strategy Pattern** similar to quiz:
 
 ## Components
 
-| Component                | Source                           | Notes                                        |
-| ------------------------ | -------------------------------- | -------------------------------------------- |
-| `ReviewPage`             | `pages/practices/ReviewPage.tsx` | URL-driven router between picker and session |
-| `ReviewPicker`           | Custom in `components/`          | Content type + source filter selection       |
-| `ReviewView`             | Custom in `components/`          | Session orchestrator                         |
-| `ReviewCard`             | Custom in `components/`          | Step-based card container (React.memo)       |
-| `ReviewCardPinyinInput`  | Custom in `components/`          | Pinyin input step                            |
-| `ReviewCardToneSelect`   | Custom in `components/`          | Tone selection step                          |
-| `ReviewCardOptionSelect` | Custom in `components/`          | Multiple choice option step                  |
+| Component                | Source                           | Notes                                                                  |
+| ------------------------ | -------------------------------- | ---------------------------------------------------------------------- |
+| `ReviewPage`             | `pages/practices/ReviewPage.tsx` | URL-driven router between picker and session                           |
+| `ReviewPicker`           | Custom in `components/`          | Content type + source filter selection                                 |
+| `ReviewView`             | Custom in `components/`          | Session orchestrator                                                   |
+| `ReviewCard`             | Custom in `components/`          | Step-based card container (React.memo)                                 |
+| `ReviewCardPinyinInput`  | Custom in `components/`          | Pinyin input step                                                      |
+| `ReviewCardToneSelect`   | Custom in `components/`          | Tone selection step                                                    |
+| `ReviewCardOptionSelect` | Custom in `components/`          | Multiple choice option step                                            |
 | `ReviewCardResult`       | Custom in `components/`          | Result step with correct/incorrect mark (shared `Icon`) + A/G/E rating |
-| `ReviewComplete`         | Custom in `components/`          | Session complete summary                     |
-| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                        |     | `ReviewPromptCard` | Custom in `components/` | Launch/prompt card for review start |
+| `ReviewComplete`         | Custom in `components/`          | Session complete summary                                               |
+| `ReviewLaunchCard`       | Custom in `components/`          | Launch card in picker                                                  |     | `ReviewPromptCard` | Custom in `components/` | Launch/prompt card for review start |
 
 ### Step Flow
 

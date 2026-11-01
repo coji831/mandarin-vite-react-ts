@@ -20,23 +20,23 @@ The feature folder is `features/readers/` (not `graded-readers`).
 
 ## Layout & Routes
 
-| Route                        | Component (page container)            | Purpose                                     |
-| ---------------------------- | ------------------------------------- | ------------------------------------------- |
-| `/learn/readers`             | `pages/learn/readers/ReadersPage.tsx` | Library view (list archetype)               |
-| `/learn/readers/:passageId`  | `pages/learn/readers/ReadersPage.tsx` | One reading session (detail archetype, paper register) |
+| Route                       | Component (page container)            | Purpose                                                |
+| --------------------------- | ------------------------------------- | ------------------------------------------------------ |
+| `/learn/readers`            | `pages/learn/readers/ReadersPage.tsx` | Library view (list archetype)                          |
+| `/learn/readers/:passageId` | `pages/learn/readers/ReadersPage.tsx` | One reading session (detail archetype, paper register) |
 
 `ReadersPage` has **no phase gate** (never called `usePhaseGate`): `/learn/readers` renders for every visitor, including a Phase-1 guest — phase is sequencing metadata only. Guests can browse the 6 demo passages read-only (no generate / sessions / bookmarks).
 
 ## Components
 
-| Component         | Source                           | Notes                                                                                                                                                                              |
-| ----------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ReaderLibrary`   | `components/ReaderLibrary.tsx`   | HSK filter pills + passage card grid (3/2/1-col responsive); loading/error/empty/filtered-empty states                                                                             |
-| `PassageCard`     | `components/PassageCard.tsx`     | HSK badge, title, word count, bookmark toggle, completion checkmark (no known-word percentage — `knownWordRatio` is a stored constant, not a measurement)                          |
+| Component         | Source                           | Notes                                                                                                                                                                                                              |
+| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ReaderLibrary`   | `components/ReaderLibrary.tsx`   | HSK filter pills + passage card grid (3/2/1-col responsive); loading/error/empty/filtered-empty states                                                                                                             |
+| `PassageCard`     | `components/PassageCard.tsx`     | HSK badge, title, word count, bookmark toggle, completion checkmark (no known-word percentage — `knownWordRatio` is a stored constant, not a measurement)                                                          |
 | `ReadingView`     | `components/ReadingView.tsx`     | Sentence-by-sentence layout; integrates `AudioControlBar` + `SentenceDisplay`; drives `useAutoSaveProgress`; observes reading POSITION against the viewport and reveals `Finish reading` only at the last sentence |
-| `SentenceDisplay` | `components/SentenceDisplay.tsx` | Per-sentence row (highlighted text + pinyin); per-sentence play button (shared `Icon`) routes `play(index, "single")` through the shared AudioManager; active highlight from the shared `audioStore` |
-| `WordPopover`     | `components/WordPopover.tsx`     | Inline word lookup card (glyph, pinyin, meaning) → opens LexicalHub; audio pauses while open (popover pause/resume parity)                                                         |
-| `AudioControlBar` | `components/AudioControlBar/`    | Play/pause, speed (0.75x/1x/1.25x), progress indicator; reads the SHARED presentational `audioStore` snapshot directly                                                             |
+| `SentenceDisplay` | `components/SentenceDisplay.tsx` | Per-sentence row (highlighted text + pinyin); per-sentence play button (shared `Icon`) routes `play(index, "single")` through the shared AudioManager; active highlight from the shared `audioStore`               |
+| `WordPopover`     | `components/WordPopover.tsx`     | Inline word lookup card (glyph, pinyin, meaning) → opens LexicalHub; audio pauses while open (popover pause/resume parity)                                                                                         |
+| `AudioControlBar` | `components/AudioControlBar/`    | Play/pause, speed (0.75x/1x/1.25x), progress indicator; reads the SHARED presentational `audioStore` snapshot directly                                                                                             |
 
 ## Audio Flow (shared AudioManager + Behavior Contract)
 

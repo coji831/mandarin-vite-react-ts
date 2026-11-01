@@ -32,7 +32,11 @@ const OUT = "docs/guides/design/css-class-catalog.md";
 
 const SHEETS = [
   ["globals.css", "apps/frontend/src/styles/globals.css", "Tokens plus single-property utilities"],
-  ["components.css", "apps/frontend/src/styles/components.css", "Multi-property component patterns"],
+  [
+    "components.css",
+    "apps/frontend/src/styles/components.css",
+    "Multi-property component patterns",
+  ],
   ["animations.css", "apps/frontend/src/styles/animations.css", "Keyframes and animation classes"],
 ];
 
@@ -80,9 +84,7 @@ const total = sections.reduce((n, s) => n + s.rows.length, 0);
 
 // last-verified is the newest sheet mtime, not the clock: a regeneration that changed nothing must not
 // make a stale catalogue look freshly verified.
-const newest = Math.max(
-  ...SHEETS.map(([, rel]) => fs.statSync(path.join(ROOT, rel)).mtimeMs),
-);
+const newest = Math.max(...SHEETS.map(([, rel]) => fs.statSync(path.join(ROOT, rel)).mtimeMs));
 const verified = new Date(newest).toISOString().slice(0, 10);
 const body = [
   "---",

@@ -66,9 +66,9 @@ const rel = (abs) => path.relative(ROOT, abs).replace(/\\/g, "/");
 // Comments become blank lines rather than empty text, so line numbers survive —
 // a dangling-name report is only useful if it points at the line a human opens.
 const blankOut = (text) =>
-  text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " ")).replace(/\/\/[^\n]*/g, (m) =>
-    m.replace(/[^\n]/g, " "),
-  );
+  text
+    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
+    .replace(/\/\/[^\n]*/g, (m) => m.replace(/[^\n]/g, " "));
 
 // ─── Collect ────────────────────────────────────────────────────────────────
 
@@ -128,7 +128,8 @@ for (const [name, ref] of references) {
 }
 unresolved.sort((a, b) => a.name.localeCompare(b.name));
 
-const className = (u) => (u.inCode ? "documentation-only" : u.fallback ? "resolved-by-fallback" : "dangling");
+const className = (u) =>
+  u.inCode ? "documentation-only" : u.fallback ? "resolved-by-fallback" : "dangling";
 const dangling = unresolved.filter((u) => className(u) === "dangling");
 const fallbacks = unresolved.filter((u) => className(u) === "resolved-by-fallback");
 const docOnly = unresolved.filter((u) => className(u) === "documentation-only");
@@ -182,9 +183,7 @@ if (unresolved.length) {
   console.log(`\n  unresolved reads (${unresolved.length}) — no declaration in the scanned tree:`);
   const pad = Math.max(...unresolved.map((u) => u.name.length));
   for (const u of unresolved) {
-    console.log(
-      `    ${u.name.padEnd(pad)}  ${`${u.file}:${u.line}`.padEnd(58)} ${className(u)}`,
-    );
+    console.log(`    ${u.name.padEnd(pad)}  ${`${u.file}:${u.line}`.padEnd(58)} ${className(u)}`);
   }
 }
 
@@ -202,7 +201,9 @@ if (fallbacks.length || docOnly.length) {
 
 const unreferenced = [...declarations.keys()].filter((n) => !references.has(n)).sort();
 if (unreferenced.length) {
-  console.log(`  · ${unreferenced.length} declared but unread (informational): ${unreferenced.join(", ")}`);
+  console.log(
+    `  · ${unreferenced.length} declared but unread (informational): ${unreferenced.join(", ")}`,
+  );
 }
 
 console.log(`\n  genuinely dangling: ${dangling.length}`);

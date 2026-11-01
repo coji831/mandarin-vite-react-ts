@@ -69,7 +69,7 @@ Design tokens are the shared vocabulary between design and code. The token syste
 
 | Category      | Pattern                                | Example                   |
 | ------------- | -------------------------------------- | ------------------------- |
-| Colors        | `--color-*`, `--surface-*`, `--text-*` | `var(--accent-fill)`    |
+| Colors        | `--color-*`, `--surface-*`, `--text-*` | `var(--accent-fill)`      |
 | Spacing       | `--space-*`                            | `var(--space-md)`         |
 | Border radius | `--radius-*`                           | `var(--radius-sm)`        |
 | Shadows       | `--shadow-*`                           | `var(--shadow-md)`        |

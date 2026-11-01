@@ -18,7 +18,6 @@ audience: agents
 
 ---
 
-
 ## 26.0 Step 0 — Revalidation verdict (mandatory; run 2026-10-30)
 
 Surfaces in scope:
@@ -52,7 +51,6 @@ Per-item verdict (the 7 contract items of the revalidation guide):
 Rework boundary applied (`design-revalidation-guide.md` §"Rework-from-scratch boundary"): **kept** = tokens, `--page-measure-*`, `PageShell`/`PageStack`/`PageGrid`, the `session-query` chrome rule, `QuizSessionPage` orchestration, `QuestionView`/`IMEQuestionView`/`MultipleChoiceView`, the `QuizStrategy` interface and `AnswerResult`. **Rebuilt** = the completion region (§26.2), the `QuizCard` body, the guest branch of results. **Never touched** = `content/` corpus, ADRs, gated-green anatomy/a11y/tests.
 
 ---
-
 
 ## 26.1 Per-epic design spec — Epic 26
 
@@ -148,7 +146,6 @@ Fixed frame, inner scroll, chrome never scrolls: `PageShell`/`PageStack` keep th
 Story tests pass (one per state per format) · `npm run design-audit:foundation` green · `npm run check:page-inventory` green · `npm run check:registry-stories` green (covers `CompletionSlot`) · `npm run check:design-parity` green (no token drift) · axe clean on each format's `default` + `fail` story · 22-criteria rubric pass at epic close · verification artifact written (§26.5, `26-8`).
 
 ---
-
 
 ## 26.2 The completion-slot contract
 

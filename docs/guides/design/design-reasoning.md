@@ -173,17 +173,17 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 ### 4.1 Quiz (All Modes)
 
-| Rule                    | Specification                                                                                |
-| ----------------------- | -------------------------------------------------------------------------------------------- |
-| **Card background**     | `--card` with `--hairline`                                                     |
-| **No shadows on cards** | Quiz cards are flat — shadows add visual noise during focus                                  |
-| **Character glyph**     | `--font-4xl` (32px) minimum, centered                                                        |
-| **Question text**       | `--font-lg` (18px), `--text-primary`                                                         |
-| **Timer**               | `--font-xl` (20px) bold, `--text-warning` when <5s                                           |
-| **Correct feedback**    | Emerald glow: `--color-success` border + `--color-success-bg` background                     |
-| **Incorrect feedback**  | Warm red pulse: `--color-error` border + `--color-error-bg` background                       |
-| **Phase badge**         | Primary amber for active phase, muted for locked                                             |
-| **Audio button**        | Ghost treatment — subtle, not competing with content                                         |
+| Rule                    | Specification                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| **Card background**     | `--card` with `--hairline`                                                           |
+| **No shadows on cards** | Quiz cards are flat — shadows add visual noise during focus                          |
+| **Character glyph**     | `--font-4xl` (32px) minimum, centered                                                |
+| **Question text**       | `--font-lg` (18px), `--text-primary`                                                 |
+| **Timer**               | `--font-xl` (20px) bold, `--text-warning` when <5s                                   |
+| **Correct feedback**    | Emerald glow: `--color-success` border + `--color-success-bg` background             |
+| **Incorrect feedback**  | Warm red pulse: `--color-error` border + `--color-error-bg` background               |
+| **Phase badge**         | Primary amber for active phase, muted for locked                                     |
+| **Audio button**        | Ghost treatment — subtle, not competing with content                                 |
 | **Answer input**        | `--surface-light-5` background, `--hairline` border, focus ring uses `--accent-fill` |
 
 **Anti-patterns:**
@@ -217,8 +217,8 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 | Rule                  | Specification                                                                             |
 | --------------------- | ----------------------------------------------------------------------------------------- |
-| **Tab headers**       | Use `Tabs` shared component, active tab uses `--accent-fill` border                     |
-| **Pinyin grid cells** | `--card` background, hover shows `--accent-tint`                      |
+| **Tab headers**       | Use `Tabs` shared component, active tab uses `--accent-fill` border                       |
+| **Pinyin grid cells** | `--card` background, hover shows `--accent-tint`                                          |
 | **Tone cards**        | Tone colors (`--tone-1` through `--tone-5`) for accent only — text stays `--text-primary` |
 | **Stroke animations** | Full-width canvas, no competing UI near the stroke area                                   |
 | **Section spacing**   | `--space-lg` (24px) between major sections, `--space-md` (16px) between related items     |
@@ -231,13 +231,13 @@ These rules apply to **every** feature, **every** component, **every** screen:
 
 ### 4.4 Content Browser (Characters, Words, Radicals)
 
-| Rule               | Specification                                               |
-| ------------------ | ----------------------------------------------------------- |
+| Rule               | Specification                                       |
+| ------------------ | --------------------------------------------------- |
 | **List items**     | Consistent height, `--card` background, hover state |
-| **Selected state** | `--accent-fill` left border indicator              |
-| **Search input**   | Standard `Input` shared component                           |
-| **Filter chips**   | `FilterChip` shared component, amber when active            |
-| **Pagination**     | Use `gap-sm` between page buttons                           |
+| **Selected state** | `--accent-fill` left border indicator               |
+| **Search input**   | Standard `Input` shared component                   |
+| **Filter chips**   | `FilterChip` shared component, amber when active    |
+| **Pagination**     | Use `gap-sm` between page buttons                   |
 
 **Anti-patterns:**
 
@@ -325,17 +325,17 @@ These have been caught in previous code reviews. Don't reintroduce them:
 
 ### When to Use Which Token
 
-| Need                      | Use                            | Don't Use                                               |
-| ------------------------- | ------------------------------ | ------------------------------------------------------- |
-| Primary action background | `--accent-fill`              | Raw `#b45309`                                           |
-| Card background           | `--card`               | `--canvas` (that's for panels)                |
-| Page background           | `--canvas`           | `--card`                                        |
-| Primary text              | `--text-primary` (95% white)   | `white` or `#fff`                                       |
-| Secondary text            | `--text-secondary` (85% white) | `--text-primary` (would be too strong)                  |
-| Hover background          | `--surface-hover`              | Manual `rgba()`                                         |
-| Border on cards           | `--hairline`             | `--accent-fill` (that's for highlighted items) |
-| Success feedback          | `--color-success`              | `--accent-fill`                                       |
-| Error feedback            | `--color-error`                | `--color-warning`                                       |
+| Need                      | Use                            | Don't Use                                      |
+| ------------------------- | ------------------------------ | ---------------------------------------------- |
+| Primary action background | `--accent-fill`                | Raw `#b45309`                                  |
+| Card background           | `--card`                       | `--canvas` (that's for panels)                 |
+| Page background           | `--canvas`                     | `--card`                                       |
+| Primary text              | `--text-primary` (95% white)   | `white` or `#fff`                              |
+| Secondary text            | `--text-secondary` (85% white) | `--text-primary` (would be too strong)         |
+| Hover background          | `--surface-hover`              | Manual `rgba()`                                |
+| Border on cards           | `--hairline`                   | `--accent-fill` (that's for highlighted items) |
+| Success feedback          | `--color-success`              | `--accent-fill`                                |
+| Error feedback            | `--color-error`                | `--color-warning`                              |
 
 ### Heirarchy of Spacing Tokens
 
