@@ -21,6 +21,7 @@
     "format": "npm run format --workspaces --if-present",
     "format:all": "prettier --write \"docs/**\" \"apps/**\" \"packages/**\" \"scripts/**\" \"tools/**\" \".github/**\" \"*.md\" \"*.json\"",
     "format:check": "prettier --check \"docs/**\" \"apps/**\" \"packages/**\" \"scripts/**\" \".github/**\" \"*.md\" \"*.json\"",
+    "format:check:changed": "node scripts/check-format-changed.mjs",
     "cleanup:radical-content": "npx tsx scripts/cleanup-radical-content.ts",
     "validate:radical-content": "npx tsx scripts/validate-radical-content.ts",
     "validate:grammar-content": "npx tsx scripts/validate-grammar-content.ts",

@@ -65,6 +65,10 @@ Notes that cost a run when missed:
   `npm run` in a numbered row and fails when the script does not exist, when no command in
   `.solar/commands.json` runs it, or when a solar command names a script nobody has. Adding a gate here
   and forgetting the solar command is exactly the failure it catches, so it runs after every table edit.
+- **Gate 1 has a Tier-1 fast path: `npm run format:check:changed`.** It runs prettier over the files
+  changed against `--base <rev>` (default `HEAD`) plus the untracked ones, and measured ~1 s against the
+  full sweep's 22 s on this tree (2026-11-01). It is an optimization and **never a substitute**:
+  `format:check` keeps its exact globs, and `ci.yml` runs that full sweep on every PR.
 
 ## Before implementing
 

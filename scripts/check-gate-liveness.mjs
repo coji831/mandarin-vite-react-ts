@@ -73,6 +73,12 @@ const EXEMPT = new Map([
       "invocation, so it proves one token rename inside the change that makes it. A table row would " +
       "have to carry two revisions and could not run in a governed pass.",
   ],
+  [
+    "check-format-changed.mjs",
+    "the Tier-1 fast path for gate 1, not a gate of its own: it runs prettier over the files changed " +
+      "against --base plus the untracked ones, and CI runs the full `format:check` sweep on every PR. " +
+      "A row would read as a second format gate over a narrower scope than the one that decides.",
+  ],
 ]);
 
 const at = (re, group = 1) => ({ re, group });
