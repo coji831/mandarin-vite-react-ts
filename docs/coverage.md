@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | 40 |
+| A10 Agentic / Dev-Flow | 31 | 10 | 0 | 41 | 41 |
 
 
 <a id="a1"></a>
@@ -175,11 +175,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (40)  ·  score 30/40 documented · 10 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (41)  ·  score 31/41 documented · 10 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 16 + agents 9 + skills 3)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
+| **Agentic layer (instructions 17 + agents 9 + skills 3)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
 | instructions/a11y-floor | ✅ | .github/instructions/a11y-floor.instructions.md | documented | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
@@ -189,6 +189,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | instructions/frontend-input-handling | ✅ | .github/instructions/frontend-input-handling.instructions.md | documented | — | check:system-map |
 | instructions/prisma-schema-changes | ✅ | .github/instructions/prisma-schema-changes.instructions.md | documented | — | check:system-map |
 | instructions/quiz-architecture | ✅ | .github/instructions/quiz-architecture.instructions.md | documented | — | check:system-map |
+| instructions/quiz-grading-normalization | ✅ | .github/instructions/quiz-grading-normalization.instructions.md | documented | — | check:system-map |
 | instructions/react-external-libs | ✅ | .github/instructions/react-external-libs.instructions.md | documented | — | check:system-map |
 | instructions/storybook-production-alignment | ✅ | .github/instructions/storybook-production-alignment.instructions.md | documented | — | check:system-map |
 | instructions/testing-standards | ✅ | .github/instructions/testing-standards.instructions.md | documented | — | check:system-map |

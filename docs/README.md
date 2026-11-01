@@ -66,7 +66,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — review · 32 leaves](#layer-6)
+- [Layer 6 · Agentic System — review · 33 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -388,7 +388,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — review · 32 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — review · 33 leaves</summary>
 
 #### Instructions
 
@@ -403,6 +403,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Use when building input components with debounce, auto-submit, or timer functionality. Covers edge cases like multi-character input and countdown completion. | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
 | Use when editing Prisma schema, adding database models, changing columns, or running migrations. Covers safety checks and required commands. | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
 | Use when creating or modifying quiz modes, quiz strategies, quiz pages, or quiz routing. Covers strategy pattern compliance, routing conventions, and component reuse rules. | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
+| Use when changing answer grading, tone comparison, or pinyin normalization in quiz or review code. Covers neutral tone 0 and 5, mark and digit insensitive pinyin comparison, per-strategy correctPinyin forms, and never regressing a correct answer. | **review** | [.github/instructions/quiz-grading-normalization.instructions.md](../.github/instructions/quiz-grading-normalization.instructions.md) |
 | Use when integrating external DOM-manipulating libraries (hanzi-writer, D3, charts, canvas libraries) with React components. Covers ref stability, DOM ownership, and lifecycle coordination. | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
 | Storybook is for shared components only. Read before adding or changing a shared component or its story. | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
 | Minimum testing requirements per tier: what must be tested, at what level, before a story closes. Read when adding logic, writing tests, or completing a story. | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
@@ -411,7 +412,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
 | UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
+_17 instruction leaves · 18 on disk — project-workflow is the control-plane gate table._
 
 #### Agents
 
@@ -470,7 +471,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 31 | 10 | 0 | 41 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
