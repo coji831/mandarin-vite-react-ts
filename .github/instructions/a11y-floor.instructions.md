@@ -35,3 +35,25 @@ reason.
   literal, and the 44px primary is a documented deliberate exception to that floor.
 - **The gate is the check.** The axe sweep over every theme is the R0 reading; a review that restates
   a ratio the sweep printed is duplicating the instrument. The static half is the accessibility plugin's own checks (`run_axe_scan` and the specialists it dispatches). `npm run design-audit` is NOT an accessibility gate: its only a11y rule is `missing-aria-label`.
+
+## Keyboard Single-Activation (Enter/Space)
+
+- Native `<button>` (including the shared `Button`) fires `onClick` on BOTH Enter
+  and Space automatically. NEVER add a redundant `onKeyDown` that also triggers
+  the action — the toggle/action runs twice per keypress (double-toggle
+  anti-pattern). Keep `onClick` only.
+- Use `aria-expanded` on the `Button` for disclosure toggles (e.g. the expand
+  button in `TreeRootNode`).
+- For a non-native `div[role="button"]`, an explicit `onKeyDown` IS required —
+  a `div` never fires `click` on Enter/Space. See `PhoneticFamilyNode`'s header
+  (`role="button" tabIndex={0}` + explicit Enter/Space handler with
+  `e.preventDefault()`).
+
+## Dialog Focus Management (WCAG 2.4.3)
+
+- On open, move focus INTO the dialog: give the container `tabIndex={-1}` and
+  call `.focus()` in a mount effect (see `WordPopover`).
+- On close, return focus to the trigger: capture `document.activeElement` on
+  mount, restore it in the effect cleanup (only if the trigger is still in the
+  document).
+- Close the dialog on Escape.
