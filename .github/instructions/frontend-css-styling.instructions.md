@@ -6,18 +6,20 @@ applyTo: "**/*.css,apps/frontend/src/**/*.tsx"
 # CSS and styling
 
 Every value reads a token. The token layer is `styles/globals.css`, with `styles/components.css` and
-`styles/animations.css` imported beside it; the table below says what each one holds. `DESIGN.md`
-records the intent.
+`styles/animations.css` imported beside it; the table below says what each one holds. It is the one
+place a value changes once and reaches every consumer; a literal moves that decision into the
+component. `DESIGN.md` records the intent.
 
 **Reported, never gated.** `npm run design-audit` (the `--full` run, a pinned measurement that already
-exits 1) reports a literal as `hardcoded-color`, `hardcoded-spacing` or `hardcoded-font-size`; stylelint
-fails only CSS `rgb()`/`rgba()`; `npm run check:spine-parity` checks the name vocabulary. This file is
-the law.
+exits 1, so a literal changes nothing) reports a literal as `hardcoded-color`, `hardcoded-spacing` or
+`hardcoded-font-size`; stylelint fails only CSS `rgb()`/`rgba()`; `npm run check:spine-parity` checks
+the name vocabulary. This file is the law. Do not restate the rules in a review comment.
 
 ## The prohibitions
 
-- **No literal value.** No hex, no `rgb()`, no `px`, no `ms`, no raw `z-index` integer. A value with no
-  token is a token-layer request: name the role the value plays and add the token.
+- **No literal value.** No hex, no `rgb()`, no `px`, no `ms`, no raw `z-index` integer. Colour, radius,
+  spacing, duration and font size all read `var(--token)`. A value with no token is a token-layer
+  request: name the role the value plays and add the token, or ask for one.
 - **No arbitrary opacity.** Use the `op-40` / `op-60` / `op-80` / `op-100` utilities.
 - **No `transition` in feature CSS.** Transitions belong to `components.css` or `animations.css`; in JSX
   use `transition-all` / `transition-colors`.
@@ -36,6 +38,19 @@ Colours, radii and the spacing scale always come from tokens. A one-off **struct
 literal when it is pure layout math, not a scale step: `min-height` on a fixed-state shell, a hairline
 border, a fixed panel width. `RadicalTreesTab.css` and `PhoneticFamilyNode.css` are the sanctioned
 example of that boundary. Do not invent a token per px; that bloats the token surface.
+
+## Which token a value may read
+
+- **Read only the token paths the registry entry declares.** `.github/component-registry.json` is the
+  component contract; a path read outside it is an undeclared dependency that nobody documented.
+- **A variant's look comes from its declared token value, not from a branch of literals.** The closed
+  variant set and the token map are one decision; split them and one moves without the other.
+- **Motion and layering read their own tokens.** Durations and easing come from `--duration-*` and
+  `--transition-*`; stacking from `--z-*`. Both are global contracts (reduced-motion, overlays), and a
+  local value escapes them.
+- **Do not resolve an alias by hand.** The `spine` MCP server (`spine://tokens`,
+  `spine://tokens/{theme}`) follows aliases to the value; a hand-resolved alias in a comment stops being
+  true at the next token edit.
 
 ## Where styles live
 

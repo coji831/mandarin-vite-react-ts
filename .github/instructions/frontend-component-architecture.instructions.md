@@ -55,5 +55,4 @@ A store never lives under a `components/` directory. Check: `ls -d **/components
 ## Token discipline and the design gates
 
 `design-audit:foundation` catches page-scoped layout; a hardcoded value is not gated. See
-`token-discipline.instructions.md` for the rule and `frontend-css-styling.instructions.md` for the CSS
-prohibitions. Do not restate them here.
+`frontend-css-styling.instructions.md` for the rule and the CSS prohibitions. Do not restate them here.

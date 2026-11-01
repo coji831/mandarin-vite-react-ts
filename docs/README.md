@@ -66,7 +66,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — review · 33 leaves](#layer-6)
+- [Layer 6 · Agentic System — review · 32 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -388,7 +388,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — review · 33 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — review · 32 leaves</summary>
 
 #### Instructions
 
@@ -408,11 +408,10 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Storybook is for shared components only. Read before adding or changing a shared component or its story. | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
 | Minimum testing requirements per tier: what must be tested, at what level, before a story closes. Read when adding logic, writing tests, or completing a story. | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
 | A theme is a delta overlay over the same semantic token names: no new names, no component overrides, no fork. Applies to the live token layer and the design spec. | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
-| The token layer is the only source of a value: every colour, length, duration and z-index reads var(--token). Applies to stylesheets and TSX. | **review** | [.github/instructions/token-discipline.instructions.md](../.github/instructions/token-discipline.instructions.md) |
 | Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
 | UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_17 instruction leaves · 18 on disk — project-workflow is the control-plane gate table._
+_16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
 
 #### Agents
 
@@ -471,7 +470,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 31 | 10 | 0 | 41 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 

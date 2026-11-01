@@ -82,7 +82,7 @@ Each file below carries its own `applyTo` or `description`, so it arrives when i
 `.github/AGENTS.md` is the full index; `.github/agent-surface.json` is the context budget.
 
 - styling a component, or touching a colour, size or duration -> `frontend-css-styling`,
-  `token-discipline`, `theme-delta`
+  `theme-delta`
 - building or refactoring a component's state, logic or barrel -> `frontend-component-architecture`
 - designing a surface or laying out a page -> `uiux-design-protocol`, `ui-composition`
 - writing a story -> `storybook-production-alignment`
