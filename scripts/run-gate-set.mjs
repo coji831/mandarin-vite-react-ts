@@ -40,7 +40,8 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
+const IS_WINDOWS = process.platform === "win32";
+const NPM = IS_WINDOWS ? "npm.cmd" : "npm";
 
 const names = process.argv.slice(2).filter((a) => a !== "--");
 
@@ -89,7 +90,14 @@ for (const name of names) {
   const run =
     via === "node"
       ? spawnSync(process.execPath, argv, { cwd: ROOT, encoding: "utf8" })
-      : spawnSync(NPM, ["--silent", "run", name], { cwd: ROOT, encoding: "utf8", shell: false });
+      : spawnSync(NPM, ["--silent", "run", name], {
+          cwd: ROOT,
+          encoding: "utf8",
+          // On Windows npm is a `.cmd` shim, which `spawnSync` refuses to start without a shell
+          // (EINVAL). The name is a package.json key already matched against the script list above,
+          // so the command string carries nothing the table did not put there.
+          shell: IS_WINDOWS,
+        });
   const exit = run.status ?? (run.error ? 1 : 0);
   results.push({
     name,
