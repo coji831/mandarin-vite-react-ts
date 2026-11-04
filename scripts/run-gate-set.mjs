@@ -131,11 +131,15 @@ for (const run of results) {
 }
 
 const npmCount = results.filter((r) => r.via === "npm").length;
+// The outer wrapper only exists when this was started as `npm run gates`. Counting it
+// unconditionally reported one npm call even when the runner was started directly as
+// `node scripts/run-gate-set.mjs` with node-only gates, when there were none.
+const outerNpm = process.env.npm_lifecycle_event === "gates" ? 1 : 0;
 const total = Date.now() - started;
 console.log("");
 console.log(
   `  ${results.length} gate(s): ${results.length - failed.length} passed, ` +
-    `${failed.length} failed, ${total} ms total, ${npmCount + 1} npm invocation(s)`,
+    `${failed.length} failed, ${total} ms total, ${npmCount + outerNpm} npm invocation(s)`,
 );
 if (failed.length) {
   console.log(`  failed: ${failed.map((r) => `${r.name} (exit ${r.exit})`).join(", ")}`);
