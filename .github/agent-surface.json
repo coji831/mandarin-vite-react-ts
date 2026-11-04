@@ -1,7 +1,7 @@
 {
   "description": "The context budget for this repo, read by scripts/check-load.mjs. Every value is a CEILING: lowering one is a pass, raising one is a finding. Set a value where the tree is today, then lower it in the commit that earns it. A path may add its own `cap` to override scope_fan_in_cap_bytes.",
-  "always_on_cap_bytes": 28000,
-  "scope_fan_in_cap_bytes": 57000,
+  "always_on_cap_bytes": 19000,
+  "scope_fan_in_cap_bytes": 40000,
   "representative_paths": [
     {
       "path": "apps/frontend/src/features/quiz/components/QuizCard.tsx",
