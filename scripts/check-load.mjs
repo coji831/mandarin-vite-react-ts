@@ -291,6 +291,8 @@ const skillsOnDisk = fs.existsSync(path.join(ROOT, ".github", "skills"))
 const overSkills = [];
 const missingSkills = [];
 const unregisteredSkills = [];
+const badRows = [];
+const dupTriggers = [];
 let registry = null;
 if (fs.existsSync(REGISTRY)) {
   try {
@@ -303,11 +305,24 @@ if (fs.existsSync(REGISTRY)) {
   const registered = new Set();
   for (const s of rows) {
     registered.add(s.path);
+    // The two routing fields are what the harness matches on. A row without them is an index entry,
+    // not a route, and the router has nothing to match.
+    if (!s.trigger || !String(s.trigger).trim()) badRows.push(`${s.id}: no \`trigger\``);
+    if (!s.when || !String(s.when).trim()) badRows.push(`${s.id}: no \`when\``);
     if (!fs.existsSync(path.join(ROOT, s.path))) {
       missingSkills.push(s);
       continue;
     }
     if (s.budget_bytes != null && size(s.path) > s.budget_bytes) overSkills.push(s);
+  }
+  // Two rows a router cannot tell apart are one row with two bodies. Three words is enough to catch a
+  // copy-paste; the semantic test is a judgement no script should make, and it belongs to the audit.
+  const prefixes = new Map();
+  for (const s of rows) {
+    if (!s.trigger) continue;
+    const key = String(s.trigger).trim().split(/\s+/).slice(0, 3).join(" ").toLowerCase();
+    if (prefixes.has(key)) dupTriggers.push([prefixes.get(key), s.id, key]);
+    else prefixes.set(key, s.id);
   }
   const unregistered = skillsOnDisk.filter((p) => !registered.has(p));
   console.log(`\nSKILLS (${rows.length} registered, ${skillsOnDisk.length} on disk)`);
@@ -325,6 +340,37 @@ if (fs.existsSync(REGISTRY)) {
   if (unregistered.length) {
     for (const p of unregistered) unregisteredSkills.push(p);
   }
+}
+
+// ---- ideal targets: debt, never a failure --------------------------------------------------------
+// Every cap comes in a pair. The cap fails; the ideal reports. A single cap set at the ideal would be red
+// the day it was written, and a cap with no ideal gives a number with no direction - so the gap between
+// them is the work a later pass owes, printed once rather than asserted.
+const debt = [];
+const noteDebt = (label, actual, ideal) => {
+  if (ideal != null && actual > ideal) debt.push({ label, actual, ideal, over: actual - ideal });
+};
+noteDebt("always-on", alwaysOn, profile.always_on_ideal_bytes);
+if (worst) noteDebt("worst fan-in path", worst, profile.scope_fan_in_ideal_bytes);
+if (fileCap != null && scopedRules.length) {
+  const widestScoped = scopedRules.reduce((a, b) => (b.bytes > a.bytes ? b : a));
+  noteDebt(widestScoped.name, widestScoped.bytes, profile.per_file_ideal_bytes);
+}
+if (registry && Array.isArray(registry.skills)) {
+  for (const s of registry.skills) {
+    if (s.ideal_bytes == null || !fs.existsSync(path.join(ROOT, s.path))) continue;
+    noteDebt(`skill ${s.id}`, size(s.path), s.ideal_bytes);
+  }
+}
+if (debt.length) {
+  const total = debt.reduce((n, d) => n + d.over, 0);
+  console.log(
+    `\nIDEAL TARGETS (debt, never a failure)  ${debt.length} over, ${num(total)} B to pay down`,
+  );
+  for (const d of debt.slice().sort((a, b) => b.over - a.over))
+    console.log(
+      `  ${pad(d.label, 30)} ${String(num(d.actual)).padStart(7)} > ideal ${num(d.ideal).padStart(6)}   +${num(d.over)} B`,
+    );
 }
 
 // ---- verdict -----------------------------------------------------------------------------------
@@ -345,6 +391,11 @@ for (const s of missingSkills)
 for (const p of unregisteredSkills)
   problems.push(
     `${p} has no row in skills-registry.json - add one with its trigger and a budget, or delete the skill`,
+  );
+for (const b of badRows) problems.push(`skills-registry.json ${b} - a row the router cannot match`);
+for (const [a, b, key] of dupTriggers)
+  problems.push(
+    `skills-registry.json rows ${a} and ${b} share the trigger prefix "${key}" - the router cannot tell them apart`,
   );
 
 if (missingPaths.length) {

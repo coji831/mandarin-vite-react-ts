@@ -98,6 +98,94 @@ function collectScannedFiles() {
 }
 
 /**
+ * Backticked document paths, resolved uniquely or not at all.
+ *
+ * Why this exists: a skill cites the files it depends on in backticks - `backend-error-messages.instructions.md`
+ * - and nothing validated those. `extractLinks` only reads markdown links, so a renamed instruction file left
+ * six citations pointing at nothing while every gate stayed green. This is the same defect class as a
+ * `last-verified:` label naming a dead key, and it recurred four times before this was written.
+ *
+ * Scope is the RULE surface only: the files an agent is told to obey. Prose docs cite code paths in
+ * backticks constantly and those are shorthand (`paths.ts`), not contracts, so scanning them would trade a
+ * real signal for a hundred false ones. Only document extensions are checked - a `.md`, `.json` or `.yml`
+ * under `.github/` or `docs/` is a thing a reader is expected to open.
+ *
+ * Resolution order: relative to the citing file, then the repo root, then `.github/`, then a unique basename
+ * anywhere outside the skipped dirs. Bare filenames are the case that matters most - they resolve today only
+ * because the reader knows to prepend a directory.
+ */
+const DOC_EXT = /\.(md|json|ya?ml)$/i;
+const RULE_SURFACE = [
+  path.join(ROOT, ".github", "skills"),
+  path.join(ROOT, ".github", "instructions"),
+];
+
+function collectRuleSurface() {
+  const out = [];
+  for (const base of RULE_SURFACE) {
+    if (!fs.existsSync(base)) continue;
+    for (const entry of fs.readdirSync(base, { withFileTypes: true })) {
+      const full = path.join(base, entry.name);
+      if (entry.isDirectory()) {
+        const skill = path.join(full, "SKILL.md");
+        if (fs.existsSync(skill)) out.push(skill);
+      } else if (entry.name.endsWith(".md")) {
+        out.push(full);
+      }
+    }
+  }
+  // T0 as well: it is the file that points at everything else.
+  const t0 = path.join(ROOT, ".github", "copilot-instructions.md");
+  if (fs.existsSync(t0)) out.push(t0);
+  return out.sort();
+}
+
+let basenameIndex = null;
+function uniqueBasename(name) {
+  if (!basenameIndex) {
+    basenameIndex = new Map();
+    const walk = (dir) => {
+      if (!fs.existsSync(dir)) return;
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isDirectory()) {
+          if (!SKIP_DIRS.has(entry.name)) walk(path.join(dir, entry.name));
+        } else if (DOC_EXT.test(entry.name)) {
+          const list = basenameIndex.get(entry.name) ?? [];
+          list.push(path.join(dir, entry.name));
+          basenameIndex.set(entry.name, list);
+        }
+      }
+    };
+    walk(ROOT);
+  }
+  const hits = basenameIndex.get(name) ?? [];
+  return hits.length === 1 ? hits[0] : null;
+}
+
+function extractDocPaths(text) {
+  const targets = [];
+  const re = /`([A-Za-z0-9_][\w./-]*\.(?:md|json|ya?ml))`/gi;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const raw = m[1];
+    if (raw.startsWith("http")) continue;
+    targets.push(raw);
+  }
+  return targets;
+}
+
+/** A doc path is a break only when none of the four resolutions finds it. */
+function docPathResolves(file, raw) {
+  const candidates = [
+    path.resolve(path.dirname(file), raw),
+    path.resolve(ROOT, raw),
+    path.resolve(ROOT, ".github", raw),
+  ];
+  if (candidates.some((c) => fs.existsSync(c))) return true;
+  return !raw.includes("/") && uniqueBasename(raw) !== null;
+}
+
+/**
  * Remove fenced code blocks (``` or ~~~) so markdown-looking text inside code
  * (prompt templates, shell/PowerShell snippets) is not treated as links.
  */
@@ -242,6 +330,8 @@ function printCurrent(entries) {
 function main() {
   const files = collectScannedFiles();
   const current = [];
+  const ruleSurface = new Set(collectRuleSurface());
+  let docPathsChecked = 0;
 
   for (const file of files) {
     let text;
@@ -268,6 +358,16 @@ function main() {
 
       current.push(identity(path.relative(ROOT, file), target));
     }
+
+    // Backticked doc paths, rule surface only. Same baseline, same identity shape, so an accepted
+    // citation costs nothing new to maintain.
+    if (ruleSurface.has(file)) {
+      for (const target of extractDocPaths(body)) {
+        docPathsChecked += 1;
+        if (docPathResolves(file, target)) continue;
+        current.push(identity(path.relative(ROOT, file), target));
+      }
+    }
   }
   current.sort(compareEntries);
 
@@ -275,7 +375,9 @@ function main() {
   if (printBaseline) printCurrent(current);
 
   const baseline = loadBaseline();
-  console.log(`\n🔍 Doc link checker — ${files.length} markdown file(s) scanned`);
+  console.log(
+    `\n🔍 Doc link checker — ${files.length} markdown file(s) scanned, ${docPathsChecked} backticked rule-surface path(s) resolved`,
+  );
 
   const baselineKeys = new Set(baseline.map(keyOf));
   const currentKeys = new Set(current.map(keyOf));

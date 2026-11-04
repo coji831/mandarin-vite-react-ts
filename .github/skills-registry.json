@@ -1,137 +1,161 @@
 {
-  "description": "The index of every SKILL.md in this repo, and the only place a skill's byte budget lives. `scripts/check-load.mjs` reads it: a skill on disk with no row here is a finding, and a row whose budget the skill exceeds is a finding. `phase` is the lifecycle step a skill owns (0-7), null when it spans the lifecycle; `family` separates the workflow set from the audit set. `supersedes` names the block of the deleted project-workflow instruction that moved here, so a reviewer can prove nothing was dropped.",
+  "description": "The index of every SKILL.md in this repo, and the only place a skill's byte budget lives. `scripts/check-load.mjs` reads it: a skill on disk with no row is a finding, a row without a `trigger` or `when` is a finding, two rows sharing their first three trigger words are a finding, and a skill past its `budget_bytes` is a finding. `ideal_bytes` is the convergence target and never fails - the gap between it and `budget_bytes` is debt a later pass pays down. `phase` is the lifecycle step a skill owns (0-7), null when it spans the lifecycle; `family` separates the workflow set from the audit set. `supersedes` names the block of the deleted project-workflow instruction that moved here, so a reviewer can prove nothing was dropped.",
   "skills": [
     {
       "id": "workflow",
       "phase": null,
+      "family": "workflow",
       "path": ".github/skills/workflow/SKILL.md",
       "trigger": "the lifecycle end to end: which phase comes next, what it produces, its exit gate",
+      "ideal_bytes": 1900,
       "budget_bytes": 2000,
       "supersedes": [
         "project-workflow#Project workflow (the intro paragraph)",
         "copilot-instructions#The lifecycle (the eight-row phase table)",
         "copilot-instructions#The lifecycle (the two rules that cost epics)"
       ],
-      "family": "workflow"
+      "when": "Before starting any phase, and whenever the next step is unclear."
     },
     {
       "id": "phase-scope-epic",
       "phase": 0,
+      "family": "workflow",
       "path": ".github/skills/phase-scope-epic/SKILL.md",
       "trigger": "scoping an epic: the binding text, re-measuring an amendment's premises, the deferral record",
+      "when": "At an epic's start, before the business requirements and before any code.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1200,
       "supersedes": [
         "project-workflow#Before implementing (steps 4-5)",
         "copilot-instructions#The lifecycle (phase 0 row)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "phase-business-requirements",
       "phase": 1,
+      "family": "workflow",
       "path": ".github/skills/phase-business-requirements/SKILL.md",
       "trigger": "writing an epic's business requirements: the README, one story file per story, AC and status",
+      "when": "After the epic's scope is agreed, before design and before code.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1200,
-      "supersedes": ["copilot-instructions#The lifecycle (phase 1 row)"],
-      "family": "workflow"
+      "supersedes": ["copilot-instructions#The lifecycle (phase 1 row)"]
     },
     {
       "id": "phase-design-gate",
       "phase": 2,
+      "family": "workflow",
       "path": ".github/skills/phase-design-gate/SKILL.md",
       "trigger": "the design gate: the component set per surface, each component's state list, the human preview",
+      "when": "Before writing the first TSX of a surface. The human preview gate sits here.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1200,
-      "supersedes": ["copilot-instructions#The lifecycle (phase 2 row)"],
-      "family": "workflow"
+      "supersedes": ["copilot-instructions#The lifecycle (phase 2 row)"]
     },
     {
       "id": "phase-build-story",
       "phase": 3,
+      "family": "workflow",
       "path": ".github/skills/phase-build-story/SKILL.md",
       "trigger": "building one story: the pre-implementation checks, the change checklist, Tier 1, the commit gate",
+      "when": "While implementing one story, from the first edit to the commit.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1200,
       "supersedes": [
         "project-workflow#Before implementing (steps 1-3)",
         "project-workflow#The code-change checklist",
         "copilot-instructions#The lifecycle (phase 3 row)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "phase-close-story",
       "phase": 4,
+      "family": "workflow",
       "path": ".github/skills/phase-close-story/SKILL.md",
       "trigger": "closing a story: boxing the AC, the BR/IMP pair, the doc-code truth-check, status and date",
+      "when": "When the story's code is committed and its acceptance criteria are met.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1200,
       "supersedes": [
         "project-workflow#Closing (the story-close bullet)",
         "copilot-instructions#The lifecycle (phase 4 row)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "phase-close-epic",
       "phase": 5,
+      "family": "workflow",
       "path": ".github/skills/phase-close-epic/SKILL.md",
       "trigger": "closing an epic: the Phase 5 surface table by name, Tier 2, the docs audit, the carry-forward",
+      "when": "When the epic's last story is closed and the epic is ready to ship.",
+      "ideal_bytes": 1200,
       "budget_bytes": 1500,
       "supersedes": [
         "project-workflow#Closing (the epic-close bullet)",
         "project-workflow#Counts and logs",
         "copilot-instructions#The lifecycle (phase 5 row and its surface list)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "phase-ship-pr",
       "phase": 6,
+      "family": "workflow",
       "path": ".github/skills/phase-ship-pr/SKILL.md",
       "trigger": "shipping an epic as one pull request: the PR template, gate evidence, CI green",
+      "when": "When the epic is closed and its work is ready for review as one pull request.",
+      "ideal_bytes": 800,
       "budget_bytes": 800,
-      "supersedes": ["copilot-instructions#The lifecycle (phase 6 row)"],
-      "family": "workflow"
+      "supersedes": ["copilot-instructions#The lifecycle (phase 6 row)"]
     },
     {
       "id": "phase-archive-epic",
       "phase": 7,
+      "family": "workflow",
       "path": ".github/skills/phase-archive-epic/SKILL.md",
       "trigger": "archiving closed epics in a deferred batch: which folders move, the archive exemptions",
+      "when": "In a deferred batch after shipping, never mid-epic.",
+      "ideal_bytes": 800,
       "budget_bytes": 800,
-      "supersedes": ["copilot-instructions#The lifecycle (phase 7 row)"],
-      "family": "workflow"
+      "supersedes": ["copilot-instructions#The lifecycle (phase 7 row)"]
     },
     {
       "id": "quality-gates-tier-1",
       "phase": null,
+      "family": "workflow",
       "path": ".github/skills/quality-gates-tier-1/SKILL.md",
       "trigger": "Tier 1 gates: the five commands every code change runs, and what each counts",
+      "when": "Before every commit, and while working to see whether a change is still clean.",
+      "ideal_bytes": 2000,
       "budget_bytes": 2200,
       "supersedes": [
         "project-workflow#Quality gates (the single-source rule and the Tier 1 table)",
         "project-workflow#Quality gates (the build-is-the-typecheck, npm-test and Gate-1-fast-path notes)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "quality-gates-tier-2",
       "phase": null,
+      "family": "workflow",
       "path": ".github/skills/quality-gates-tier-2/SKILL.md",
       "trigger": "Tier 2 gates: the pre-merge and close gates, what each counts, and when a red result is debt",
+      "when": "Before a merge, a story close or an epic close.",
+      "ideal_bytes": 5000,
       "budget_bytes": 6700,
       "supersedes": [
         "project-workflow#Quality gates (the Tier 2 table)",
         "project-workflow#Quality gates (Notes that cost a run when missed)"
-      ],
-      "family": "workflow"
+      ]
     },
     {
       "id": "add-a-gate",
       "phase": null,
+      "family": "workflow",
       "path": ".github/skills/add-a-gate/SKILL.md",
       "trigger": "adding a quality gate: the row, the npm script, the solar command, the parity checks",
+      "when": "When a new check needs to be enforceable, before writing it.",
+      "ideal_bytes": 1400,
       "budget_bytes": 1500,
-      "supersedes": ["project-workflow#Quality gates (row numbers never move)"],
-      "family": "workflow"
+      "supersedes": ["project-workflow#Quality gates (row numbers never move)"]
     },
     {
       "id": "backend-audit",
@@ -140,6 +164,7 @@
       "path": ".github/skills/backend-audit/SKILL.md",
       "trigger": "auditing backend code: error message format, module boundaries, service layer",
       "when": "Run before closing a backend story.",
+      "ideal_bytes": 2500,
       "budget_bytes": 2900,
       "supersedes": []
     },
@@ -150,6 +175,7 @@
       "path": ".github/skills/docs-audit/SKILL.md",
       "trigger": "auditing documentation and verification artefacts against the code they describe",
       "when": "Run at an epic close, or on any doc a code change invalidated.",
+      "ideal_bytes": 4000,
       "budget_bytes": 4600,
       "supersedes": []
     },
@@ -160,8 +186,15 @@
       "path": ".github/skills/frontend-audit/SKILL.md",
       "trigger": "auditing frontend code, UIUX fundamentals and the AI-slop checklist",
       "when": "Run after a frontend feature and before closing a UI story.",
+      "ideal_bytes": 6000,
       "budget_bytes": 10600,
       "supersedes": []
     }
+  ],
+  "routing": [
+    "A description opens with the moment, not the subject: 'closing a story:', not 'stories'. The router matches task wording, so the words a person would use to start the task lead.",
+    "One namespace prefix per family, and no other skill may use it: 'Phase N of the lifecycle:', 'Tier N quality gates:', 'Run this skill when auditing X'. A prefix is a claim of exclusivity, so a second skill with the same prefix is a routing defect.",
+    "A skill that owns a lifecycle phase carries the phase number in both the description and `phase`. Two sources for one fact is the drift this registry exists to prevent.",
+    "The trigger is what the skill does; `when` is the moment it fires. Neither may restate the other, and no two rows may share their first three words - if they do, the router cannot tell them apart."
   ]
 }

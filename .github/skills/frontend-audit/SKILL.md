@@ -102,7 +102,9 @@ compliance, slop tells, elevation and z-index, so do not re-derive those by eye.
 - **External DOM libs** — canvas/animation libs (hanzi-writer, D3) integrated per `react-external-libs.instructions.md`: ref stability, DOM ownership, lifecycle coordination; no direct DOM writes fighting React.
 - **Feature conventions** — quiz/review follow `quiz-architecture.instructions.md` (strategy pattern, routing, component reuse); no feature logic in stories.
 - **No business logic in stories** — stories are thin visual shells over real data flow; no home-grown data fetching/state machines inside a story.
-- **Doc ↔ code truth-check** — for changed components/features, verify the feature `docs/design.md` + BR/impl still match (renamed components reflected, endpoints accurate).
+- **Doc ↔ code truth-check** — for changed components/features, verify the feature's own
+  `apps/frontend/src/features/<feature>/docs/design.md` plus its BR/impl still match (renamed components
+  reflected, endpoints accurate).
 
 ## Output Format
 

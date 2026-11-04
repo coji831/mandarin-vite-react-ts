@@ -1,8 +1,11 @@
 {
-  "description": "The context budget for this repo, read by scripts/check-load.mjs. Every value is a CEILING: lowering one is a pass, raising one is a finding. Set a value where the tree is today, then lower it in the commit that earns it. A path may add its own `cap` to override scope_fan_in_cap_bytes.",
+  "description": "The context budget for this repo, read by scripts/check-load.mjs. Every value comes in one pair: `*_ideal_bytes` is the convergence target and never fails, `*_cap_bytes` is the hard ceiling and does. Exceeding an ideal is debt a later pass pays down; exceeding a cap is a finding. The gap between the two is deliberate: a cap set at the ideal would fail on the day it was written, and a cap with no ideal has no direction. A path may add its own `cap` to override scope_fan_in_cap_bytes.",
   "always_on_cap_bytes": 19000,
+  "always_on_ideal_bytes": 16000,
   "scope_fan_in_cap_bytes": 40000,
+  "scope_fan_in_ideal_bytes": 32000,
   "per_file_cap_bytes": 5500,
+  "per_file_ideal_bytes": 4000,
   "representative_paths": [
     {
       "path": "apps/frontend/src/features/quiz/components/QuizCard.tsx",

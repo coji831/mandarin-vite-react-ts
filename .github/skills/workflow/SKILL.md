@@ -29,7 +29,7 @@ epic, 7 is a deferred batch. `.github/skills-registry.json` indexes every phase 
 never opened. **A carry-forward goes into the receiving epic's own file**, not only into your close-out
 table.
 
-## Gates
+
 
 `quality-gates-tier-1` holds the gates every change runs, `quality-gates-tier-2` the ones a close runs,
 `add-a-gate` adds a row. The human-paced checklist is `docs/guides/operations/workflow.md`.
