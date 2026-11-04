@@ -63,12 +63,15 @@ export function useChengyu(): UseChengyuReturn {
   // committed search always restarts from page 1.
   const [debouncedSearch, setDebouncedSearch] = useState("");
   useEffect(() => {
+    // Nothing new to commit (mount, or typing back to the committed value).
+    // Scheduling anyway makes the page-1 reset a 500ms race, not a rule.
+    if (filter.search === debouncedSearch) return;
     const timer = setTimeout(() => {
       setDebouncedSearch(filter.search);
       setPageState(1);
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [filter.search]);
+  }, [filter.search, debouncedSearch]);
 
   // Monotonic request id — drops stale responses so a slow earlier request can
   // never overwrite the result of a newer filter/page change.

@@ -135,6 +135,30 @@ describe("useChengyu (integration + MSW)", () => {
     expect(result.current.totalPages).toBe(2);
   });
 
+  it("keeps the chosen page after the mount search-commit window elapses", async () => {
+    // The debounce effect commits the search and restarts the list at page 1. On
+    // mount nothing has changed, so that reset must not be scheduled at all —
+    // otherwise a page-2 click inside the first 500ms is silently undone.
+    const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
+    server.use(paginatedListHandler(all));
+
+    const { result } = renderHook(() => useChengyu());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    act(() => result.current.setPage(2));
+    await waitFor(() => expect(result.current.idioms[0].id).toBe("cy_0021"));
+
+    // Real timers: run past the 500ms debounce window, then assert nothing reset.
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 700);
+      });
+    });
+
+    expect(result.current.page).toBe(2);
+    expect(result.current.idioms[0].id).toBe("cy_0021");
+  });
+
   it("resets to page 1 when a filter (era) changes", async () => {
     const all = Array.from({ length: 25 }, (_, i) => makeIdiom(i + 1));
     const requested: Array<{ page: number; era: string | null }> = [];
