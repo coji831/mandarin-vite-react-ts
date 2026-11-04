@@ -42,7 +42,6 @@ its own gate set.
 | 16 | Class catalog | `npm run check:class-catalog` | the three stylesheets | classes from globals.css, components.css and animations.css |
 | 17 | Rule surface budget | `npm run check:load` | `.github/instructions/**`, `copilot-instructions.md` | instruction files and representative paths from `.github/instructions` and `agent-surface.json` |
 | 18 | Solar parity | `npm run check:solar-parity` | `.solar/commands.json`, `.solar/registry.json`, `.github/agents/` | gate commands parsed from the numbered rows of this table |
-| 19 | Gate liveness | `npm run check:gate-liveness` | `scripts/check-*.mjs` + this table | numbered rows carrying a `Measures` cell; check scripts on disk; denominators read from each probed gate's summary line |
 
 Notes that cost a run when missed:
 
@@ -72,6 +71,12 @@ Notes that cost a run when missed:
   `npm run` in a numbered row and fails when the script does not exist, when no command in
   `.solar/commands.json` runs it, or when a solar command names a script nobody has. Adding a gate here
   and forgetting the solar command is exactly the failure it catches, so it runs after every table edit.
+- **`check:gate-liveness` is an on-demand audit, not a numbered gate.** It checks that each row
+  declares a denominator and each check script is registered, which is not the class that recurs
+  (rules loading on the wrong files is), and it took 3.7 s of the 7.2 s cheap Tier-2 sweep (median of
+  three runs, 2026-11-02). The `Measures` column on rows 1-18 stays as documentation that nothing
+  enforces, so a new `scripts/check-*.mjs` can be added without a table row and no governed run will
+  notice: run `npm run check:gate-liveness` after adding one.
 - **Gate 1 has a Tier-1 fast path: `npm run format:check:changed`.** It runs prettier over the files
   changed against `--base <rev>` (default `HEAD`) plus the untracked ones, and measured ~1 s against the
   full sweep's 22 s on this tree (2026-11-01). It is an optimization and **never a substitute**:

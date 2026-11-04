@@ -80,6 +80,13 @@ const EXEMPT = new Map([
       "against --base plus the untracked ones, and CI runs the full `format:check` sweep on every PR. " +
       "A row would read as a second format gate over a narrower scope than the one that decides.",
   ],
+  [
+    "check-gate-liveness.mjs",
+    "an on-demand audit rather than a numbered gate: it was demoted from the table because the class " +
+      "it guards (a row that stops declaring what it counts, a check script that stops being " +
+      "registered) is not the class that recurs, and it runs when someone asks it to rather than on " +
+      "every governed pass.",
+  ],
 ]);
 
 const at = (re, group = 1) => ({ re, group });
