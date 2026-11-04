@@ -57,6 +57,6 @@ The AI-slop tells are reported, not gated, by `npm run design-audit` (`slop-*`, 
 
 ## The gates
 
-The canonical table is in `project-workflow.instructions.md`, and the design rows there are the ones that
+The canonical table is in the `quality-gates-tier-2` skill, and the design rows there are the ones that
 apply here: #7 stories and the ledgers, #8 design lint, #9 design audit, #14 parity, #15 name discipline
 and #16 the class catalog. Do not keep a second list.

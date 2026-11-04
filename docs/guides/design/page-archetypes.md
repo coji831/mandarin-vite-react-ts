@@ -770,6 +770,6 @@ gates  = user preview gate → design-audit · check:page-inventory ·
 ## Ledger & Gates
 
 - **`.github/page-inventory.json`** — one entry per page container: `{ route, component, archetype, mode, chrome, anatomy, status: conforms|diverges }`. This is the machine-readable page contract and the divergence snapshot.
-- **`check:page-inventory`** (gate #7 in `project-workflow.instructions.md`) fails if a page lacks an entry or uses an unregistered archetype.
+- **`check:page-inventory`** (gate #7 in the `quality-gates-tier-2` skill) fails if a page lacks an entry or uses an unregistered archetype.
 
 **See also:** `design-reasoning.md` (design philosophy + token freeze + external borrowing) • `uiux-fundamentals.md` (the 12 fundamentals the archetypes encode).

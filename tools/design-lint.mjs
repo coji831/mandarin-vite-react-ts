@@ -7,8 +7,8 @@
  * enforces ZERO findings (errors + warnings + infos), because the upstream CLI
  * exits 0 on warnings — which would let a spec regression through silently.
  *
- * Canonical command (single source: .github/instructions/project-workflow.
- * instructions.md, gate #8): `npm run design:lint`.
+ * Canonical command (single source: .github/skills/quality-gates-tier-2/SKILL.md,
+ * gate #8): `npm run design:lint`.
  *
  * Semantics (verified 2026-09-10 against @google/design.md v0.3.0):
  *   - Upstream `lint` exits non-zero only on `error`-severity findings.

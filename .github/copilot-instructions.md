@@ -45,24 +45,13 @@ locally is a fork. If spine lacks a token, that is a spine change or an escalati
 
 ## The lifecycle
 
-Seven phases, each with an exit gate. Phases 0-2 precede code, 3-4 repeat per story, 5-6 happen once per
-epic, 7 is a deferred batch. The gate **commands** are in `project-workflow.instructions.md`, which owns the
-only gate table.
+Eight phases, each with an exit gate. Phases 0-2 precede code, 3-4 repeat per story, 5-6 happen once per
+epic, 7 is a deferred batch. The phase table — what each step produces, its exit gate and the skill that
+owns it — is the `workflow` skill, and `.github/skills-registry.json` indexes every step skill.
 
-| #   | Phase       | Produces                                          | Exit gate                                   | Lead                   |
-| --- | ----------- | ------------------------------------------------- | ------------------------------------------- | ---------------------- |
-| 0   | Scope       | the epic's binding text plus any audit amendment  | re-measure every premise an amendment names | architect              |
-| 1   | BR          | `README` plus one story file per story            | every story carries an AC and a status      | architect              |
-| 2   | Design      | the component set and each component's state list | the human preview gate                      | uiux-designer          |
-| 3   | Build       | story commits, the implementation doc, tests      | Tier 1 gates plus "commit allowed"          | engineers              |
-| 4   | Story close | the BR and IMP pair                               | doc-code truth-check on that pair           | docs-writer            |
-| 5   | Epic close  | close sections, high-level docs, KB, map          | Tier 2, review verdict, docs audit          | docs-writer + reviewer |
-| 6   | Ship        | one PR per epic                                   | CI green                                    | coordinator            |
-| 7   | Archive     | folders under `docs/**/archive/`                  | a batch pass, not per epic                  | owner                  |
-
-Two rules that cost epics before they were written down: **a brief quotes the Phase-5 surface table, it
-never summarises it** (a self-audit cannot see a file you never opened), and **a carry-forward goes into the
-receiving epic's own file**, not only into your close-out table.
+**Running gates is not optional.** Before a commit, a story close or an epic close, run the gates in
+`quality-gates-tier-1` (every change) and `quality-gates-tier-2` (at a close). A brief quotes the Phase-5
+surface table rather than summarising it, and a carry-forward goes into the receiving epic's own file.
 
 ## The architecture
 
@@ -81,9 +70,8 @@ Docs pair by name: `docs/business-requirements/epic-<num>-<slug>/README.md` with
 
 ## Commands
 
-`npm install` then `npm run dev` (5173) and `npm run dev:backend` (3001). Gates: `npm run lint`,
-`npm run build` (**this is the frontend type-check**), `npm test` (changed scope), `npm run test:full`,
-`npm run design-audit`, `npm run check:spine-parity`, `npm run check:load`. `package.json` has the rest.
+`npm install`, then `npm run dev` (5173) and `npm run dev:backend` (3001). The gates are not repeated here:
+`quality-gates-tier-1` and `quality-gates-tier-2` are the only gate list, and `package.json` has the rest.
 
 ## Where to read next
 
@@ -101,7 +89,8 @@ Each file below carries its own `applyTo` or `description`, so it arrives when i
 - touching the schema or a migration -> `prisma-schema-changes`
 - using a quiz pattern -> `quiz-architecture`
 - reaching for an external DOM library -> `react-external-libs`
-- writing or closing a story or epic -> `project-workflow`
+- writing or closing a story or epic -> skill `workflow`, then the phase skill it names, all indexed in
+  `.github/skills-registry.json`
 - writing a doc under `docs/` -> `documentation-standards`
 - rendering a user-facing backend error -> `backend-error-messages`
 - auditing before reporting UI code complete -> skill `frontend-audit` (Parts 2-4)

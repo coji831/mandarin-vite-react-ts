@@ -34,8 +34,8 @@ stay narrow, and end-to-end covers a few critical journeys.
 
 ## Gates
 
-Tiers 1 and 2 live in `project-workflow.instructions.md`, the only gate list. Run `npm test` for the
-changed scope while working; `npm run test:full` before a story closes.
+Tiers 1 and 2 live in the `quality-gates-tier-1` / `quality-gates-tier-2` skills, the only gate list. Run
+`npm test` for the changed scope while working; `npm run test:full` before a story closes.
 A failure that already exists belongs in `docs/guides/testing/known-failures.md`: match it there first
 rather than re-triaging from scratch.
 

@@ -4,7 +4,7 @@
 # lint stay in storybook-checks.yml; visual regression in chromatic.yml; the PR
 # preview smoke in preview.yml.
 #
-# Wired (canonical table: .github/instructions/project-workflow.instructions.md):
+# Wired (canonical tables: .github/skills/quality-gates-tier-1/SKILL.md + quality-gates-tier-2/SKILL.md):
 #   • Format           → npm run format:check  (gate #1, both)
 #   • Lint             → npm run lint          (gate #2, both)
 #   • Type-check       → npm run typecheck     (gate #10, backend full)

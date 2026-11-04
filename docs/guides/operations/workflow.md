@@ -11,8 +11,8 @@ type: guide
 **Purpose:** Step-by-step development workflow: design, plan, implement, test, review  
 **Audience:** Developers executing epics and stories
 
-> ⚠️ **Canonical gate definitions live elsewhere.** The canonical two-tier gate table lives in
-> `.github/instructions/project-workflow.instructions.md` — this file is a human-friendly checklist
+> ⚠️ **Canonical gate definitions live elsewhere.** The canonical two-tier gate tables live in the
+> `quality-gates-tier-1` and `quality-gates-tier-2` skills — this file is a human-friendly checklist
 > only; do not cite it for gate definitions.
 
 **Priority Legend:**
@@ -211,8 +211,8 @@ See [Infrastructure Setup Guide](../operations/infrastructure.md) for complete w
 For standardized AI workflow steps, automation protocol, and structured prompt format, see:
 
 - **Primary**: `.github/copilot-instructions.md` (always loaded) for the binding rules and the routing
-  table, then `.github/instructions/project-workflow.instructions.md` for the lifecycle steps and the
-  canonical gate table
+  table, then the `workflow` skill and its phase skills for the lifecycle steps and the
+  `quality-gates-tier-1` / `-tier-2` skills for the canonical gate tables
 - **Prompt Catalog**: `docs/automation/structured-ai-prompts.md` for detailed prompt examples
 
 ---

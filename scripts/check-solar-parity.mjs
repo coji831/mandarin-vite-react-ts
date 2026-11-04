@@ -10,9 +10,10 @@
  *   and the solar manifest were never compared. This compares them.
  *
  * WHAT IT CHECKS
- *   The gate table is the INPUT. Script names are never hardcoded here: every `npm run <script>`
- *   inside a `| <number> | ... |` row of `.github/instructions/project-workflow.instructions.md` is a
- *   gate, so a gate added to that table is a finding on the next run.
+ *   The gate tables are the INPUT. Script names are never hardcoded here: every `npm run <script>`
+ *   inside a `| <number> | ... |` row of either tier skill (`GATE_TABLES` in
+ *   `scripts/lib/gate-table.mjs` names `quality-gates-tier-1` and `quality-gates-tier-2`) is a gate,
+ *   so a gate added to a table is a finding on the next run.
  *   A. the gate resolves: the script exists at the root, or in the workspace its `--workspace=` names.
  *   B. solar can run it: some `.solar/commands.json` entry's argv carries the same `run <script>`
  *      pair. `--silent` may precede it. When the script exists only inside a workspace, that entry
@@ -30,7 +31,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { GATE_TABLE, gateCommands, readGateTable } from "./lib/gate-table.mjs";
+import { GATE_TABLES, gateCommands, readGateTable } from "./lib/gate-table.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
@@ -121,7 +122,7 @@ const L = Math.max(...rows.map((r) => r.label.length), 5);
 const S = Math.max(...rows.map((r) => `${r.script} ${r.workspace ?? ""}`.trim().length), 6);
 const stats = `${rows.length} gate commands · ${Object.keys(solar).length} solar commands`;
 const agents = `${workers.length} workers · ${onDisk.length} agents · ${runtime.length} runtime`;
-console.log(`\n🔍 Solar parity: ${GATE_TABLE}`);
+console.log(`\n🔍 Solar parity: ${GATE_TABLES.join(" + ")}`);
 console.log(`  ${stats}\n  ${agents}\n`);
 for (const r of rows) {
   const cmd = `${r.script}${r.workspace ? " " + r.workspace : ""}`;

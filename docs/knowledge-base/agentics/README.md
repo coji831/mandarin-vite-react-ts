@@ -27,16 +27,16 @@ This section consolidates agent-operation knowledge that was previously scattere
 
 These existing guides are **actionable references** (not deep-dives) that agents should read during implementation:
 
-| Resource                                                    | Type         | Purpose                                                         |
-| ----------------------------------------------------------- | ------------ | --------------------------------------------------------------- |
-| `docs/guides/design/design-reasoning.md`                    | Action guide | Design philosophy + token change procedure                      |
-| `docs/guides/operations/workflow.md`                        | Action guide | Human-friendly epic/story workflow checklist                    |
-| `docs/guides/operations/review.md`                          | Action guide | Code review checklist                                           |
-| `docs/guides/references/review-checklist.md`                | Action guide | Review checklist                                                |
-| `.github/copilot-instructions.md`                           | Instructions | Agent operational playbook (TL;DR, rules, etc)                  |
-| `.github/instructions/project-workflow.instructions.md`     | Instructions | Story-level development workflow                                |
-| `.github/instructions/uiux-design-protocol.instructions.md` | Instructions | UIUX design protocol (Storybook-first + fundamentals + AI-slop) |
-| `.github/skills/frontend-audit/SKILL.md`                    | Skill        | Frontend audit — pre-ship UI checklist (Parts 2–4)              |
+| Resource                                                    | Type         | Purpose                                                                                   |
+| ----------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------- |
+| `docs/guides/design/design-reasoning.md`                    | Action guide | Design philosophy + token change procedure                                                |
+| `docs/guides/operations/workflow.md`                        | Action guide | Human-friendly epic/story workflow checklist                                              |
+| `docs/guides/operations/review.md`                          | Action guide | Code review checklist                                                                     |
+| `docs/guides/references/review-checklist.md`                | Action guide | Review checklist                                                                          |
+| `.github/copilot-instructions.md`                           | Instructions | Agent operational playbook (TL;DR, rules, etc)                                            |
+| `.github/skills/workflow/SKILL.md`                          | Skill        | Story-level development workflow (phase skills indexed in `.github/skills-registry.json`) |
+| `.github/instructions/uiux-design-protocol.instructions.md` | Instructions | UIUX design protocol (Storybook-first + fundamentals + AI-slop)                           |
+| `.github/skills/frontend-audit/SKILL.md`                    | Skill        | Frontend audit — pre-ship UI checklist (Parts 2–4)                                        |
 
 ## Tooling Reference
 

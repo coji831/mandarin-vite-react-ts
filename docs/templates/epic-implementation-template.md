@@ -88,7 +88,7 @@ GET /api/<endpoint>
 
 ## Epic Close — Documentation Duty
 
-<The Phase 5 surface table in `.github/copilot-instructions.md` §Epic & Story Lifecycle enumerates what must be
+<The Phase 5 surface table in `.github/skills/phase-close-epic/SKILL.md` enumerates what must be
 re-verified. State each surface's outcome; a surface that needed no change is still recorded as checked.>
 
 | Surface                                | Outcome                                                        |

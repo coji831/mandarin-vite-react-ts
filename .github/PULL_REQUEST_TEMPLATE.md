@@ -53,7 +53,7 @@
 
 ## Quality Gates / Testing
 
-<!-- [BOTH] Run applicable gates. Tier 2 applies at merge / story-complete / epic-close. Canonical table (source of truth): `.github/instructions/project-workflow.instructions.md` — no doc may define its own gate set. -->
+<!-- [BOTH] Run applicable gates. Tier 2 applies at merge / story-complete / epic-close. Canonical tables (source of truth): `.github/skills/quality-gates-tier-1/SKILL.md` and `-tier-2` — no doc may define its own gate set. -->
 
 ### Tier 1 — per-change / pre-commit
 
@@ -107,6 +107,7 @@
 
 - [Project Overview](../docs/guides/getting-started/project-overview.md)
 - [Documentation Home](../docs/README.md)
-- [Quality Gates (canonical)](../.github/instructions/project-workflow.instructions.md)
+- [Quality Gates, Tier 1 (canonical)](../.github/skills/quality-gates-tier-1/SKILL.md)
+- [Quality Gates, Tier 2 (canonical)](../.github/skills/quality-gates-tier-2/SKILL.md)
 - [Known Failures Registry](../docs/guides/testing/known-failures.md)
 - [Review Checklist](../docs/guides/operations/review.md)

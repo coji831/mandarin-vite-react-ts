@@ -19,9 +19,9 @@
  * and the flags strip. `docs/branches/` was deleted — a stale `docs/branches/`
  * dir is caught by `runCheck` as a linkage note, never a hard fail.
  *
- * Agentic layer (A10): enumerated FROM DISK (`.github/instructions/` minus
- * project-workflow · `agents/` · `skills/`), each unit's purpose taken from
- * the leaf's own front-matter `description:`.
+ * Agentic layer (A10): enumerated FROM DISK (`.github/instructions/` · `agents/` ·
+ * `skills/`), each unit's purpose taken from the leaf's own front-matter
+ * `description:`.
  * Freshness is layer-level via the `**Last updated:**` marker in
  * `.github/copilot-instructions.md`; per-file freshness applies only to
  * conventions (prose `**Last Updated:**`) and control-plane (native markers);
@@ -231,8 +231,6 @@ const LAYER_ORDER = [1, 2, 3, 4, 5, 6, 7];
 const AGENTIC_PURPOSES = {
   ".github/copilot-instructions.md":
     "Operational playbook for AI agents — quick start, architecture, rule index",
-  ".github/instructions/project-workflow.instructions.md":
-    "Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing",
   "docs/guides/dev-flow-visualization.html":
     "Visualized dev flow — generation stages, verification, gates",
 };
@@ -754,8 +752,8 @@ function collectTooling() {
     {
       unit: "scripts/",
       code: true,
-      docPath: ".github/instructions/project-workflow.instructions.md",
-      docDisplay: "project-workflow gate table",
+      docPath: ".github/skills/quality-gates-tier-2/SKILL.md",
+      docDisplay: "gate tables (quality-gates skills)",
       meta: null,
       klass: {
         cat: CAT.PARTIAL,
@@ -781,8 +779,7 @@ function collectTooling() {
 /**
  * A10 — Docs + agentic + working (the agentic/dev-flow freshness area).
  * 5 groups, units are their OWN docs (docPath === the file itself):
- *   16 instructions (excl. project-workflow.instructions.md — the gate table
- *      control-plane row) · 9 agents · 3 skills · 8 conventions · 3 control-plane.
+ *   16 instructions · 9 agents · 15 skills · 8 conventions · 2 control-plane.
  *
  * Enumeration is DERIVED FROM DISK: every rule, agent and skill on disk is a
  * unit, so a new file needs no list edited anywhere. Returns { units, notes }.
@@ -803,12 +800,10 @@ function collectAgentic() {
       area: "A10",
     });
 
-  // 1. Instructions (16) — every `/instructions/*.instructions.md` on disk,
-  //    minus project-workflow (the control-plane gate table). Purpose is the
-  //    rule's own front-matter `description:`.
-  const instrOnDisk = listFiles(
-    path.join(ROOT, ".github", "instructions"),
-    (f) => f.endsWith(".instructions.md") && f !== "project-workflow.instructions.md",
+  // 1. Instructions (16) — every `/instructions/*.instructions.md` on disk.
+  //    Purpose is the rule's own front-matter `description:`.
+  const instrOnDisk = listFiles(path.join(ROOT, ".github", "instructions"), (f) =>
+    f.endsWith(".instructions.md"),
   ).map((f) => `.github/instructions/${f}`);
   for (const rel of instrOnDisk) {
     const slug = rel
@@ -834,7 +829,7 @@ function collectAgentic() {
     push(`agents/${slug}`, rel, "agents", desc ?? `${slug} (no description)`);
   }
 
-  // 3. Skills (3) — every `.github/skills/*/SKILL.md` on disk.
+  // 3. Skills (15) — every `.github/skills/*/SKILL.md` on disk.
   const skillsOnDisk = listDirs(path.join(ROOT, ".github", "skills")).map(
     (n) => `.github/skills/${n}/SKILL.md`,
   );
@@ -856,11 +851,12 @@ function collectAgentic() {
     );
   }
 
-  // 5. Control-plane (3): copilot-instructions.md · gate table ·
-  //    dev-flow-visualization.html. (decision-log.json moved to the L3 tree leaf.)
+  // 5. Control-plane (2): copilot-instructions.md · dev-flow-visualization.html.
+  //    The gate table is no longer here: it lives in the quality-gates skills,
+  //    which the skills scan above already enumerates. (decision-log.json moved
+  //    to the L3 tree leaf.)
   const controlPlane = [
     [".github/copilot-instructions.md", "copilot-instructions.md"],
-    [".github/instructions/project-workflow.instructions.md", "gate table (project-workflow)"],
     ["docs/guides/dev-flow-visualization.html", "dev-flow-visualization.html"],
   ];
   for (const [rel, unit] of controlPlane)
@@ -969,9 +965,9 @@ function buildFlags(areas) {
   // A10 freshness — restricted rules:
   //   conventions   → native prose `**Last Updated:**` staleness.
   //   control-plane → native markers only; `decision-log.json` is exempt (JSON
-  //     machine catalog); the gate table has no native marker → layer-tracked,
-  //     so NO "no last-verified" flag. instructions/agents/skills are tracked at
-  //     layer level — no per-file freshness claims.
+  //     machine catalog), and a unit with no native marker is layer-tracked, so
+  //     it earns NO "no last-verified" flag. instructions/agents/skills are
+  //     tracked at layer level — no per-file freshness claims.
   const a10 = areas.find((a) => a.id === "A10");
   for (const u of a10?.units ?? []) {
     const g = u.group ?? "other";
@@ -1535,13 +1531,13 @@ function renderTree(treeArg) {
         lines.push(renderLeafTable(leaves));
         lines.push("");
         if (layer === 6 && branch === "instructions") {
-          // 18/17 instruction reconcile — machine-emitted from on-disk count.
+          // Every instruction on disk is a leaf since the gate table moved to a
+          // skill; the reconcile line stays machine-emitted so a stray instruction
+          // shows up rather than being assumed.
           const onDisk = listFiles(path.join(ROOT, ".github", "instructions"), (f) =>
             f.endsWith(".instructions.md"),
           ).length;
-          lines.push(
-            `_${leaves.length} instruction leaves · ${onDisk} on disk — project-workflow is the control-plane gate table._`,
-          );
+          lines.push(`_${leaves.length} instruction leaves · ${onDisk} on disk._`);
           lines.push("");
         }
       }

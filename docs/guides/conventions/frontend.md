@@ -16,7 +16,7 @@ audience: frontend
 
 ## Shared Component Catalog
 
-> **Authoritative source:** `.github/component-registry.json` — the machine-checked catalog of all shared components, verified via `npm run check:registry-stories` (gate 7 in `.github/instructions/project-workflow.instructions.md`).
+> **Authoritative source:** `.github/component-registry.json` — the machine-checked catalog of all shared components, verified via `npm run check:registry-stories` (gate 7 in the `quality-gates-tier-2` skill).
 >
 > All shared components live in `apps/frontend/src/shared/components/` and are re-exported through the `shared/components` barrel. This document does NOT maintain a parallel component list — consult the registry for the current catalog.
 

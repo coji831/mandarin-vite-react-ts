@@ -42,12 +42,15 @@ docs/guides/design/css-class-catalog.md
 
 # The rule surface is governed by `npm run check:load`, a byte ratchet on what an agent loads before
 # reading code — not by table aesthetics. Prettier pads every markdown table to its widest cell, which
-# costs 4,066 B across the instructions (+2,802 B in project-workflow's gate table alone) and 2,336 B
+# costs 4,066 B across the instructions (the gate table alone was +2,802 B before it moved) and 2,336 B
 # across the agents, and buys nothing: the padding is invisible to a reader and is charged to every
-# scoped task. These two directories are the only `.github/` paths prettier would change today, so
-# they are formatted by hand and measured, never reformatted: padding here would move the ratchet.
+# task. These three directories are the only `.github/` paths prettier would change today, so they are
+# formatted by hand and measured, never reformatted: padding here would move the ratchet. The skills
+# join them because they hold the two canonical gate tables now, and padding those 18 rows would spend
+# ~2.5 KB of a skill's own byte budget on whitespace.
 # `.github/copilot-instructions.md` sits in the same ratchet but is already clean, so it stays checked
-# — keep it clean by hand. `format:check:changed` stays vacuous for the two ignored directories by
+# — keep it clean by hand. `format:check:changed` stays vacuous for the three ignored directories by
 # design; `format:check` is the gate that covers the rest of `.github/`.
 .github/agents/**
 .github/instructions/**
+.github/skills/**

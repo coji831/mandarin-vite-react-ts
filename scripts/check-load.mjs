@@ -270,6 +270,63 @@ if (fileCap != null && scopedRules.length) {
   );
 }
 
+// ---- skills: the budgets the registry declares ---------------------------------------------------
+// A skill loads on a task match, so it is not part of the always-on layer or of a path's fan-in and
+// was invisible to every gate here. `.github/skills-registry.json` declares a budget per skill; until
+// this section existed, nothing read it and the 12 numbers were decoration. Registry rows are checked
+// in both directions a row can be wrong: a path that is not on disk, and bytes over the row's budget.
+// Skills outside the registry are named but are not findings - the registry indexes the workflow
+// family, and the three audit skills predate it.
+const REGISTRY = path.join(ROOT, ".github", "skills-registry.json");
+const skillsOnDisk = fs.existsSync(path.join(ROOT, ".github", "skills"))
+  ? fs
+      .readdirSync(path.join(ROOT, ".github", "skills"), { withFileTypes: true })
+      .filter(
+        (d) =>
+          d.isDirectory() &&
+          fs.existsSync(path.join(ROOT, ".github", "skills", d.name, "SKILL.md")),
+      )
+      .map((d) => `.github/skills/${d.name}/SKILL.md`)
+  : [];
+const overSkills = [];
+const missingSkills = [];
+const unregisteredSkills = [];
+let registry = null;
+if (fs.existsSync(REGISTRY)) {
+  try {
+    registry = JSON.parse(fs.readFileSync(REGISTRY, "utf8"));
+  } catch (err) {
+    console.error(`load: skills-registry.json is not valid JSON - ${err.message}`);
+    process.exit(2);
+  }
+  const rows = Array.isArray(registry.skills) ? registry.skills : [];
+  const registered = new Set();
+  for (const s of rows) {
+    registered.add(s.path);
+    if (!fs.existsSync(path.join(ROOT, s.path))) {
+      missingSkills.push(s);
+      continue;
+    }
+    if (s.budget_bytes != null && size(s.path) > s.budget_bytes) overSkills.push(s);
+  }
+  const unregistered = skillsOnDisk.filter((p) => !registered.has(p));
+  console.log(`\nSKILLS (${rows.length} registered, ${skillsOnDisk.length} on disk)`);
+  for (const s of rows) {
+    const actual = fs.existsSync(path.join(ROOT, s.path)) ? size(s.path) : null;
+    const at = actual == null ? "MISSING" : String(num(actual)).padStart(8);
+    const cap = s.budget_bytes == null ? "none" : num(s.budget_bytes);
+    const over = actual != null && s.budget_bytes != null && actual > s.budget_bytes;
+    const slack =
+      actual == null || s.budget_bytes == null
+        ? ""
+        : `   ${num(Math.abs(s.budget_bytes - actual))} B ${over ? "over" : "headroom"}`;
+    console.log(`  ${pad(s.id, 30)}${at}   cap ${pad(cap, 7)}${over ? "OVER" : "ok"}${slack}`);
+  }
+  if (unregistered.length) {
+    for (const p of unregistered) unregisteredSkills.push(p);
+  }
+}
+
 // ---- verdict -----------------------------------------------------------------------------------
 const problems = [];
 if (alwaysOver)
@@ -279,6 +336,16 @@ if (alwaysOver)
 for (const p of overPaths) problems.push(`${p.path} ${num(p.total)} B over cap ${num(p.cap)}`);
 for (const r of overFiles)
   problems.push(`${r.name} ${num(r.bytes)} B over the per-file cap ${num(fileCap)}`);
+for (const s of overSkills)
+  problems.push(
+    `skill ${s.id} ${num(size(s.path))} B over its registry budget ${num(s.budget_bytes)}`,
+  );
+for (const s of missingSkills)
+  problems.push(`skills-registry.json names ${s.path}, which is not on disk`);
+for (const p of unregisteredSkills)
+  problems.push(
+    `${p} has no row in skills-registry.json - add one with its trigger and a budget, or delete the skill`,
+  );
 
 if (missingPaths.length) {
   console.error(

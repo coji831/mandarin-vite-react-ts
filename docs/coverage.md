@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 30 | 9 | 0 | 39 | 39 |
+| A10 Agentic / Dev-Flow | 41 | 9 | 0 | 50 | 50 |
 
 
 <a id="a1"></a>
@@ -170,16 +170,16 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| scripts/ | ✅ | project-workflow gate table | **partial** ⚠️ gate table documents intent; scripts self-documenting | — | check:* / validate:* |
+| scripts/ | ✅ | gate tables (quality-gates skills) | **partial** ⚠️ gate table documents intent; scripts self-documenting | — | check:* / validate:* |
 | tools/ | ✅ | — | **partial** ⚠️ design-audit self-documenting | — | design-audit |
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (39)  ·  score 30/39 documented · 9 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (50)  ·  score 41/50 documented · 9 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 16 + agents 9 + skills 3)** | ✅ | .github/copilot-instructions.md | **documented** layer-level: `**Last updated:** 2026-11-04` | — | check:system-map |
+| **Agentic layer (instructions 16 + agents 9 + skills 15)** | ✅ | .github/copilot-instructions.md | **documented** layer-level: `**Last updated:** 2026-11-04` | — | check:system-map |
 | instructions/a11y-floor | ✅ | .github/instructions/a11y-floor.instructions.md | documented | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
@@ -205,9 +205,21 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | agents/hermes | ✅ | .github/agents/hermes.agent.md | documented | — | check:system-map |
 | agents/investigator | ✅ | .github/agents/investigator.agent.md | documented | — | check:system-map |
 | agents/uiux-designer | ✅ | .github/agents/uiux-designer.agent.md | documented | — | check:system-map |
+| skills/add-a-gate | ✅ | .github/skills/add-a-gate/SKILL.md | documented | — | check:system-map |
 | skills/backend-audit | ✅ | .github/skills/backend-audit/SKILL.md | documented | — | check:system-map |
 | skills/docs-audit | ✅ | .github/skills/docs-audit/SKILL.md | documented | — | check:system-map |
 | skills/frontend-audit | ✅ | .github/skills/frontend-audit/SKILL.md | documented | — | check:system-map |
+| skills/phase-archive-epic | ✅ | .github/skills/phase-archive-epic/SKILL.md | documented | — | check:system-map |
+| skills/phase-build-story | ✅ | .github/skills/phase-build-story/SKILL.md | documented | — | check:system-map |
+| skills/phase-business-requirements | ✅ | .github/skills/phase-business-requirements/SKILL.md | documented | — | check:system-map |
+| skills/phase-close-epic | ✅ | .github/skills/phase-close-epic/SKILL.md | documented | — | check:system-map |
+| skills/phase-close-story | ✅ | .github/skills/phase-close-story/SKILL.md | documented | — | check:system-map |
+| skills/phase-design-gate | ✅ | .github/skills/phase-design-gate/SKILL.md | documented | — | check:system-map |
+| skills/phase-scope-epic | ✅ | .github/skills/phase-scope-epic/SKILL.md | documented | — | check:system-map |
+| skills/phase-ship-pr | ✅ | .github/skills/phase-ship-pr/SKILL.md | documented | — | check:system-map |
+| skills/quality-gates-tier-1 | ✅ | .github/skills/quality-gates-tier-1/SKILL.md | documented | — | check:system-map |
+| skills/quality-gates-tier-2 | ✅ | .github/skills/quality-gates-tier-2/SKILL.md | documented | — | check:system-map |
+| skills/workflow | ✅ | .github/skills/workflow/SKILL.md | documented | — | check:system-map |
 | conventions/api-client | ✅ | docs/guides/conventions/api-client.md | **partial** ⚠️ review (last-verified 2026-08-07 > 6 weeks) | — | check:system-map |
 | conventions/backend | ✅ | docs/guides/conventions/backend.md | **partial** ⚠️ review (last-verified 2026-09-03 > 6 weeks) | — | check:system-map |
 | conventions/data-import-scripts | ✅ | docs/guides/conventions/data-import-scripts.md | **partial** ⚠️ review (last-verified 2026-07-24 > 6 weeks) | — | check:system-map |
@@ -217,7 +229,6 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | conventions/security | ✅ | docs/guides/conventions/security.md | **partial** ⚠️ review (last-verified 2026-06-07 > 6 weeks) | — | check:system-map |
 | conventions/state-management | ✅ | docs/guides/conventions/state-management.md | **partial** ⚠️ review (last-verified 2026-06-03 > 6 weeks) | — | check:system-map |
 | copilot-instructions.md | ✅ | .github/copilot-instructions.md | documented | — | check:system-map |
-| gate table (project-workflow) | ✅ | .github/instructions/project-workflow.instructions.md | documented | — | check:system-map |
 | dev-flow-visualization.html | ✅ | docs/guides/dev-flow-visualization.html | **partial** ⚠️ review (last-verified 2026-08-18 > 6 weeks) | — | check:system-map |
 
 ## Doc-Debt Queue
@@ -283,7 +294,7 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 55 | manifest.json | A7 | docs/guides/data/seed-pipeline.md | — | — |
 | 56 | terraform/ | A8 | terraform/README.md | — | — |
 | 57 | .github/workflows/ | A8 | docs/guides/operations/infrastructure.md | — | — |
-| 58 | scripts/ | A9 | project-workflow gate table | — | — |
+| 58 | scripts/ | A9 | gate tables (quality-gates skills) | — | — |
 | 59 | tools/ | A9 | — | — | — |
 | 60 | conventions/api-client | A10 | docs/guides/conventions/api-client.md | — | — |
 | 61 | conventions/backend | A10 | docs/guides/conventions/backend.md | — | — |

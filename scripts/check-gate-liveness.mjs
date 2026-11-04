@@ -4,10 +4,10 @@
  * check-gate-liveness.mjs - is each gate still measuring anything?
  *
  * WHY THIS EXISTS
- *   `scripts/check-reflow.mjs` printed `0/0 pass` and exited 0 for weeks. Every gate in
- *   `.github/instructions/project-workflow.instructions.md` measured something; nothing asked whether
- *   the thing it measured was still there. A denominator that quietly reaches zero is indistinguishable
- *   from a pass, and the only reader that noticed was a human reading the output line. This gate asks
+ *   `scripts/check-reflow.mjs` printed `0/0 pass` and exited 0 for weeks. Every gate in the
+ *   numbered gate tables measured something; nothing asked whether the thing it measured was still
+ *   there. A denominator that quietly reaches zero is indistinguishable from a pass, and the only
+ *   reader that noticed was a human reading the output line. This gate asks
  *   the question mechanically, for the table as a whole.
  *
  * WHAT IT CHECKS
@@ -44,7 +44,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { GATE_TABLE, gateCommands, readGateTable } from "./lib/gate-table.mjs";
+import { GATE_TABLES, gateCommands, readGateTable } from "./lib/gate-table.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MIN_PROBES = 3;
@@ -252,7 +252,7 @@ const pinnedCount = PROBES.filter((probe) => probe.pinned).length;
 const F = Math.max(...checkFiles.map((file) => file.length), 8);
 const S = Math.max(...probes.map((probe) => probe.script.length), 6);
 
-console.log(`\n🔍 Gate liveness: ${GATE_TABLE}\n`);
+console.log(`\n🔍 Gate liveness: ${GATE_TABLES.join(" + ")}\n`);
 console.log(
   `  DECLARATION   ${rows.length} numbered row(s), ${rows.length - undeclared.length} declare a cell`,
 );

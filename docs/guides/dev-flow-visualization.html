@@ -1079,9 +1079,8 @@
           padding: 0.5rem 0.75rem;
         "
       >
-        This is a visual mirror of the canonical gates in
-        <code>.github/instructions/project-workflow.instructions.md</code> — if they differ,
-        project-workflow wins.
+        This is a visual mirror of the canonical gates in the <code>quality-gates-tier-1</code> and
+        <code>quality-gates-tier-2</code> skills — if they differ, the skills win.
       </p>
 
       <h3 style="margin-top: 0.5rem; color: #93c5fd">Tier 1 — Per-Change (during development)</h3>
@@ -1210,8 +1209,7 @@
       <!-- ============================================================ -->
       <h2 id="story-workflow">6. Story-Level Workflow</h2>
       <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.5); margin-bottom: 0.75rem">
-        Sequential steps when implementing a story. From
-        <code>project-workflow.instructions.md</code>.
+        Sequential steps when implementing a story. From the <code>workflow</code> skill.
       </p>
 
       <div class="steps-list">
@@ -1419,7 +1417,7 @@ DEV SERVERS:
   npm run dev:backend  →  Backend   :3001  (Express on Railway in prod)
   npm run storybook      →  Storybook :6006  (Component library)
 
-QUALITY GATES (two-tier, manual/local — mirror of project-workflow):
+QUALITY GATES (two-tier, manual/local — mirror of the quality-gates skills):
   Tier 1 (per-change):  format (soft) → lint (0 errors) → lint:css (FE)
                         → build (type-check + bundle) → npm test (changed scope)
   Tier 2 (pre-merge):   test:full (NOT npm test) → test-storybook (FE workspace)

@@ -22,7 +22,7 @@ audience: agents
 
 ### Token Freeze (standing rule)
 
-**New design tokens are only added via the `DESIGN.md` + `globals.css` + `design-audit` ADR path** (gates #8/#9 in `project-workflow.instructions.md` enforce token parity — this makes the rule explicit). Concretely:
+**New design tokens are only added via the `DESIGN.md` + `globals.css` + `design-audit` ADR path** (gates #8/#9 in the `quality-gates-tier-2` skill enforce token parity — this makes the rule explicit). Concretely:
 
 - A new token must land in **both** `DESIGN.md` (spec) and `apps/frontend/src/styles/globals.css` (CSS var) — parity.
 - It must pass `npx @google/design.md lint DESIGN.md` and `npm run design-audit`.

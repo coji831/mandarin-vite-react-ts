@@ -447,5 +447,5 @@ npm audit fix                             # Auto-fix vulnerabilities
 - [Linting Setup Guide](setup/linting.md) — Quick-start ESLint/Prettier setup
 - [Frontend Conventions](conventions/frontend.md) — Code style and patterns
 - [Backend Conventions](conventions/backend.md) — Backend architecture patterns
-- [Project Workflow & Quality Gates](../../../.github/instructions/project-workflow.instructions.md) — Pre-commit and PR checks
+- [Project Workflow & Quality Gates](../../../.github/skills/workflow/SKILL.md) — Pre-commit and PR checks
 - [Environment Setup Guide](getting-started/environment-setup.md) — Environment variables

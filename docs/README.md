@@ -30,7 +30,7 @@ graph TD
 - **Epics:** ratified roadmap + decision records in [planning](planning/) · archived back-catalog in [archive](business-requirements/archive/README.md).
 - **Ratified decisions:** BM-1 business model · epic plan 25–40 + OI-1…OI-10 · D1/D7 (NestJS 11 shell-swap) · ADR-001…005 design ADRs · ADR-006 `proposed`. Full list in `.github/decision-log.json`.
 - **Design system:** `DESIGN.md` tokens machine-linted (`green`) · component registry `green` (`check:registry-stories` green) · page inventory **13/18 conform · 5/18 diverges** — the living divergence tracker.
-- **Gates:** canonical two-tier gate table in `project-workflow.instructions.md`; local solo-dev gates (`check:registry-stories`, `check:page-inventory`, `design-audit`).
+- **Gates:** canonical two-tier gate tables in the `quality-gates-tier-1` / `quality-gates-tier-2` skills; local solo-dev gates (`check:registry-stories`, `check:page-inventory`, `design-audit`).
 
 ## What are you here for?
 
@@ -40,7 +40,7 @@ graph TD
 | Agent writing code   | [`copilot-instructions.md`](../.github/copilot-instructions.md) (always on) → file-scoped `.instructions.md` (auto-attach)                                                      |
 | Design work          | [`DESIGN.md`](../DESIGN.md) → [`guides/design/page-archetypes.md`](guides/design/page-archetypes.md) → [`guides/design/design-reasoning.md`](guides/design/design-reasoning.md) |
 | Business / planning  | [`business/business-model.md`](business/business-model.md) (BM-1) → [`planning/epics-25-40.md`](planning/epics-25-40.md)                                                        |
-| Auditing / freshness | this map → [`project-workflow.instructions.md`](../.github/instructions/project-workflow.instructions.md) gate table → `check:*` scripts                                        |
+| Auditing / freshness | this map → [`quality-gates-tier-2`](../.github/skills/quality-gates-tier-2/SKILL.md) gate tables → `check:*` scripts                                        |
 
 ---
 
@@ -66,7 +66,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — active · 31 leaves](#layer-6)
+- [Layer 6 · Agentic System — active · 42 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -388,7 +388,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — active · 31 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — active · 42 leaves</summary>
 
 #### Instructions
 
@@ -411,7 +411,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 | Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | active | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
 | UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | active | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
-_16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
+_16 instruction leaves · 16 on disk._
 
 #### Agents
 
@@ -431,16 +431,27 @@ _16 instruction leaves · 17 on disk — project-workflow is the control-plane g
 
 | Purpose | Status | Link |
 | --- | --- | --- |
+| The procedure for adding a quality gate without breaking parity: which skill the row goes in, the npm script, the solar command, and the checks that prove it is runnable. | active | [.github/skills/add-a-gate/SKILL.md](../.github/skills/add-a-gate/SKILL.md) |
 | Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | active | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
 | Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | active | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
 | Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | active | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
+| Phase 7 of the lifecycle: archiving closed epics in one deferred batch — which folders move and the exemptions. | active | [.github/skills/phase-archive-epic/SKILL.md](../.github/skills/phase-archive-epic/SKILL.md) |
+| Phase 3 of the lifecycle: building one story — the pre-implementation checks, the code-change checklist, the Tier 1 gates, the implementation record, and the commit gate. | active | [.github/skills/phase-build-story/SKILL.md](../.github/skills/phase-build-story/SKILL.md) |
+| Phase 1 of the lifecycle: an epic's business requirements — the README, one story file per story with an AC and a status, and the BR/implementation name pairing. | active | [.github/skills/phase-business-requirements/SKILL.md](../.github/skills/phase-business-requirements/SKILL.md) |
+| Phase 5 of the lifecycle: closing an epic — the Phase 5 surface table by name, close sections, KB extraction, the map, the review verdict and the carry-forward. | active | [.github/skills/phase-close-epic/SKILL.md](../.github/skills/phase-close-epic/SKILL.md) |
+| Phase 4 of the lifecycle: closing a story — boxing the acceptance criteria, the BR/IMP pair and its doc-code truth-check, and the status and date the freshness scan reads. | active | [.github/skills/phase-close-story/SKILL.md](../.github/skills/phase-close-story/SKILL.md) |
+| Phase 2 of the lifecycle: the design gate before code — the component set per surface, each component's state list, spine resolution, and the human preview that ends the phase. | active | [.github/skills/phase-design-gate/SKILL.md](../.github/skills/phase-design-gate/SKILL.md) |
+| Phase 0 of the lifecycle: cutting an epic's scope before code — the binding text, re-measuring every premise an audit amendment names, and the deferral record. | active | [.github/skills/phase-scope-epic/SKILL.md](../.github/skills/phase-scope-epic/SKILL.md) |
+| Phase 6 of the lifecycle: shipping an epic as one pull request — the PR template, the gate evidence it asks for, and the CI-green exit gate. | active | [.github/skills/phase-ship-pr/SKILL.md](../.github/skills/phase-ship-pr/SKILL.md) |
+| Tier 1 quality gates: the five commands every code change runs before a commit, each gate's scope and what it counts. Read before committing, or when a change needs its gates named. | active | [.github/skills/quality-gates-tier-1/SKILL.md](../.github/skills/quality-gates-tier-1/SKILL.md) |
+| Tier 2 quality gates: the thirteen pre-merge, story-close and epic-close gates with their commands, scope and what each counts, plus the notes that decide when a red result is pre-existing debt. Read when closing a story or epic, or preparing to merge. | active | [.github/skills/quality-gates-tier-2/SKILL.md](../.github/skills/quality-gates-tier-2/SKILL.md) |
+| The eight-phase epic and story lifecycle: what each phase produces, its exit gate, and the skill that owns the step. Read when scoping an epic, writing requirements, opening or closing a story, closing an epic, shipping or archiving, or when unsure what comes next. | active | [.github/skills/workflow/SKILL.md](../.github/skills/workflow/SKILL.md) |
 
 #### Control plane
 
 | Purpose | Status | Link |
 | --- | --- | --- |
 | Operational playbook for AI agents — quick start, architecture, rule index | active | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
-| Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | active | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
 | Visualized dev flow — generation stages, verification, gates | active | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |
 
 </details>
@@ -469,7 +480,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 30 | 9 | 0 | 39 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 41 | 9 | 0 | 50 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 

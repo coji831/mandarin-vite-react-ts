@@ -1,5 +1,5 @@
 /**
- * gate-table.mjs - the one reader of the numbered gate table.
+ * gate-table.mjs - the one reader of the numbered gate tables.
  *
  * WHY THIS EXISTS
  *   `scripts/check-solar-parity.mjs` parsed the gate table inline to ask one question: can a
@@ -10,6 +10,11 @@
  *   every consumer that binds cells by position had to learn about it. This repo's own
  *   pre-implementation rule says a second way to do a solved thing is the defect these steps exist
  *   to prevent, so the parse lives here once and each consumer reads the structure it needs.
+ *
+ *   The table now lives in two skills, one per tier, because that is how it is used: Tier 1 is read
+ *   on every change and Tier 2 at a close. Two sources, one row sequence - `GATE_TABLES` names them
+ *   in row order, and every consumer reads the concatenation, so a row means the same thing however
+ *   many files it is spread across. A third source is an edit to this constant, never a second parse.
  *
  * CONTRACT
  *   - A gate row is any line matching /^\|\s*(\d+)\s*\|/. The repeated header rows do not match:
@@ -27,7 +32,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export const GATE_TABLE = ".github/instructions/project-workflow.instructions.md";
+export const GATE_TABLES = [
+  ".github/skills/quality-gates-tier-1/SKILL.md",
+  ".github/skills/quality-gates-tier-2/SKILL.md",
+];
 
 const ROW = /^\|\s*(\d+)\s*\|/;
 const COMMAND = /npm (?:run )?([\w:.-]+)/g;
@@ -58,9 +66,11 @@ export function parseGateTable(markdown) {
   return rows;
 }
 
-/** The gate table of a checkout, parsed. `root` is the directory that holds `.github/`. */
+/** The gate tables of a checkout, parsed and concatenated in `GATE_TABLES` order. */
 export function readGateTable(root) {
-  return parseGateTable(fs.readFileSync(path.join(root, GATE_TABLE), "utf8"));
+  return GATE_TABLES.flatMap((rel) =>
+    parseGateTable(fs.readFileSync(path.join(root, rel), "utf8")),
+  );
 }
 
 /**

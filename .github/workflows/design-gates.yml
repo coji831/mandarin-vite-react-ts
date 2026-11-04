@@ -1,7 +1,7 @@
 # Design Gates — DESIGN.md spec + DESIGN.md<->globals.css parity (gates #8 + #14).
 #
-# Canonical commands (single source: .github/instructions/project-workflow.
-# instructions.md quality-gate table, rows #8 and #14):
+# Canonical commands (single source: .github/skills/quality-gates-tier-2/SKILL.md,
+# rows #8 and #14):
 #   #8   npm run design:lint           (tools/design-lint.mjs)
 #   #14  npm run check:design-parity   (scripts/check-design-parity.mjs)
 #
