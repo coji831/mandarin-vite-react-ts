@@ -46,8 +46,8 @@ docs/guides/design/css-class-catalog.md
 # across the agents, and buys nothing: the padding is invisible to a reader and is charged to every
 # scoped task. These two directories are the only `.github/` paths prettier would change today, so
 # they are formatted by hand and measured, never reformatted: padding here would move the ratchet.
-# `.github/copilot-instructions.md` and `.github/AGENTS.md` sit in the same ratchet but are already
-# clean, so they stay checked — keep them clean by hand. `format:check:changed` stays vacuous for the
-# two ignored directories by design; `format:check` is the gate that covers the rest of `.github/`.
+# `.github/copilot-instructions.md` sits in the same ratchet but is already clean, so it stays checked
+# — keep it clean by hand. `format:check:changed` stays vacuous for the two ignored directories by
+# design; `format:check` is the gate that covers the rest of `.github/`.
 .github/agents/**
 .github/instructions/**

@@ -37,7 +37,7 @@ graph TD
 | You are…             | Start here                                                                                                                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | New developer        | [`guides/getting-started/quickstart.md`](guides/getting-started/quickstart.md) → `project-overview.md` → this map's Docs/Guides layer                                           |
-| Agent writing code   | [`.github/AGENTS.md`](../.github/AGENTS.md) + [`copilot-instructions.md`](../.github/copilot-instructions.md) → file-scoped `.instructions.md` (auto-attach)                    |
+| Agent writing code   | [`copilot-instructions.md`](../.github/copilot-instructions.md) (always on) → file-scoped `.instructions.md` (auto-attach)                                                      |
 | Design work          | [`DESIGN.md`](../DESIGN.md) → [`guides/design/page-archetypes.md`](guides/design/page-archetypes.md) → [`guides/design/design-reasoning.md`](guides/design/design-reasoning.md) |
 | Business / planning  | [`business/business-model.md`](business/business-model.md) (BM-1) → [`planning/epics-25-40.md`](planning/epics-25-40.md)                                                        |
 | Auditing / freshness | this map → [`project-workflow.instructions.md`](../.github/instructions/project-workflow.instructions.md) gate table → `check:*` scripts                                        |
@@ -55,7 +55,7 @@ The per-class status vocabulary lives in
 **Last Updated:** August 24, 2026
 
 <!-- system-map:generated -->
-<!-- generated 2026-11-01 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-11-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 ## The tree
 
@@ -66,7 +66,7 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 - [Layer 3 · Architecture / Decisions — planned · 8 leaves](#layer-3)
 - [Layer 4 · Design System — review · 9 leaves](#layer-4)
 - [Layer 5 · Docs / Guides — review · 128 leaves](#layer-5)
-- [Layer 6 · Agentic System — review · 32 leaves](#layer-6)
+- [Layer 6 · Agentic System — active · 31 leaves](#layer-6)
 - [Layer 7 · Working / Evidence — active · 1 leaves](#layer-7)
 
 <details id="layer-1"><summary>Layer 1 · Product / Business — review · 5 leaves</summary>
@@ -388,28 +388,28 @@ Generated full tree — every tracked leaf (purpose · status · link), nested l
 
 </details>
 
-<details id="layer-6"><summary>Layer 6 · Agentic System — review · 32 leaves</summary>
+<details id="layer-6"><summary>Layer 6 · Agentic System — active · 31 leaves</summary>
 
 #### Instructions
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| The WCAG 2.2 floors every component and page must clear, and the one rule each floor implies. Applies to every file. | **review** | [.github/instructions/a11y-floor.instructions.md](../.github/instructions/a11y-floor.instructions.md) |
-| Use when writing backend API controllers, services, or error handling. Covers consistent error response format and message conventions. | **review** | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
-| Use when writing or updating a doc under docs/. Covers the leaf front-matter contract, template compliance, and the doc-to-code truth-check. | **review** | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
-| Use when making API calls from frontend code. Mandates service layer pattern — never call apiClient directly from hooks or components. | **review** | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
-| Where React state and logic belong: the three-layer hierarchy, colocation, service and store placement. Read when building or refactoring a component. | **review** | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
-| CSS rules for PinyinPal: the token law, the three-file split, and the prohibitions. Read before writing any stylesheet or className. | **review** | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
-| Use when building input components with debounce, auto-submit, or timer functionality. Covers edge cases like multi-character input and countdown completion. | **review** | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
-| Use when editing Prisma schema, adding database models, changing columns, or running migrations. Covers safety checks and required commands. | **review** | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
-| Use when creating or modifying quiz modes, quiz strategies, quiz pages, or quiz routing. Covers strategy pattern compliance, routing conventions, and component reuse rules. | **review** | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
-| Use when changing answer grading, tone comparison, or pinyin normalization in quiz or review code. Covers neutral tone 0 and 5, mark and digit insensitive pinyin comparison, per-strategy correctPinyin forms, and never regressing a correct answer. | **review** | [.github/instructions/quiz-grading-normalization.instructions.md](../.github/instructions/quiz-grading-normalization.instructions.md) |
-| Use when integrating external DOM-manipulating libraries (hanzi-writer, D3, charts, canvas libraries) with React components. Covers ref stability, DOM ownership, and lifecycle coordination. | **review** | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
-| Storybook is for shared components only. Read before adding or changing a shared component or its story. | **review** | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
-| Minimum testing requirements per tier: what must be tested, at what level, before a story closes. Read when adding logic, writing tests, or completing a story. | **review** | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
-| A theme is a delta overlay over the same semantic token names: no new names, no component overrides, no fork. Applies to the live token layer and the design spec. | **review** | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
-| Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | **review** | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
-| UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | **review** | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
+| The WCAG 2.2 floors every component and page must clear, and the one rule each floor implies. Applies to every file. | active | [.github/instructions/a11y-floor.instructions.md](../.github/instructions/a11y-floor.instructions.md) |
+| Use when writing backend API controllers, services, or error handling. Covers consistent error response format and message conventions. | active | [.github/instructions/backend-error-messages.instructions.md](../.github/instructions/backend-error-messages.instructions.md) |
+| Use when writing or updating a doc under docs/. Covers the leaf front-matter contract, template compliance, and the doc-to-code truth-check. | active | [.github/instructions/documentation-standards.instructions.md](../.github/instructions/documentation-standards.instructions.md) |
+| Use when making API calls from frontend code. Mandates service layer pattern — never call apiClient directly from hooks or components. | active | [.github/instructions/frontend-api-client.instructions.md](../.github/instructions/frontend-api-client.instructions.md) |
+| Where React state and logic belong: the three-layer hierarchy, colocation, service and store placement. Read when building or refactoring a component. | active | [.github/instructions/frontend-component-architecture.instructions.md](../.github/instructions/frontend-component-architecture.instructions.md) |
+| CSS rules for PinyinPal: the token law, the three-file split, and the prohibitions. Read before writing any stylesheet or className. | active | [.github/instructions/frontend-css-styling.instructions.md](../.github/instructions/frontend-css-styling.instructions.md) |
+| Use when building input components with debounce, auto-submit, or timer functionality. Covers edge cases like multi-character input and countdown completion. | active | [.github/instructions/frontend-input-handling.instructions.md](../.github/instructions/frontend-input-handling.instructions.md) |
+| Use when editing Prisma schema, adding database models, changing columns, or running migrations. Covers safety checks and required commands. | active | [.github/instructions/prisma-schema-changes.instructions.md](../.github/instructions/prisma-schema-changes.instructions.md) |
+| Use when creating or modifying quiz modes, quiz strategies, quiz pages, or quiz routing. Covers strategy pattern compliance, routing conventions, and component reuse rules. | active | [.github/instructions/quiz-architecture.instructions.md](../.github/instructions/quiz-architecture.instructions.md) |
+| Use when changing answer grading, tone comparison, or pinyin normalization in quiz or review code. Covers neutral tone 0 and 5, mark and digit insensitive pinyin comparison, per-strategy correctPinyin forms, and never regressing a correct answer. | active | [.github/instructions/quiz-grading-normalization.instructions.md](../.github/instructions/quiz-grading-normalization.instructions.md) |
+| Use when integrating external DOM-manipulating libraries (hanzi-writer, D3, charts, canvas libraries) with React components. Covers ref stability, DOM ownership, and lifecycle coordination. | active | [.github/instructions/react-external-libs.instructions.md](../.github/instructions/react-external-libs.instructions.md) |
+| Storybook is for shared components only. Read before adding or changing a shared component or its story. | active | [.github/instructions/storybook-production-alignment.instructions.md](../.github/instructions/storybook-production-alignment.instructions.md) |
+| Minimum testing requirements per tier: what must be tested, at what level, before a story closes. Read when adding logic, writing tests, or completing a story. | active | [.github/instructions/testing-standards.instructions.md](../.github/instructions/testing-standards.instructions.md) |
+| A theme is a delta overlay over the same semantic token names: no new names, no component overrides, no fork. Applies to the live token layer and the design spec. | active | [.github/instructions/theme-delta.instructions.md](../.github/instructions/theme-delta.instructions.md) |
+| Composition rules for laying out a surface: hierarchy, spacing rhythm, container choice, CTA clarity, density. Read before composing a page or layout surface. | active | [.github/instructions/ui-composition.instructions.md](../.github/instructions/ui-composition.instructions.md) |
+| UIUX mandate and the design-system contract for any UI work: spine first, compose from the registry, every state designed. Read before writing UI code. | active | [.github/instructions/uiux-design-protocol.instructions.md](../.github/instructions/uiux-design-protocol.instructions.md) |
 
 _16 instruction leaves · 17 on disk — project-workflow is the control-plane gate table._
 
@@ -417,32 +417,31 @@ _16 instruction leaves · 17 on disk — project-workflow is the control-plane g
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Use when: designing system architecture, reviewing technical designs, evaluating architectural tradeoffs, defining tech strategy, or producing implementation plans. | **review** | [.github/agents/architect.agent.md](../.github/agents/architect.agent.md) |
-| Use when: building backend APIs, writing NestJS routes/controllers/services/modules, modifying Prisma schema and running migrations, implementing database queries, writing backend tests, performing backend audits, or ensuring database safety. | **review** | [.github/agents/backend-engineer.agent.md](../.github/agents/backend-engineer.agent.md) |
-| Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | **review** | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
-| Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | **review** | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
-| Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | **review** | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
-| Use when: running a task through the SOLAR v5 governor graph — ONE entry point that deterministically routes to a specialist (or orchestrates an epic as a chain of specialist runs), gates the result, and completes with run-cards (v5 pilot, e.g. epic 25). Also use when the user asks for 'governor', 'v5 run', 'graph-governed', 'run the chain', or wants the same orchestrator UX but with durable checkpoints + run-cards. For ad-hoc single-agent requests with no governor need, delegate straight to the matching specialist instead. | **review** | [.github/agents/governor-v5.agent.md](../.github/agents/governor-v5.agent.md) |
-| Use when: decoding the user's request into an intent + flow before a SOLAR run (intake only). Governor v5 calls Hermes as the FIRST step of every new task. Also answers 'what would you route this as?'. Do NOT use for executing, coding, or designing — Hermes only classifies. | **review** | [.github/agents/hermes.agent.md](../.github/agents/hermes.agent.md) |
-| Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | **review** | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
-| Use when: specifying the component set for a surface, resolving a need to a spine or shared component, or checking that every visual state is designed before engineering starts. | **review** | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
+| Use when: designing system architecture, reviewing technical designs, evaluating architectural tradeoffs, defining tech strategy, or producing implementation plans. | active | [.github/agents/architect.agent.md](../.github/agents/architect.agent.md) |
+| Use when: building backend APIs, writing NestJS routes/controllers/services/modules, modifying Prisma schema and running migrations, implementing database queries, writing backend tests, performing backend audits, or ensuring database safety. | active | [.github/agents/backend-engineer.agent.md](../.github/agents/backend-engineer.agent.md) |
+| Review code for convention compliance, architecture violations, dead code, barrel pollution, and hardcoded values. Use when: code review, quality audit, PR review, checking for violations. | active | [.github/agents/code-reviewer.agent.md](../.github/agents/code-reviewer.agent.md) |
+| Use when: writing or updating BR/implementation docs, creating knowledge base articles or guides, documenting technical challenges, creating verification artifacts, running doc↔code truth-checks, checking template compliance, or auditing documentation for staleness. | active | [.github/agents/docs-writer.agent.md](../.github/agents/docs-writer.agent.md) |
+| Use when: building frontend UI, writing React components/hooks/stores, creating pages/screens from wireframes, implementing frontend features, writing frontend tests, or auditing frontend code for convention compliance. | active | [.github/agents/frontend-engineer.agent.md](../.github/agents/frontend-engineer.agent.md) |
+| Use when: running a task through the SOLAR v5 governor graph — ONE entry point that deterministically routes to a specialist (or orchestrates an epic as a chain of specialist runs), gates the result, and completes with run-cards (v5 pilot, e.g. epic 25). Also use when the user asks for 'governor', 'v5 run', 'graph-governed', 'run the chain', or wants the same orchestrator UX but with durable checkpoints + run-cards. For ad-hoc single-agent requests with no governor need, delegate straight to the matching specialist instead. | active | [.github/agents/governor-v5.agent.md](../.github/agents/governor-v5.agent.md) |
+| Use when: decoding the user's request into an intent + flow before a SOLAR run (intake only). Governor v5 calls Hermes as the FIRST step of every new task. Also answers 'what would you route this as?'. Do NOT use for executing, coding, or designing — Hermes only classifies. | active | [.github/agents/hermes.agent.md](../.github/agents/hermes.agent.md) |
+| Use when: researching codebase structure, tracing code paths, finding all usages of a symbol, investigating bugs, collecting context before implementing, or understanding how a feature works. | active | [.github/agents/investigator.agent.md](../.github/agents/investigator.agent.md) |
+| Use when: specifying the component set for a surface, resolving a need to a spine or shared component, or checking that every visual state is designed before engineering starts. | active | [.github/agents/uiux-designer.agent.md](../.github/agents/uiux-designer.agent.md) |
 
 #### Skills
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | **review** | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
-| Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | **review** | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
-| Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | **review** | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
+| Run this skill when auditing backend code. Covers error message format, architecture boundaries, input validation, DI compliance, Prisma safety, test coverage, API contracts, and security. | active | [.github/skills/backend-audit/SKILL.md](../.github/skills/backend-audit/SKILL.md) |
+| Run this skill when auditing documentation or verification artifacts. Covers template compliance, doc↔code truth-check (endpoints, names, counts, data source, links, dates, tooling), rename hygiene, cross-linking, KB extraction format, and Technical Challenges & Solutions format. | active | [.github/skills/docs-audit/SKILL.md](../.github/skills/docs-audit/SKILL.md) |
+| Run this skill when auditing frontend code — UI, components, pages, or full userflows. Part 1 covers the 12 UIUX fundamentals + the AI-slop checklist (first-class); Parts 2–4 cover architecture & data, verification, and integration so ALL frontend development is audited. Use after implementing a frontend feature, before closing a UI story, or when reviewing any frontend change. | active | [.github/skills/frontend-audit/SKILL.md](../.github/skills/frontend-audit/SKILL.md) |
 
 #### Control plane
 
 | Purpose | Status | Link |
 | --- | --- | --- |
-| Agent roles, behavior rules, prohibited patterns; the rule/agent/skill inventory is derived from disk | **review** | [.github/AGENTS.md](../.github/AGENTS.md) |
-| Operational playbook for AI agents — quick start, architecture, rule index | **review** | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
-| Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | **review** | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
-| Visualized dev flow — generation stages, verification, gates | **review** | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |
+| Operational playbook for AI agents — quick start, architecture, rule index | active | [.github/copilot-instructions.md](../.github/copilot-instructions.md) |
+| Canonical two-tier quality gates (Tier 1 / Tier 2) — development workflow, epic/story closing | active | [.github/instructions/project-workflow.instructions.md](../.github/instructions/project-workflow.instructions.md) |
+| Visualized dev flow — generation stages, verification, gates | active | [docs/guides/dev-flow-visualization.html](guides/dev-flow-visualization.html) |
 
 </details>
 
@@ -470,7 +469,7 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 | A7 Content / Data | 0 | 9 | 0 | 9 | [coverage.md](coverage.md#a7) |
 | A8 Infra | 1 | 2 | 0 | 3 | [coverage.md](coverage.md#a8) |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | [coverage.md](coverage.md#a9) |
-| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | [coverage.md](coverage.md#a10) |
+| A10 Agentic / Dev-Flow | 30 | 9 | 0 | 39 | [coverage.md](coverage.md#a10) |
 
 ## Flags
 
@@ -499,8 +498,6 @@ Full-system documentation coverage per area. Detail + doc-debt queue live in the
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
-- ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
-- ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
 - ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)
 <!-- /system-map:generated -->

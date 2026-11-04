@@ -10,12 +10,24 @@ Three obligations. Everything else is judgement and lives in the guides.
 ## 1. The design system is spine, read through the MCP
 
 The generic layer (tokens, components, page-anatomy measures, archetype vocabulary) is the **spine**
-repo, served by the spine MCP. This repo owns only the theme overlay and the `domain.pinyinpal` tokens.
+repo, served by the spine MCP (`.mcp.json` -> `spine`, stdio). This repo owns only the theme overlay and
+the `domain.pinyinpal` tokens; a theme is a delta over the same semantic names, so renaming a spine token
+locally is a fork.
 
+- Resources: `spine://tokens`, `spine://components/{name}`, `spine://rules`.
 - `suggest_component` / `search_kb` to resolve a need to a real component. **Never invent one.**
 - `spine://components/{name}` for a component's props and its closed variant set.
-- `suggest_token` for a semantic role, `validate_snippet` while writing.
+- `suggest_token` for a semantic role, `validate_snippet` while writing, and `lint_spec` / `audit_design`
+  to check a spec or a snippet before it becomes code.
+- Prompts: `design-review`, `prep-brief`, `theme-selection`.
+- The procedures are spine's own skills in the checkout's `agents/skills/` (`add-component`, `add-theme`,
+  `design-review`) — reach them through the checkout or `search_kb`; they are never copied into this repo.
 - A generic token or measure spine lacks is a **spine change**, never a local `:root` addition.
+
+Page structure is consumed as names, never pixels: `--page-measure-<archetype>` and `--page-pad` in
+`PageShell.css`, `--section-rhythm-*` in `PageStack.css`, `--card-gutter-*` in `PageGrid.css`, `--chrome-h`
+in `globals.css`. The archetype name IS the measure name — one-to-one, so `PageShell` keeps no translation
+table — and `DESIGN.md` <-> `globals.css` token parity is gate #14 (`npm run check:design-parity`).
 
 Local context: `DESIGN.md` (theme overlay), `styles/globals.css` (values), `.github/component-registry.json`
 (local components), `docs/guides/design/page-archetypes.md` (the page library).

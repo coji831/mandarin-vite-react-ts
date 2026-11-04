@@ -1,1 +1,1 @@
-See .github/AGENTS.md for full agent instructions.
+See .github/copilot-instructions.md for full agent instructions.

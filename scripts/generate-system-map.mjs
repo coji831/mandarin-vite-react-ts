@@ -19,14 +19,13 @@
  * and the flags strip. `docs/branches/` was deleted — a stale `docs/branches/`
  * dir is caught by `runCheck` as a linkage note, never a hard fail.
  *
- * Agentic layer (A10): enumerated FROM DISK (`instructions:` minus
+ * Agentic layer (A10): enumerated FROM DISK (`.github/instructions/` minus
  * project-workflow · `agents/` · `skills/`), each unit's purpose taken from
- * the leaf's own front-matter `description:`. `.github/AGENTS.md` no longer
- * hand-maintains those lists; if a list is still present and disagrees with
- * the directory scan, `check` reports it as drift.
- * Freshness is layer-level via AGENTS.md `last-verified:`; per-file freshness
- * applies only to conventions (prose `**Last Updated:**`) and control-plane
- * (native markers); `decision-log.json` is exempt.
+ * the leaf's own front-matter `description:`.
+ * Freshness is layer-level via the `**Last updated:**` marker in
+ * `.github/copilot-instructions.md`; per-file freshness applies only to
+ * conventions (prose `**Last Updated:**`) and control-plane (native markers);
+ * `decision-log.json` is exempt.
  *
  * Two modes:
  *   --emit   Reads the sources of truth and writes the generated blocks into
@@ -49,8 +48,8 @@
  *     `.github/decision-log.json` (optional — handled gracefully when absent)
  *   - area-index presence (knowledge-base/README.md, getting-started/README.md,
  *     templates/README.md, archive READMEs, …)
- *   - `.github/AGENTS.md` front-matter — the single enumerator for the agentic
- *     layer (instructions 17 · agents 7 · skills 6) + its `last-verified` marker
+ *   - `.github/copilot-instructions.md`'s `**Last updated:**` — the layer-level
+ *     freshness marker for the agentic layer
  *
  * Usage:
  *   node scripts/generate-system-map.mjs --emit
@@ -122,7 +121,7 @@ const EXCLUDED_REL_PATTERNS = [
 // docs, feature docs). `catalog`/`pointer` mark special-format leaves (JSON
 // catalogs / pointer rows) that carry no docs front-matter.
 // L6 (Agentic System) is intentionally absent here — it is fed from
-// `collectAgentic` in the AGENTS.md special format.
+// `collectAgentic`, which scans the rule surface on disk.
 const LAYER_ROOTS = {
   1: {
     name: "Product / Business",
@@ -230,8 +229,6 @@ const LAYER_ORDER = [1, 2, 3, 4, 5, 6, 7];
 // Control-plane purposes (L6) — constant so the agentic branch never needs docs
 // front-matter on .github/ files. decision-log.json moved to the L3 tree leaf.
 const AGENTIC_PURPOSES = {
-  ".github/AGENTS.md":
-    "Agent roles, behavior rules, prohibited patterns; the rule/agent/skill inventory is derived from disk",
   ".github/copilot-instructions.md":
     "Operational playbook for AI agents — quick start, architecture, rule index",
   ".github/instructions/project-workflow.instructions.md":
@@ -785,13 +782,10 @@ function collectTooling() {
  * A10 — Docs + agentic + working (the agentic/dev-flow freshness area).
  * 5 groups, units are their OWN docs (docPath === the file itself):
  *   16 instructions (excl. project-workflow.instructions.md — the gate table
- *      control-plane row) · 9 agents · 3 skills · 8 conventions · 5 control-plane.
+ *      control-plane row) · 9 agents · 3 skills · 8 conventions · 3 control-plane.
  *
- * Enumeration is DERIVED FROM DISK. `.github/AGENTS.md` used to hand-maintain
- * `instructions:` / `agents:` / `skills:` lists; a hand-maintained inventory
- * rots silently (three rules were added and the list was not), so disk is the
- * enumerator now and a stale list — if one is ever present — is reported as
- * drift by `agentsList`. Returns { units, notes }.
+ * Enumeration is DERIVED FROM DISK: every rule, agent and skill on disk is a
+ * unit, so a new file needs no list edited anywhere. Returns { units, notes }.
  */
 function collectAgentic() {
   const units = [];
@@ -809,8 +803,6 @@ function collectAgentic() {
       area: "A10",
     });
 
-  const agentsMeta = readAgentsFrontMatter();
-
   // 1. Instructions (16) — every `/instructions/*.instructions.md` on disk,
   //    minus project-workflow (the control-plane gate table). Purpose is the
   //    rule's own front-matter `description:`.
@@ -818,14 +810,7 @@ function collectAgentic() {
     path.join(ROOT, ".github", "instructions"),
     (f) => f.endsWith(".instructions.md") && f !== "project-workflow.instructions.md",
   ).map((f) => `.github/instructions/${f}`);
-  const instrFromAgents = (agentsMeta?.instructions ?? [])
-    .filter(
-      (f) =>
-        /instructions\/.*\.instructions\.md$/.test(f) &&
-        !f.endsWith("project-workflow.instructions.md"),
-    )
-    .sort();
-  for (const rel of agentsList(instrFromAgents, instrOnDisk, "instructions", notes)) {
+  for (const rel of instrOnDisk) {
     const slug = rel
       .split("/")
       .pop()
@@ -839,8 +824,7 @@ function collectAgentic() {
   const agentsOnDisk = listFiles(path.join(ROOT, ".github", "agents"), (f) =>
     f.endsWith(".agent.md"),
   ).map((f) => `.github/agents/${f}`);
-  const agentsFromAgents = [...(agentsMeta?.agents ?? [])].sort();
-  for (const rel of agentsList(agentsFromAgents, agentsOnDisk, "agents", notes)) {
+  for (const rel of agentsOnDisk) {
     const slug = rel
       .split("/")
       .pop()
@@ -854,8 +838,7 @@ function collectAgentic() {
   const skillsOnDisk = listDirs(path.join(ROOT, ".github", "skills")).map(
     (n) => `.github/skills/${n}/SKILL.md`,
   );
-  const skillsFromAgents = [...(agentsMeta?.skills ?? [])].sort();
-  for (const rel of agentsList(skillsFromAgents, skillsOnDisk, "skills", notes)) {
+  for (const rel of skillsOnDisk) {
     const slug = rel.split("/").slice(-2, -1)[0];
     const desc = readLeafMeta(rel)?.description;
     if (!desc) notes.push(`skills/${slug}: no native description — using unit name`);
@@ -873,10 +856,9 @@ function collectAgentic() {
     );
   }
 
-  // 5. Control-plane (4): AGENTS.md · copilot-instructions.md · gate table ·
+  // 5. Control-plane (3): copilot-instructions.md · gate table ·
   //    dev-flow-visualization.html. (decision-log.json moved to the L3 tree leaf.)
   const controlPlane = [
-    [".github/AGENTS.md", "AGENTS.md"],
     [".github/copilot-instructions.md", "copilot-instructions.md"],
     [".github/instructions/project-workflow.instructions.md", "gate table (project-workflow)"],
     ["docs/guides/dev-flow-visualization.html", "dev-flow-visualization.html"],
@@ -889,29 +871,6 @@ function collectAgentic() {
     u.klass = classifyUnit({ codeExists: true, docPath: u.docPath, meta: u.meta });
   }
   return { units, notes };
-}
-
-/**
- * Enumerate an AGENTS.md-tracked group from disk, and report a stale list.
- *
- * Disk is the source of truth: `.github/AGENTS.md` no longer hand-maintains
- * `instructions:` / `agents:` / `skills:`, so an ABSENT list is the normal
- * state and is silent — warning on it would be a permanent false alarm, which
- * is how real warnings get ignored. A list that IS present but disagrees with
- * the directory scan is the drift case worth reporting, so that warns. Either
- * way the disk scan is what gets returned.
- */
-function agentsList(fromAgents, onDisk, group, notes) {
-  const norm = (p) => path.normalize(p).replace(/\\/g, "/");
-  const diskSet = new Set(onDisk.map(norm));
-  const missing = fromAgents.filter((p) => !diskSet.has(norm(p)));
-  const inSync = missing.length === 0 && fromAgents.length === onDisk.length;
-  if (fromAgents.length > 0 && !inSync) {
-    notes.push(
-      `AGENTS.md ${group} list missing/out of sync — falling back to dir scan (${fromAgents.length} in AGENTS.md vs ${onDisk.length} on disk)`,
-    );
-  }
-  return onDisk;
 }
 
 // ─── Classification pass + scoreboard ────────────────────────────────────────
@@ -1012,7 +971,7 @@ function buildFlags(areas) {
   //   control-plane → native markers only; `decision-log.json` is exempt (JSON
   //     machine catalog); the gate table has no native marker → layer-tracked,
   //     so NO "no last-verified" flag. instructions/agents/skills are tracked at
-  //     layer level via AGENTS.md — no per-file freshness claims.
+  //     layer level — no per-file freshness claims.
   const a10 = areas.find((a) => a.id === "A10");
   for (const u of a10?.units ?? []) {
     const g = u.group ?? "other";
@@ -1023,12 +982,12 @@ function buildFlags(areas) {
       flags.push(`${u.area} ${u.unit}: review (${u.meta?.["last-verified"]} > 6 weeks)`);
     }
   }
-  // A10 layer-level marker (AGENTS.md last-verified) staleness.
-  const agentsMarker = readAgentsFrontMatter()?.["last-verified"];
+  // A10 layer-level marker (`**Last updated:**` in the always-on file) staleness.
+  const agentsMarker = readT0Marker();
   const markerDate = agentsMarker ? parseDate(agentsMarker) : null;
   if (markerDate && daysSince(markerDate) > STALE_DAYS) {
     flags.push(
-      `A10 agentic layer: AGENTS.md last-verified ${agentsMarker} > 6 weeks — layer-level review`,
+      `A10 agentic layer: copilot-instructions.md \`**Last updated:** ${agentsMarker}\` > 6 weeks — layer-level review`,
     );
   }
 
@@ -1439,11 +1398,10 @@ function compareLeaves(a, b) {
   return a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0;
 }
 
-/** L6 agentic branch — AGENTS.md special format, leaves with purposes. */
+/** L6 agentic branch — the rule surface on disk, leaves with purposes. */
 function collectAgenticTree() {
   const { units } = collectAgentic();
-  const agentsMeta = readAgentsFrontMatter();
-  const marker = agentsMeta?.["last-verified"];
+  const marker = readT0Marker();
   const d = marker ? parseDate(marker) : null;
   const layerStale = !!d && daysSince(d) > STALE_DAYS;
   // Tree L6 = instructions · agents · skills · control-plane. Conventions live
@@ -1595,47 +1553,16 @@ function renderTree(treeArg) {
 }
 
 /**
- * Parse `.github/AGENTS.md` front-matter. Enumeration is derived from disk by
- * `collectAgentic`, so the `instructions:` / `agents:` / `skills:` lists are
- * no longer the enumerator: they are read only so a list still present but
- * stale is reported as drift. `last-verified:` is the live scalar consumer.
- * Returns null when AGENTS.md or its front-matter is missing; lists default to
- * empty arrays.
+ * Read the layer-level freshness marker for the agentic layer, from the one
+ * always-on file that survives. Returns the date string, or null when the file
+ * or its marker is missing.
  */
-function readAgentsFrontMatter() {
-  const abs = path.join(ROOT, ".github", "AGENTS.md");
+function readT0Marker() {
+  const abs = path.join(ROOT, ".github", "copilot-instructions.md");
   if (!fs.existsSync(abs)) return null;
   const text = fs.readFileSync(abs, "utf-8");
-  const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
-  if (!fm) return null;
-  const meta = { instructions: [], agents: [], skills: [], "last-verified": null };
-  let currentKey = null;
-  for (const line of fm[1].split(/\r?\n/)) {
-    const kv = line.match(/^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$/);
-    if (kv) {
-      currentKey = kv[1];
-      const val = kv[2].trim();
-      if (val) meta[currentKey] = val.replace(/^["']|["']$/g, "");
-    } else if (currentKey === "instructions") {
-      // `- file: "..."` entries; a nested `description:` line is ignored —
-      // the instruction file's own `description:` is the purpose now.
-      const fileKv = line.match(/^\s*-\s+file:\s*["']?(.+?)["']?\s*$/);
-      if (fileKv) {
-        if (!Array.isArray(meta.instructions)) meta.instructions = [];
-        meta.instructions.push(fileKv[1].trim().replace(/["']$/g, ""));
-      }
-    } else {
-      const item = line.match(/^\s*-\s+(.+)$/);
-      if (item && currentKey) {
-        const raw = item[1].trim();
-        const fileKv2 = raw.match(/^file:\s*["']?(.+?)["']?$/);
-        const val = fileKv2 ? fileKv2[1].trim() : raw.replace(/^["']|["']$/g, "").trim();
-        if (!Array.isArray(meta[currentKey])) meta[currentKey] = [];
-        meta[currentKey].push(val);
-      }
-    }
-  }
-  return meta;
+  const m = text.match(/^\*\*Last updated:\*\*\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/m);
+  return m ? m[1] : null;
 }
 
 // ─── Markdown rendering ──────────────────────────────────────────────────────
@@ -1743,17 +1670,19 @@ function renderCoverageBlock(areas, flags) {
     ]);
     if (area.id === "A10") {
       // Layer-level summary row first (not scored — the scoreboard counts the
-      // 43 per-unit rows only). Presence is derived from AGENTS.md enumeration;
-      // no per-file freshness claims for instructions/agents/skills.
+      // per-unit rows only). Presence is derived from the disk scan; freshness is
+      // the layer-level `**Last updated:**` marker in the always-on file.
       const instrN = area.units.filter((u) => u.group === "instructions").length;
       const agentN = area.units.filter((u) => u.group === "agents").length;
       const skillN = area.units.filter((u) => u.group === "skills").length;
-      const layerMarker = readAgentsFrontMatter()?.["last-verified"] ?? "—";
+      const layerMarker = readT0Marker() ?? "—";
+      const layerDate = layerMarker === "—" ? null : parseDate(layerMarker);
+      const layerStale = !!layerDate && daysSince(layerDate) > STALE_DAYS;
       rows.unshift([
         `**Agentic layer (instructions ${instrN} + agents ${agentN} + skills ${skillN})**`,
         "✅",
-        ".github/AGENTS.md",
-        `**documented** ⚠️ layer-level: AGENTS.md \`last-verified: ${layerMarker}\``,
+        ".github/copilot-instructions.md",
+        `**documented**${layerStale ? " ⚠️" : ""} layer-level: \`**Last updated:** ${layerMarker}\``,
         "—",
         "check:system-map",
       ]);
@@ -1977,7 +1906,7 @@ function runCheck(areas, flags, agenticNotes) {
     }
   }
 
-  // Linkage notes collect the AGENTS.md enumeration fallbacks plus the
+  // Linkage notes collect the agentic enumeration notes plus the
   // linkage/count-truth notes below; declared here so the paths below push to a
   // defined array (no temporal-dead-zone ReferenceError).
   const linkageNotes = [...agenticNotes];

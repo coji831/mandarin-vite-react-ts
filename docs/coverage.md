@@ -1,7 +1,7 @@
 
 
 <!-- coverage:generated -->
-<!-- generated 2026-11-01 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
+<!-- generated 2026-11-04 by scripts/generate-system-map.mjs — DO NOT EDIT; run `npm run generate:system-map` -->
 
 # Coverage Ledger (generated)
 
@@ -20,7 +20,7 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | A7 Content / Data | 0 | 9 | 0 | 9 | 9 |
 | A8 Infra | 1 | 2 | 0 | 3 | 4 |
 | A9 Tooling / Scripts | 0 | 2 | 0 | 2 | 2 |
-| A10 Agentic / Dev-Flow | 30 | 10 | 0 | 40 | 40 |
+| A10 Agentic / Dev-Flow | 30 | 9 | 0 | 39 | 39 |
 
 
 <a id="a1"></a>
@@ -175,11 +175,11 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 
 <a id="a10"></a>
 
-## A10 — Agentic / Dev-Flow (40)  ·  score 30/40 documented · 10 partial · 0 undocumented
+## A10 — Agentic / Dev-Flow (39)  ·  score 30/39 documented · 9 partial · 0 undocumented
 
 | Unit | Code | Doc | Status | Debt | Gate |
 | --- | --- | --- | --- | --- | --- |
-| **Agentic layer (instructions 16 + agents 9 + skills 3)** | ✅ | .github/AGENTS.md | **documented** ⚠️ layer-level: AGENTS.md `last-verified: 2026-09-06` | — | check:system-map |
+| **Agentic layer (instructions 16 + agents 9 + skills 3)** | ✅ | .github/copilot-instructions.md | **documented** layer-level: `**Last updated:** 2026-11-04` | — | check:system-map |
 | instructions/a11y-floor | ✅ | .github/instructions/a11y-floor.instructions.md | documented | — | check:system-map |
 | instructions/backend-error-messages | ✅ | .github/instructions/backend-error-messages.instructions.md | documented | — | check:system-map |
 | instructions/documentation-standards | ✅ | .github/instructions/documentation-standards.instructions.md | documented | — | check:system-map |
@@ -216,7 +216,6 @@ Answers *“is everything documented?”* across the whole system. Rows are deri
 | conventions/naming-standards | ✅ | docs/guides/conventions/naming-standards.md | **partial** ⚠️ review (last-verified 2026-06-08 > 6 weeks) | — | check:system-map |
 | conventions/security | ✅ | docs/guides/conventions/security.md | **partial** ⚠️ review (last-verified 2026-06-07 > 6 weeks) | — | check:system-map |
 | conventions/state-management | ✅ | docs/guides/conventions/state-management.md | **partial** ⚠️ review (last-verified 2026-06-03 > 6 weeks) | — | check:system-map |
-| AGENTS.md | ✅ | .github/AGENTS.md | **partial** ⚠️ review (last-verified 2026-09-06 > 6 weeks) | — | check:system-map |
 | copilot-instructions.md | ✅ | .github/copilot-instructions.md | documented | — | check:system-map |
 | gate table (project-workflow) | ✅ | .github/instructions/project-workflow.instructions.md | documented | — | check:system-map |
 | dev-flow-visualization.html | ✅ | docs/guides/dev-flow-visualization.html | **partial** ⚠️ review (last-verified 2026-08-18 > 6 weeks) | — | check:system-map |
@@ -294,10 +293,9 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 | 65 | conventions/naming-standards | A10 | docs/guides/conventions/naming-standards.md | — | — |
 | 66 | conventions/security | A10 | docs/guides/conventions/security.md | — | — |
 | 67 | conventions/state-management | A10 | docs/guides/conventions/state-management.md | — | — |
-| 68 | AGENTS.md | A10 | .github/AGENTS.md | — | — |
-| 69 | dev-flow-visualization.html | A10 | docs/guides/dev-flow-visualization.html | — | — |
-| 70 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
-| 71 | /learn/basic | A2 | — | — | — |
+| 68 | dev-flow-visualization.html | A10 | docs/guides/dev-flow-visualization.html | — | — |
+| 69 | /learn | A2 | docs/guides/design/page-archetypes.md | — | — |
+| 70 | /learn/basic | A2 | — | — | — |
 
 ## Flags
 
@@ -326,8 +324,6 @@ Priority: (1) shipped + `undocumented` → (2) `partial` with declared gaps → 
 - ⚠️ A10 conventions/naming-standards: review (2026-06-08 > 6 weeks)
 - ⚠️ A10 conventions/security: review (2026-06-07 > 6 weeks)
 - ⚠️ A10 conventions/state-management: review (2026-06-03 > 6 weeks)
-- ⚠️ A10 AGENTS.md: review (2026-09-06 > 6 weeks)
 - ⚠️ A10 dev-flow-visualization.html: review (2026-08-18 > 6 weeks)
-- ⚠️ A10 agentic layer: AGENTS.md last-verified 2026-09-06 > 6 weeks — layer-level review
 - ⚠️ features/README.md declares a docs/ per-feature convention; 7 feature(s) lack docs/design.md (chengyu, grammar, lexical-hub, library, phonetic-clusters, progress, word-hub)
 <!-- /coverage:generated -->

@@ -1,7 +1,7 @@
 # PinyinPal - agent instructions
 
-**Last updated:** 2026-11-01. This file is the law that loads on every task. Everything else is scoped by
-a glob or invoked as a skill, and the index of it is `.github/AGENTS.md`.
+**Last updated:** 2026-11-04. This file is the law that loads on every task. Everything else is scoped by
+a glob or invoked as a skill; "Where to read next" below is the index.
 
 ## COMMIT GATE (binding, read first)
 
@@ -17,11 +17,20 @@ the user already approved for commit earlier in the same session.
 - Never invent a generic token, component or page-anatomy measure. Spine owns the generic layer.
 - Never reimplement `Button`, `Input`, `LoadingScreen`, `ErrorScreen`, `ProgressBar`, `FilterChip`,
   `ToggleSwitch` or `ContentBrowser`. Import from `src/shared/components`.
-- Never set a page `max-width`, a centring wrapper or a page grid in page CSS. `PageShell` ->
-  `PageHeader` -> `PageStack` -> `PageGrid` own the measure; `design-audit:foundation` fails on it.
+- Never set a page `max-width`, a centring wrapper or a page grid in page CSS; the page-anatomy law below
+  owns the measure.
 - Never store state inside a `components/` directory, and never call `apiClient` from a component or hook.
 - Never create a page story or a page shell. Storybook is a component surface.
 - Never bypass a CSS import restriction with an eslint-disable.
+
+## The page-anatomy law
+
+Every routed page composes `AppLayout`/`LearnLayout` -> `PageShell` -> `PageHeader` -> `PageStack` ->
+`PageGrid`. `.github/page-inventory.json` is the anatomy ledger (`check:page-inventory`), and
+`docs/guides/design/page-archetypes.md` defines the archetypes and their measures.
+`npm run design-audit:foundation` runs spine's own audit over the local checkout (`SPINE_ROOT`, the
+`.github/workflows/spine-foundation.yml` job) and fails on exactly three rules: `missing-layout-token`,
+`page-scoped-layout-css`, `page-scoped-grid`.
 
 ## The design system is spine
 
@@ -79,7 +88,7 @@ Docs pair by name: `docs/business-requirements/epic-<num>-<slug>/README.md` with
 ## Where to read next
 
 Each file below carries its own `applyTo` or `description`, so it arrives when its subject is touched.
-`.github/AGENTS.md` is the full index; `.github/agent-surface.json` is the context budget.
+`.github/instructions/` holds the rule set; `.github/agent-surface.json` is the context budget.
 
 - styling a component, or touching a colour, size or duration -> `frontend-css-styling`,
   `theme-delta`
