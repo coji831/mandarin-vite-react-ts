@@ -44,5 +44,10 @@ docs/guides/design/css-class-catalog.md
 # reading code — not by table aesthetics. Prettier pads every markdown table to its widest cell, which
 # costs 4,066 B across the instructions (+2,802 B in project-workflow's gate table alone) and 2,336 B
 # across the agents, and buys nothing: the padding is invisible to a reader and is charged to every
-# scoped task. Size here is the load budget's job, so prettier stays out of `.github/` entirely.
-.github/**
+# scoped task. These two directories are the only `.github/` paths prettier would change today, so
+# they are formatted by hand and measured, never reformatted: padding here would move the ratchet.
+# `.github/copilot-instructions.md` and `.github/AGENTS.md` sit in the same ratchet but are already
+# clean, so they stay checked — keep them clean by hand. `format:check:changed` stays vacuous for the
+# two ignored directories by design; `format:check` is the gate that covers the rest of `.github/`.
+.github/agents/**
+.github/instructions/**
