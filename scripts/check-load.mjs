@@ -17,6 +17,11 @@
  *   - SCOPED fan-in: for each representative path in .github/agent-surface.json, the bytes of
  *     every instruction whose `applyTo` glob matches it. This is the number that actually hurts,
  *     and the one no other check in this repo looks at.
+ *   - PER-FILE ceiling: every instruction that declares an `applyTo`, against `per_file_cap_bytes`.
+ *     The fan-in total can sit comfortably under its cap while one file carries a third of it, so
+ *     the total alone does not say whether any single rule is too long to be obeyed. A rule with
+ *     NO `applyTo` is a different class (it loads on a task match, not on a path) and is not
+ *     measured here.
  *
  * THE RATCHET
  *   Values in the profile are CEILINGS. Lowering one is a pass; raising one to make room is the
@@ -244,8 +249,26 @@ if (unscoped.length) {
 
 const wide = rules
   .filter((r) => r.globs.some((g) => g === "**" || g === "**/*" || g === "**/*.tsx"))
-  .map((r) => `${r.name} (${r.globs.filter((g) => g === "**" || g === "**/*.tsx").join(", ")})`);
+  .map(
+    (r) =>
+      `${r.name} (${r.globs.filter((g) => g === "**" || g === "**/*" || g === "**/*.tsx").join(", ")})`,
+  );
 if (wide.length) console.log(`\nWIDEST GLOBS  ${wide.join("; ")}`);
+
+// ---- per-file ceiling ---------------------------------------------------------------------------
+// Only rules that declare an `applyTo`: an unscoped rule loads on a task match, not a path, so it is
+// a different class and comparing it to a scoped rule's budget would be comparing two things.
+const fileCap = profile.per_file_cap_bytes;
+const scopedRules = rules.filter((r) => r.hasApplyTo);
+const overFiles = fileCap != null ? scopedRules.filter((r) => r.bytes > fileCap) : [];
+if (fileCap != null && scopedRules.length) {
+  const widest = scopedRules.reduce((a, b) => (b.bytes > a.bytes ? b : a));
+  console.log(`\nPER-FILE CEILING (the widest of ${scopedRules.length} scoped instructions)`);
+  console.log(
+    `  ${pad(widest.name, 52)} ${String(num(widest.bytes)).padStart(8)}   cap ${num(fileCap)}   ` +
+      `${widest.bytes > fileCap ? "OVER" : "ok"}   ${num(Math.abs(fileCap - widest.bytes))} B ${widest.bytes > fileCap ? "over" : "headroom"}`,
+  );
+}
 
 // ---- verdict -----------------------------------------------------------------------------------
 const problems = [];
@@ -254,6 +277,8 @@ if (alwaysOver)
     `always-on ${num(alwaysOn)} B over cap ${num(alwaysCap)} (by ${num(alwaysOn - alwaysCap)})`,
   );
 for (const p of overPaths) problems.push(`${p.path} ${num(p.total)} B over cap ${num(p.cap)}`);
+for (const r of overFiles)
+  problems.push(`${r.name} ${num(r.bytes)} B over the per-file cap ${num(fileCap)}`);
 
 if (missingPaths.length) {
   console.error(
