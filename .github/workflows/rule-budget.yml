@@ -1,0 +1,59 @@
+# ── Rule-Surface Budget ──────────────────────────────────────────────────────
+# Runs `scripts/check-load.mjs` on any change to the rule surface. This is the
+# gate that makes the load ratchet bite somewhere other than one laptop.
+#
+# Why its own workflow, not a job in ci.yml: `ci.yml` filters on `apps/**` and
+# `packages/**`, so a rule edit never triggers it, and adding `.github/**` there
+# would wake a 30-minute suite to check a 100 ms number. This job needs no
+# `npm ci` — check-load reads files with `node:fs` only — so it is ~15 s.
+#
+# What each ceiling can and cannot catch here:
+#   • per_file_cap_bytes — EXACT in CI. It compares instruction files to each
+#     other and never touches the user-level layer, so the number here is the
+#     number a developer sees.
+#   • always_on_cap_bytes — LOOSER in CI. The cap counts the user-level
+#     `~/.copilot/instructions` layer (7,411 B on the owner's machine), which
+#     does not exist on a runner. CI therefore measures repo-controlled
+#     always-on (11,218 B) against a cap that includes a layer it cannot see,
+#     so it catches repo-side growth only and cannot fail on a user-level one.
+#   • scope_fan_in_cap_bytes — LOOSER in CI for the same reason: every fan-in
+#     total is 7,411 B lower than local. It catches a new broad glob; it will
+#     not catch a path that is only over because of the user layer.
+# Stating that here so a green CI run is not mistaken for a green local run.
+
+name: Rule-Surface Budget
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/**"
+      - "scripts/check-load.mjs"
+      - "package.json"
+      - ".github/workflows/rule-budget.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".github/**"
+      - "scripts/check-load.mjs"
+      - "package.json"
+      - ".github/workflows/rule-budget.yml"
+
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # No `npm ci`: check-load imports `node:fs`, `node:path`, `node:os` and `node:url` only.
+      # If that ever changes, this step is a false green — the step below fails loudly instead.
+      - name: Rule-surface budget
+        run: npm run check:load
