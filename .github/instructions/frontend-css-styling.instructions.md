@@ -68,15 +68,13 @@ in its parent's. A component that uses only global utilities needs no CSS file a
 Import shared components from `src/shared/components` rather than rebuilding one, and read
 `.github/component-registry.json` before creating any UI structure.
 
-Use the **native element** where one exists: `<button>` for an action, `<a href>` for navigation. A
-`<div role="button" tabIndex={0}>` is never the answer; it loses keyboard activation, focus behaviour
-and the assistive-technology role that the native element already has.
+Use the **native element** where one exists: `<button>` for an action, `<a href>` for navigation.
 
 ## Every state is a class
 
 Each interactive component styles `:hover`, `:focus-visible`, `:active` and `[disabled]` (or
 `[aria-disabled="true"]`), plus an error treatment where the component can fail. A missing state is a
-missing rule, not a later task. Focus must stay visible: 2px minimum, 3:1 against its adjacent colour.
+missing rule, not a later task.
 
 ## The flex scroll chain
 
@@ -93,7 +91,5 @@ shrink below its content. Both are why `overflow-y: auto` fails without them.
 
 ## Where the detail lives
 
-- Full utility-class and pattern-class list: `docs/guides/design/css-class-catalog.md` (generated from
-  `globals.css`, so it cannot drift).
-- Layout physics, worked examples, before/after: `docs/guides/design/layout-physics.md`.
-- Every token and its role: `DESIGN.md`, or `spine://tokens` through the spine MCP.
+Classes: `docs/guides/design/css-class-catalog.md` (generated from `globals.css`, cannot drift).
+Layout physics: `docs/guides/design/layout-physics.md`. Tokens: `DESIGN.md` or `spine://tokens`.
